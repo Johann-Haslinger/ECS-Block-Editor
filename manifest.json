@@ -1,0 +1,19 @@
+{
+    "short_name": "Block Editor",
+    "name": "ECS Block Editor",
+    "icons": [
+        {
+            "src": "/logo",
+            "type": "image/png",
+            "sizes": "199x199"
+            
+            
+        }
+    ],
+
+
+    "start_url": ".",
+    "display": "standalone",
+    "theme_color": "rgb(243,243,248)",
+    "background_color": "rgb(243,243,248)"
+}
