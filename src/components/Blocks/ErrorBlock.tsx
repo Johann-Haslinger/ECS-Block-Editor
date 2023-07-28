@@ -2,7 +2,7 @@ import React from 'react';
 import BlockOutline from './BlockOutline';
 
 const ErrorBlock = () => {
-  return <>Error</>
+  return <>Fehler</>
 };
 
 export default ErrorBlock;
