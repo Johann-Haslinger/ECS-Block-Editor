@@ -1,10 +1,11 @@
+export enum Tags {
+  CURRENT,
+  VISIBLE,
+}
 
-export const Tags = {
-    LOCKED: "LOCKED",
-    CURRENT: "CURRENT", 
-    VISIBLE: "VISIBLE",
-    PLAYER: "PLAYER",
-    ITEM: "ITEM",
-    ITEM_IN_WORLD: " ITEM_IN_WORLD",
-    INVENTORY: "INVENTORY"
+export enum BlockTypes{
+    TEXT,
+    IMAGE,
+    PAGE,
+    CARD,
 }
