@@ -3,7 +3,7 @@
     "name": "ECS Block Editor",
     "icons": [
         {
-            "src": "/logo",
+            "src": "/appLogo",
             "type": "image/png",
             "sizes": "199x199"
             

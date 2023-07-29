@@ -17,7 +17,7 @@ const InitSystem = () => {
     blockEntity.addComponent(new ChildFacet({ childOf: 'Block Editor' }));
     blockEntity.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
     blockEntity.addComponent(new IsPressedFacet({ isPressed: false}));
-    blockEntity.addComponent(new IsFocusedFacet({ isFocused: true}));
+    blockEntity.addComponent(new IsFocusedFacet({ isFocused: false}));
     blockEntity.addComponent(new IdFacet({ id: uuid()}));
 
     const blockEntity2 = new Entity();
@@ -26,6 +26,7 @@ const InitSystem = () => {
     blockEntity2.addComponent(new ChildFacet({ childOf: 'Block Editor' }));
     blockEntity2.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
     blockEntity2.addComponent(new IsPressedFacet({ isPressed: false}));
+    blockEntity2.addComponent(new IsFocusedFacet({ isFocused: false}));
     blockEntity2.addComponent(new IdFacet({ id: uuid()}));
 
     const blockEditor = new Entity();

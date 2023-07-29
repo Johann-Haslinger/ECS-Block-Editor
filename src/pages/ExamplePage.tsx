@@ -1,5 +1,5 @@
-import React, { useContext } from 'react'
-import BlockEditor from './BlockEditor'
+import React, { useContext } from 'react';
+import BlockEditor from './BlockEditor';
 import { ECSContext, Entity, useAnimationFrame, useEntities } from '@leanscope/ecs-engine';
 import { TextFacet } from '../app/BlockFacets';
 
@@ -12,8 +12,10 @@ const ExamplePage = () => {
   });
 
   return (
-   <BlockEditor blockEntities={blocks} header={''} />
-  )
-}
+    <div className="fixed w-screen h-screen  overflow-y-hidden">
+      <BlockEditor blockEntities={blocks} header={''} />
+    </div>
+  );
+};
 
-export default ExamplePage
+export default ExamplePage;
