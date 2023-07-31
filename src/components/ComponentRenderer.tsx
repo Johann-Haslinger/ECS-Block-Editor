@@ -4,6 +4,7 @@ import { ChildFacet, IsEditingFacet, IsPressedFacet, TypeFacet } from '../app/Bl
 import { BlockTypes } from '../base/Constants';
 import TextBlock from './Blocks/TextBlock';
 import ErrorBlock from './Blocks/ErrorBlock';
+import EditMenu from './Menus/EditMenu';
 
 interface ComponentRendererProps {
   blockEntities: readonly Entity[];
@@ -45,6 +46,7 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
           <ErrorBlock key={idx} />
         ),
       )}
+    {blockEditorEntity &&(  <EditMenu  entity={blockEditorEntity} />)}
     </div>
   );
 };

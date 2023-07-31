@@ -21,8 +21,8 @@ const Toolbar = (props: EntityProps) => {
   const isEditing = (blockEditorEntity[0][1] as IsEditingEntityType)?.props.isEditing;
 
   return (
-    <div className="py-4 absolute top-0 w-full left-0 flex justify-end">
-      <div className=" space-x-4 flex pr-2 md:pr-6 h-6 text-blue md:space-x-5 text-2xl">
+    <div className="py-6 md:py-4 absolute top-0 w-full left-0 flex justify-end">
+      <div className=" space-x-4 flex pr-4 md:pr-6 h-6 text-blue md:space-x-5 text-2xl">
         {isEditing ? (
           <p onClick={()=> {props.entity.addComponent(new IsEditingFacet({ isEditing: false }))}} className="text-base font-bold  ">Fertig</p>
         ) : (
