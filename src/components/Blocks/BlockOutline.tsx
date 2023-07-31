@@ -16,12 +16,11 @@ interface BlockOutlineProps {
 }
 
 const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onClick}) => {
-  const block = useEntity(blockEntity);
-  const isPressed = (block[0][3] as EntityPropsType)?.props?.isPressed;
+  const [isPressed, isEditing] = useEntityComponents(blockEntity, IsPressedFacet, IsEditingFacet);
+
   const [blockEditorEntities] = useEntities((e: Entity) => e.has(IsEditingFacet));
   const blockEditorEntity = blockEditorEntities[0];
 
-  const isEditing = blockEditorEntity?.get(IsEditingFacet)?.props.isEditing;
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const textBlockRef = useRef<HTMLDivElement | null>(null);
   const [startX, setStartX] = useState<number | null>(null);

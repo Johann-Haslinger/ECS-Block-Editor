@@ -31,12 +31,12 @@ export class TypeFacet extends Facet<TypeFacetProps> {
   }
 }
 
-export interface IsPressedFacettProps {
+export interface IsPressedFacetProps {
   isPressed: boolean;
 }
 
-export class IsPressedFacet extends Facet<IsPressedFacettProps> {
-  constructor(props: IsPressedFacettProps) {
+export class IsPressedFacet extends Facet<IsPressedFacetProps> {
+  constructor(props: IsPressedFacetProps) {
     super(props);
   }
 }

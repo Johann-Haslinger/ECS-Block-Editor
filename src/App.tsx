@@ -1,10 +1,10 @@
 import InitSystem from './systems/InitSystem';
-import { useEffect, useState } from 'react';
-import { ECS, ECSContext } from '@leanscope/ecs-engine';
+import { useContext } from 'react';
+import { ECSContext } from '@leanscope/ecs-engine';
 import ExamplePage from './pages/ExamplePage';
 
 function App() {
-  const [ecs] = useState(new ECS());
+  const ecs = useContext(ECSContext);
 
   return (
     <div className=" bg-bg w-screen h-screen ">
