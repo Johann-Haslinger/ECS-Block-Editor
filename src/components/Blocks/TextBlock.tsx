@@ -97,36 +97,28 @@ const TextBlock: React.FC<TextBlockProps> = ({ blockEntity, handleAddBlock }) =>
     };
   }, [isFocused]);
 
-  const handleKeyUp = () => {
-    if (contentEditableRef.current) {
-      const htmlText = contentEditableRef.current.innerHTML;
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(htmlText, 'text/html');
+  // const handleKeyUp = () => {
+  //   if (contentEditableRef.current) {
+  //     const htmlText = contentEditableRef.current.innerHTML;
+  //     const parser = new DOMParser();
+  //     const doc = parser.parseFromString(htmlText, 'text/html');
 
-      const divs = doc.querySelectorAll('div');
-      if (divs.length > 0) {
-        const lastDiv = divs[divs.length - 1];
-        const updatedText = htmlText.replace(lastDiv.innerHTML, '');
-        blockEntity.addComponent(new TextFacet({ text: updatedText }));
+  //     const divs = doc.querySelectorAll('div');
+  //     if (divs.length > 0) {
+  //       const lastDiv = divs[divs.length - 1];
+  //       const updatedText = htmlText.replace(lastDiv.innerHTML, '');
+  //       blockEntity.addComponent(new TextFacet({ text: updatedText }));
 
-        console.log('lastDiv.innerHTML', lastDiv.innerHTML);
-        const newBlockEntity = new Entity();
-        ecs.engine.addEntity(newBlockEntity);
-        newBlockEntity.addComponent(new TextFacet({ text: lastDiv.innerHTML }));
-        newBlockEntity.addComponent(new ChildFacet({ childOf: 'Block Editor' }));
-        newBlockEntity.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
-        newBlockEntity.addComponent(new IdFacet({ id: uuid() }));
-      } else {
-        const newBlockEntity = new Entity();
-        ecs.engine.addEntity(newBlockEntity);
-        newBlockEntity.addComponent(new TextFacet({ text: 'Enter' }));
-        newBlockEntity.addComponent(new ChildFacet({ childOf: 'Block Editor' }));
-        newBlockEntity.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
-        newBlockEntity.addComponent(new IdFacet({ id: uuid() }));
-
-      }
-    }
-  };
+  //       console.log('lastDiv.innerHTML', lastDiv.innerHTML);
+  //       const newBlockEntity = new Entity();
+  //       ecs.engine.addEntity(newBlockEntity);
+  //       newBlockEntity.addComponent(new TextFacet({ text: lastDiv.innerHTML }));
+  //       newBlockEntity.addComponent(new ChildFacet({ childOf: 'Block Editor' }));
+  //       newBlockEntity.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
+  //       newBlockEntity.addComponent(new IdFacet({ id: uuid() }));
+  //     } 
+  //   }
+  // };
 
   const handleBlur = () => {
     if (contentEditableRef.current) {
@@ -146,7 +138,7 @@ const TextBlock: React.FC<TextBlockProps> = ({ blockEntity, handleAddBlock }) =>
         <div className="w-full">
           {isFocused ? (
             <div
-              onKeyUp={handleKeyUp}
+              // onKeyUp={handleKeyUp}
               onBlur={handleBlur}
               ref={contentEditableRef}
               className="w-full bg-blue-light bg-opacity-40 outline-none"

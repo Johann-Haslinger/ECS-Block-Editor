@@ -8,7 +8,7 @@ import {
 } from '@leanscope/ecs-engine';
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import { IoEllipseOutline } from 'react-icons/io5';
-import { IsEditingFacet, IsFocusedFacet, IsPressedFacet } from '../../app/BlockFacets';
+import { IdFacet, IsEditingFacet, IsFocusedFacet, IsPressedFacet, TextFacet } from '../../app/BlockFacets';
 import { Tags } from '../../base/Constants';
 
 interface BlockOutlineProps {
@@ -16,12 +16,20 @@ interface BlockOutlineProps {
   blockEntity: Entity;
   isFocused: boolean;
   onClick?: () => void;
-
 }
 
-const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onClick, isFocused}) => {
-  const [isPressed, isEditing] = useEntityComponents(blockEntity, IsPressedFacet, IsEditingFacet);
+const BlockOutline: React.FC<BlockOutlineProps> = ({
+  content,
+  blockEntity,
+  onClick,
+  isFocused,
+}) => {
+  const [text, id] = useEntityComponents(blockEntity, TextFacet, IdFacet);
 
+  console.log('text:', text);
+
+  const isPressed = false
+  const isEditing = false
   const [blockEditorEntities] = useEntities((e: Entity) => e.has(IsEditingFacet));
   const blockEditorEntity = blockEditorEntities[0];
 
