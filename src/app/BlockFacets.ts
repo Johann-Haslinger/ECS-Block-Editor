@@ -1,6 +1,28 @@
 import { BlockTypes } from '../base/Constants';
 import { Facet } from '../base/Facet';
 
+
+export interface IsSmallBlockProps {
+  isSmall: boolean;
+}
+
+export class IsSmallBlockFacet extends Facet<IsSmallBlockProps> {
+  constructor(props: IsSmallBlockProps) {
+    super(props);
+  }
+}
+
+
+export interface DescriptionProps {
+  description: string;
+}
+
+export class DescriptionFacet extends Facet<DescriptionProps> {
+  constructor(props: DescriptionProps) {
+    super(props);
+  }
+}
+
 export interface TextProps {
   text: string;
 }

@@ -14,7 +14,7 @@ import { Tags } from '../../base/Constants';
 interface BlockOutlineProps {
   content: ReactNode;
   blockEntity: Entity;
-  isFocused: boolean;
+  isFocused?: boolean;
   onClick?: () => void;
 }
 
@@ -125,8 +125,8 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({
     <div
       className={`${
         isPressed
-          ? 'bg-[rgb(225,241,254)] w-full z-40 select-none rounded-md pl-3 p-1 md:mb-1 mb-0.5'
-          : 'w-full pl-3 p-1 md:mb-1 mb-0.5 border-white'
+          ? 'bg-[rgb(225,241,254)] w-full z-40 select-none rounded-md p-2  md:mb-1 mb-0.5'
+          : 'w-full p-2  md:mb-1 mb-0.5 border-white'
       }`}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}

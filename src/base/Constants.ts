@@ -9,4 +9,5 @@ export enum BlockTypes{
     IMAGE,
     PAGE,
     CARD,
+    MORE_INFORMATIONS
 }

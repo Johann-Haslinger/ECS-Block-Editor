@@ -7,10 +7,9 @@ import { BlockTypes } from '../../base/Constants';
 
 interface TextBlockProps {
   blockEntity: Entity;
-  handleAddBlock: (text: string) => void;
 }
 
-const TextBlock: React.FC<TextBlockProps> = ({ blockEntity, handleAddBlock }) => {
+const TextBlock: React.FC<TextBlockProps> = ({ blockEntity }) => {
   const block = useEntity(blockEntity);
   const text = (block[0][0] as EntityPropsType)?.props.text;
   const ecs = useContext(ECSContext);
