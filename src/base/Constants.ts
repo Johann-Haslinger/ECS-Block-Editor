@@ -1,6 +1,7 @@
 export enum Tags {
   CURRENT,
   VISIBLE,
+  PRESSED
 }
 
 export enum BlockTypes{

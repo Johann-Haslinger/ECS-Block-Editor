@@ -9,11 +9,13 @@ import EditMenu from './Menus/EditMenu';
 interface ComponentRendererProps {
   blockEntities: readonly Entity[];
   blockEditorEntities: readonly Entity[];
+  handleAddBlock: (text: string) => void;
 }
 
 const ComponentRenderer: React.FC<ComponentRendererProps> = ({
   blockEntities,
   blockEditorEntities,
+  handleAddBlock
 }) => {
   const editableAreaRef = useRef<HTMLDivElement>(null);
   const blockEditorEntity = blockEditorEntities[0];
@@ -28,6 +30,7 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
     }
   };
 
+
   useEffect(() => {
     if (blockEditorEntity) {
       document.addEventListener('mousedown', handleClickOutside);
@@ -37,11 +40,12 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
     };
   }, [blockEditorEntity]);
 
+
   return (
     <div ref={editableAreaRef}>
       {blockEntities.map((blockEntity, idx) =>
         blockEntity?.get(TypeFacet)?.props.type == BlockTypes.TEXT ? (
-          <TextBlock key={idx} blockEntity={blockEntity} />
+          <TextBlock handleAddBlock={handleAddBlock} key={blockEntity.id} blockEntity={blockEntity} />
         ) : (
           <ErrorBlock key={idx} />
         ),

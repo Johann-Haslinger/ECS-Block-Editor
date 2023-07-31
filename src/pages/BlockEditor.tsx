@@ -1,7 +1,10 @@
-import { Entity, useEntities } from '@leanscope/ecs-engine';
+import { ECSContext, Entity, useEntities } from '@leanscope/ecs-engine';
 import ComponentRenderer from '../components/ComponentRenderer';
-import { IsEditingFacet, TextFacet } from '../app/BlockFacets';
+import { ChildFacet, IdFacet, IsEditingFacet, TextFacet, TypeFacet } from '../app/BlockFacets';
 import Toolbar from '../components/Toolbar';
+import { useContext } from 'react';
+import { BlockTypes, Tags } from '../base/Constants';
+import { v4 as uuid } from 'uuid';
 
 interface BlockEditorProps {
   blockEntities: readonly Entity[];
@@ -10,6 +13,11 @@ interface BlockEditorProps {
 
 const BlockEditor: React.FC<BlockEditorProps> = ({ blockEntities }) => {
   const [blockEditorEntities] = useEntities((e) => e.has(IsEditingFacet));
+  const ecs = useContext(ECSContext);
+
+  const handleAddBlock = (text: string) => {
+   
+  };
 
   return (
     <div className="md:pt-14 md:p-4  w-full h-full">
@@ -20,7 +28,11 @@ const BlockEditor: React.FC<BlockEditorProps> = ({ blockEntities }) => {
             ECS Block Editor
           </p>
 
-          <ComponentRenderer blockEditorEntities={blockEditorEntities} blockEntities={blockEntities} />
+          <ComponentRenderer
+            handleAddBlock={handleAddBlock}
+            blockEditorEntities={blockEditorEntities}
+            blockEntities={blockEntities}
+          />
         </div>
       </div>
     </div>

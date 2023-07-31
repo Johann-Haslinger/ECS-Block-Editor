@@ -1,7 +1,7 @@
-import { useEntity } from '@leanscope/ecs-engine';
+import { useEntities, useEntity } from '@leanscope/ecs-engine';
 import { EntityProps } from '@leanscope/ecs-engine/react-api/classes/EntityProps';
 import { motion } from 'framer-motion';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IsEditingFacet } from '../../app/BlockFacets';
 import {
   IoArrowForwardCircle,
@@ -15,6 +15,8 @@ import {
   IoTrash,
   IoTrashOutline,
 } from 'react-icons/io5';
+import StyleOptions from './EditMenu/StyleOptions';
+import { Tags } from '../../base/Constants';
 
 type option = {
   name: string;
@@ -31,6 +33,10 @@ interface EditOptionProps {
 const EditOption: React.FC<EditOptionProps> = ({ option, isVisible }) => {
   const { name, icon, color, bgColor, content } = option;
   const [isOptionsVisible, setIsOptionsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsOptionsVisible(false);
+  }, [isVisible]);
 
   return (
     <>
@@ -54,10 +60,12 @@ const EditOption: React.FC<EditOptionProps> = ({ option, isVisible }) => {
           drag="y"
           dragConstraints={{ top: 0, bottom: 200 }}
           onDragEnd={(event, info) => {
-            console.log(event)
+            console.log(event);
             if (info.offset.y >= 1) setIsOptionsVisible(false);
           }}
-        ></motion.div>
+        >
+          {content}
+        </motion.div>
       </div>
     </>
   );
@@ -66,13 +74,14 @@ const EditOption: React.FC<EditOptionProps> = ({ option, isVisible }) => {
 const EditMenu = (props: EntityProps) => {
   const blockEditor = useEntity(props.entity);
   const isVisible = (blockEditor[0][1] as IsEditingFacet)?.props?.isEditing;
+  const [pressedBlockEntities] = useEntities((e) => e.hasTag(Tags.PRESSED));
   const [editOptions, setEditOptions] = useState([
     {
       name: 'Stil',
       icon: <IoColorPalette />,
       color: '#8547F0',
       bgColor: 'rgba(133, 71, 240, 0.1)',
-      content: <div></div>,
+      content: <StyleOptions pressedBlockEntities={pressedBlockEntities} />,
     },
     {
       name: '+ Inhalt',
@@ -106,12 +115,12 @@ const EditMenu = (props: EntityProps) => {
         transition={{ type: 'Tween' }}
         animate={{ y: !isVisible ? 200 : 0 }}
         initial={{ y: 200 }}
-        className="bg-white h-20 overflow-y-clip rounded-lg pr-1 flex over md:overflow-hidden overflow-x-scroll w-11/12 md:w-[30rem] fixed bottom-6 shadow-[0_0px_40px_1px_rgba(0,0,0,0.12)]"
+        className="bg-white h-20 overflow-y-clip  rounded-lg pr-1 flex over md:overflow-hidden  w-11/12 md:w-[30rem] fixed bottom-6 shadow-[0_0px_40px_1px_rgba(0,0,0,0.12)]"
         drag="y"
         dragConstraints={{ top: 0, bottom: 0 }}
       >
         {/* Added a wrapping div with flex-auto class */}
-        <div className="flex flex-auto">
+        <div className="flex overflow-x-scroll w flex-auto">
           {editOptions.map((option) => (
             <EditOption isVisible={isVisible} option={option} key={option.name} />
           ))}

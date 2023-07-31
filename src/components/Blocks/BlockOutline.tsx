@@ -3,19 +3,23 @@ import {
   useEntities,
   useEntity,
   useEntityComponents,
+  useEntityHasTags,
   useEntityProps,
 } from '@leanscope/ecs-engine';
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import { IoEllipseOutline } from 'react-icons/io5';
 import { IsEditingFacet, IsFocusedFacet, IsPressedFacet } from '../../app/BlockFacets';
+import { Tags } from '../../base/Constants';
 
 interface BlockOutlineProps {
   content: ReactNode;
   blockEntity: Entity;
-  onClick: () => void;
+  isFocused: boolean;
+  onClick?: () => void;
+
 }
 
-const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onClick}) => {
+const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onClick, isFocused}) => {
   const [isPressed, isEditing] = useEntityComponents(blockEntity, IsPressedFacet, IsEditingFacet);
 
   const [blockEditorEntities] = useEntities((e: Entity) => e.has(IsEditingFacet));
@@ -39,19 +43,21 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
     };
   }, [textBlockRef]);
 
-
-
   const toggleActivePressed = () => {
-    blockEditorEntity.addComponent(new IsEditingFacet({ isEditing: true }));
-    blockEntity.addComponent(new IsPressedFacet({ isPressed: !isPressed }));
-    blockEntity.addComponent(new IsFocusedFacet({ isFocused: false }));
+    if (!isFocused) {
+      blockEditorEntity.addComponent(new IsEditingFacet({ isEditing: true }));
+      blockEntity.addComponent(new IsPressedFacet({ isPressed: !isPressed }));
+      blockEntity.addComponent(new IsFocusedFacet({ isFocused: false }));
+    }
   };
 
   const handleMouseDown = () => {
     if (isEditing) {
       toggleActivePressed();
     } else {
-      onClick()
+      if (onClick) {
+        onClick();
+      }
       timeoutRef.current = setTimeout(() => {
         toggleActivePressed();
       }, 500);

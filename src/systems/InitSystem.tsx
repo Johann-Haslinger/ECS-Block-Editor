@@ -16,19 +16,19 @@ const InitSystem = () => {
     blockEntity.addComponent(new TextFacet({ text: 'Toller Text' }));
     blockEntity.addComponent(new ChildFacet({ childOf: 'Block Editor' }));
     blockEntity.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
-    blockEntity.addComponent(new IsPressedFacet({ isPressed: false}));
     blockEntity.addComponent(new IsFocusedFacet({ isFocused: false}));
     blockEntity.addComponent(new IdFacet({ id: uuid()}));
+    blockEntity.addTag(Tags.PRESSED);
 
     const blockEntity2 = new Entity();
     ecs.engine.addEntity(blockEntity2);
     blockEntity2.addComponent(new TextFacet({ text: 'Toller Text' }));
     blockEntity2.addComponent(new ChildFacet({ childOf: 'Block Editor' }));
     blockEntity2.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
-    blockEntity2.addComponent(new IsPressedFacet({ isPressed: false}));
     blockEntity2.addComponent(new IsFocusedFacet({ isFocused: false}));
     blockEntity2.addComponent(new IdFacet({ id: uuid()}));
-
+    blockEntity2.addTag(Tags.PRESSED);
+    
     const blockEditor = new Entity();
     ecs.engine.addEntity(blockEditor);
     blockEditor.addComponent(new IsEditingFacet({ isEditing: false}));
