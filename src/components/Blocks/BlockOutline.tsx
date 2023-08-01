@@ -8,7 +8,13 @@ import {
 } from '@leanscope/ecs-engine';
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import { IoEllipseOutline } from 'react-icons/io5';
-import { IdFacet, IsEditingFacet, IsFocusedFacet, IsPressedFacet, TextFacet } from '../../app/BlockFacets';
+import {
+  IdFacet,
+  IsEditingFacet,
+  IsFocusedFacet,
+  IsPressedFacet,
+  TextFacet,
+} from '../../app/BlockFacets';
 import { Tags } from '../../base/Constants';
 
 interface BlockOutlineProps {
@@ -25,16 +31,15 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({
   isFocused,
 }) => {
   const [text, id] = useEntityComponents(blockEntity, TextFacet, IdFacet);
-  const isPressed = blockEntity?.hasTag(Tags.PRESSED)
+  const isPressed = blockEntity?.hasTag(Tags.PRESSED);
   const [blockEditorEntities] = useEntities((e: Entity) => e.has(IsEditingFacet));
   const blockEditorEntity = blockEditorEntities[0];
-  const isEditing = blockEditorEntity?.hasTag(Tags.IS_EDITING)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const textBlockRef = useRef<HTMLDivElement | null>(null);
   const [startX, setStartX] = useState<number | null>(null);
   const [translateX, setTranslateX] = useState<number>(0);
   const [isSwiping, setIsSwiping] = useState<boolean>(false);
-
+  const isEditing = blockEditorEntity?.hasTag(Tags.IS_EDITING);
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (textBlockRef.current && !textBlockRef.current.contains(event.target as Node)) {
@@ -47,19 +52,15 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({
     };
   }, [textBlockRef]);
 
-  useEffect(()=> {
 
-  }, [isEditing])
   const toggleActivePressed = () => {
-    if (!isFocused) {
-      blockEditorEntity.addTag(Tags.IS_EDITING)
-   if (!isPressed){
-    blockEntity.addTag(Tags.PRESSED)
-   }else {
-    blockEntity.removeTag(Tags.PRESSED)
-   }
-      blockEntity.addComponent(new IsFocusedFacet({ isFocused: false }));
+    blockEditorEntity.addTag(Tags.IS_EDITING);
+    if (!isPressed) {
+      blockEntity.addTag(Tags.PRESSED);
+    } else {
+      blockEntity.removeTag(Tags.PRESSED);
     }
+    blockEntity.addComponent(new IsFocusedFacet({ isFocused: false }));
   };
 
   const handleMouseDown = () => {

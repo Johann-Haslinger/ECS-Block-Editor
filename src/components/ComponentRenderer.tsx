@@ -7,7 +7,7 @@ import {
   IsSmallBlockFacet,
   TypeFacet,
 } from '../app/BlockFacets';
-import { BlockTypes } from '../base/Constants';
+import { BlockTypes, Tags } from '../base/Constants';
 import TextBlock from './Blocks/TextBlock';
 import ErrorBlock from './Blocks/ErrorBlock';
 import EditMenu from './Menus/EditMenu';
@@ -32,7 +32,7 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
       blockEditorEntity &&
       !editableAreaRef.current.contains(event.target as Node)
     ) {
-      blockEditorEntity.addComponent(new IsEditingFacet({ isEditing: false }));
+      blockEditorEntity.removeTag(Tags.IS_EDITING)
     }
   };
 
