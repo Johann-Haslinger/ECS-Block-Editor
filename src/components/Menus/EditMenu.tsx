@@ -74,8 +74,8 @@ const EditOption: React.FC<EditOptionProps> = ({ option, isVisible }) => {
 const EditMenu = (props: EntityProps) => {
 
 
-  //const [isEditingFacet] = useEntityComponents(props.entity, IsEditingFacet);
-  const isVisible = props.entity?.get(IsEditingFacet)?.props?.isEditing ?? false;
+  const [isEditingFacet] = useEntityComponents(props.entity, IsEditingFacet);
+  const isVisible = isEditingFacet.props.isEditing;
   const [pressedBlockEntities] = useEntities((e) => e.hasTag(Tags.PRESSED));
   const [editOptions, setEditOptions] = useState([
     {

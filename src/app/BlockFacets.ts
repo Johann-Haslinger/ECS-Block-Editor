@@ -7,7 +7,7 @@ export interface IsSmallBlockProps {
 }
 
 export class IsSmallBlockFacet extends Facet<IsSmallBlockProps> {
-  constructor(props: IsSmallBlockProps) {
+  constructor(props: IsSmallBlockProps = { isSmall: false }) {
     super(props);
   }
 }
@@ -18,7 +18,7 @@ export interface DescriptionProps {
 }
 
 export class DescriptionFacet extends Facet<DescriptionProps> {
-  constructor(props: DescriptionProps) {
+  constructor(props: DescriptionProps = { description: '' }) {
     super(props);
   }
 }
@@ -28,7 +28,7 @@ export interface TextProps {
 }
 
 export class TextFacet extends Facet<TextProps> {
-  constructor(props: TextProps) {
+  constructor(props: TextProps = { text: '' }) {
     super(props);
   }
 }
@@ -38,7 +38,7 @@ export interface ChildProps {
 }
 
 export class ChildFacet extends Facet<ChildProps> {
-  constructor(props: ChildProps) {
+  constructor(props: ChildProps = { childOf: '' }) {
     super(props);
   }
 }
@@ -48,7 +48,7 @@ export interface TypeFacetProps {
 }
 
 export class TypeFacet extends Facet<TypeFacetProps> {
-  constructor(props: TypeFacetProps) {
+  constructor(props: TypeFacetProps = { type: BlockTypes.TEXT }) {
     super(props);
   }
 }
@@ -58,7 +58,7 @@ export interface IsPressedFacetProps {
 }
 
 export class IsPressedFacet extends Facet<IsPressedFacetProps> {
-  constructor(props: IsPressedFacetProps) {
+  constructor(props: IsPressedFacetProps = { isPressed: false }) {
     super(props);
   }
 }
@@ -68,7 +68,7 @@ export interface IsEditingFacetProps {
 }
 
 export class IsEditingFacet extends Facet<IsEditingFacetProps> {
-  constructor(props: IsEditingFacetProps) {
+  constructor(props: IsEditingFacetProps = { isEditing: false }) {
     super(props);
   }
 }
@@ -78,7 +78,7 @@ export interface IsSelectedFacetProps {
 }
 
 export class IsSelectedFacet extends Facet<IsSelectedFacetProps> {
-  constructor(props: IsSelectedFacetProps) {
+  constructor(props: IsSelectedFacetProps = { isSelected: false }) {
     super(props);
   }
 }
@@ -88,7 +88,7 @@ export interface IdFacetProps {
 }
 
 export class IdFacet extends Facet<IdFacetProps> {
-  constructor(props: IdFacetProps) {
+  constructor(props: IdFacetProps = { id: '' }) {
     super(props);
   }
 }
@@ -98,7 +98,7 @@ export interface IsFocusedFacetProps {
 }
 
 export class IsFocusedFacet extends Facet<IsFocusedFacetProps> {
-  constructor(props: IsFocusedFacetProps) {
+  constructor(props: IsFocusedFacetProps = { isFocused: false }) {
     super(props);
   }
 }
