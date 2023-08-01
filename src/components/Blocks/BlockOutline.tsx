@@ -25,14 +25,10 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({
   isFocused,
 }) => {
   const [text, id] = useEntityComponents(blockEntity, TextFacet, IdFacet);
-
-  console.log('text:', text);
-
-  const isPressed = false
-  const isEditing = false
+  const isPressed = blockEntity?.hasTag(Tags.PRESSED)
   const [blockEditorEntities] = useEntities((e: Entity) => e.has(IsEditingFacet));
   const blockEditorEntity = blockEditorEntities[0];
-
+  const isEditing = blockEditorEntity?.hasTag(Tags.IS_EDITING)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const textBlockRef = useRef<HTMLDivElement | null>(null);
   const [startX, setStartX] = useState<number | null>(null);
@@ -51,10 +47,17 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({
     };
   }, [textBlockRef]);
 
+  useEffect(()=> {
+
+  }, [isEditing])
   const toggleActivePressed = () => {
     if (!isFocused) {
-      blockEditorEntity.addComponent(new IsEditingFacet({ isEditing: true }));
-      blockEntity.addComponent(new IsPressedFacet({ isPressed: !isPressed }));
+      blockEditorEntity.addTag(Tags.IS_EDITING)
+   if (!isPressed){
+    blockEntity.addTag(Tags.PRESSED)
+   }else {
+    blockEntity.removeTag(Tags.PRESSED)
+   }
       blockEntity.addComponent(new IsFocusedFacet({ isFocused: false }));
     }
   };
