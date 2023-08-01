@@ -21,7 +21,6 @@ const InitSystem = () => {
     blockEntity3.addComponent(new TypeFacet({ type: BlockTypes.MORE_INFORMATIONS }));
     blockEntity3.addComponent(new IdFacet({ id: uuid()}));
     blockEntity3.addComponent(new IsSmallBlockFacet({ isSmall: true }));
-    blockEntity3.addTag(Tags.PRESSED);
 
     const blockEntity4 = new Entity();
     ecs.engine.addEntity(blockEntity4);
