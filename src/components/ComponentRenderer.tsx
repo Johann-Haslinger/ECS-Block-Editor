@@ -41,7 +41,7 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
   return (
     <div  className="flex  w-full flex-wrap" ref={editableAreaRef}>
       {blockEntities.map((blockEntity, idx) => (
-        <div
+        <div key={idx}
           className={
             blockEntity?.get(IsSmallBlockFacet)?.props.isSmall == true ? 'w-1/2  md:pr-1 pr-0.5 md:w-1/3' : 'w-full '
           }

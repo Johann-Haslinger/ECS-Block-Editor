@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import BlockOutline from './BlockOutline';
-import { ECSContext, Entity, useEntity } from '@leanscope/ecs-engine';
+import { ECSContext, Entity, useEntity, useEntityComponents } from '@leanscope/ecs-engine';
 import { ChildFacet, IdFacet, TextFacet, TypeFacet } from '../../app/BlockFacets';
 import { v4 as uuid } from 'uuid';
 import { BlockTypes } from '../../base/Constants';
@@ -10,9 +10,8 @@ interface TextBlockProps {
 }
 
 const TextBlock: React.FC<TextBlockProps> = ({ blockEntity }) => {
-  const block = useEntity(blockEntity);
-  const text = (block[0][0] as EntityPropsType)?.props.text;
-  const ecs = useContext(ECSContext);
+  //const [textFacet] = blockEntity.get(TextFacet);
+  const text = blockEntity.get(TextFacet)?.props.text ?? "";
 
   const [isFocused, setIsFocused] = useState(false);
   const contentEditableRef = useRef<HTMLDivElement>(null);
