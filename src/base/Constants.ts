@@ -1,7 +1,8 @@
 export enum Tags {
   CURRENT,
   VISIBLE,
-  PRESSED
+  PRESSED,
+  IS_EDITING
 }
 
 export enum BlockTypes{
@@ -9,5 +10,6 @@ export enum BlockTypes{
     IMAGE,
     PAGE,
     CARD,
-    MORE_INFORMATIONS
+    MORE_INFORMATIONS,
+    SPACER
 }

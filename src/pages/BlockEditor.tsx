@@ -17,10 +17,10 @@ const BlockEditor: React.FC<BlockEditorProps> = ({ blockEntities }) => {
 
   return (
     <div className="md:pt-14 md:p-4  w-full h-full">
-      {blockEditorEntities[0] && <Toolbar entity={blockEditorEntities[0]} />}
-      <div className=" bg-white  overflow-y-scroll  overflow-x-hidden flex justify-center w-full h-full rounded-xl">
+    
+      <div className="  bg-white  overflow-y-scroll  overflow-x-hidden flex justify-center w-full h-full rounded-xl">
         <div className="md:w-8/12 w-full   px-2  h-full ">
-          <p className="text-2xl px-2 md:mb-10 w-full select-none pb-2 mb-4 font-bold mt-32 md:mt-24 border-b-[rgb(245,245,245)]  border-b ">
+          <p className="text-2xl px-2 md:mb-10 w-full select-none pb-2 mb-4 font-bold mt-32 md:mt-24 border-b-[rgb(245,245,247)]  border-b ">
             ECS Block Editor
           </p>
 
@@ -32,6 +32,7 @@ const BlockEditor: React.FC<BlockEditorProps> = ({ blockEntities }) => {
     
         </div>
       </div>
+      {blockEditorEntities[0] && <Toolbar entity={blockEditorEntities[0]} />}
     </div>
   );
 };

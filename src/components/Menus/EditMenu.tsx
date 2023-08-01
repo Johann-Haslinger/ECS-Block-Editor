@@ -2,7 +2,7 @@ import { useEntities, useEntity } from '@leanscope/ecs-engine';
 import { EntityProps } from '@leanscope/ecs-engine/react-api/classes/EntityProps';
 import { motion } from 'framer-motion';
 import React, { useEffect, useState } from 'react';
-import { IsEditingFacet } from '../../app/BlockFacets';
+import { IsEditingFacet, TypeFacet } from '../../app/BlockFacets';
 import {
   IoArrowForwardCircle,
   IoArrowForwardCircleOutline,
@@ -74,7 +74,7 @@ const EditOption: React.FC<EditOptionProps> = ({ option, isVisible }) => {
 const EditMenu = (props: EntityProps) => {
   const blockEditor = useEntity(props.entity);
   const isVisible = (blockEditor[0][1] as IsEditingFacet)?.props?.isEditing;
-  const [pressedBlockEntities] = useEntities((e) => e.hasTag(Tags.PRESSED));
+  const [pressedBlockEntities] = useEntities((e) => e.has(TypeFacet));
   const [editOptions, setEditOptions] = useState([
     {
       name: 'Stil',
