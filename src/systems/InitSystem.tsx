@@ -53,6 +53,7 @@ const InitSystem = () => {
     ecs.engine.addEntity(blockEditor);
     blockEditor.addComponent(new IsEditingFacet({ isEditing: false}));
     blockEditor.addComponent(new IdFacet({ id: uuid()}));
+    blockEditor.addTag(Tags.IS_EDITING)
 
  
 

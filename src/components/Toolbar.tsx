@@ -14,7 +14,7 @@ import { Tags } from '../base/Constants';
 const Toolbar = (props: EntityProps) => {
   //const [isEditingFacet] = useEntityComponents(props.entity, IsEditingFacet);
 
-  const isEditing = props.entity?.get(IsEditingFacet)?.props?.isEditing ?? false;
+  const isEditing = props.entity?.get(IsEditingFacet)?.props.isEditing
 
   return (
     <div className="py-6 md:py-4  z-50 md:bg-opacity-0 bg-white absolute top-0 w-full left-0 flex justify-end">

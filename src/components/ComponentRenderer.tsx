@@ -29,10 +29,10 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
   const handleClickOutside = (event: MouseEvent) => {
     if (
       editableAreaRef.current &&
-      blockEditorEntity &&
       !editableAreaRef.current.contains(event.target as Node)
     ) {
-      blockEditorEntity.removeTag(Tags.IS_EDITING)
+      blockEditorEntity?.addComponent(new IsEditingFacet({ isEditing:false}))
+      console.log("cliked outside")
     }
   };
 
@@ -60,7 +60,7 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
           {blockEntity?.get(TypeFacet)?.props.type == BlockTypes.TEXT ? (
             <TextBlock key={idx} blockEntity={blockEntity} />
           ) : blockEntity?.get(TypeFacet)?.props.type == BlockTypes.MORE_INFORMATIONS ? (
-            <MoreInformationsBlock key={idx} blockEntity={blockEntity} />
+            <MoreInformationsBlock blockEditorEntity={blockEditorEntity} key={idx} blockEntity={blockEntity} />
           ) : blockEntity?.get(TypeFacet)?.props.type == BlockTypes.SPACER ? (
             <SpacerBlock key={idx} blockEntity={blockEntity} />
           ) : (

@@ -1,12 +1,18 @@
-import { Entity } from '@leanscope/ecs-engine';
+import { Entity, useEntities } from '@leanscope/ecs-engine';
 import React from 'react';
 import BlockOutline from './BlockOutline';
 import { IoAccessibility, IoChevronForward, IoCode } from 'react-icons/io5';
+import { IsEditingFacet } from '../../app/BlockFacets';
 
 interface MoreInformationsBlockProps {
   blockEntity: Entity;
+  blockEditorEntity: Entity;
 }
-const MoreInformationsBlock: React.FC<MoreInformationsBlockProps> = ({ blockEntity }) => {
+const MoreInformationsBlock: React.FC<MoreInformationsBlockProps> = ({
+  blockEntity,
+  blockEditorEntity,
+}) => {
+  const isEditing = blockEditorEntity?.get(IsEditingFacet)?.props.isEditing;
   const block = {
     name: 'Programmierung',
     description:
@@ -18,7 +24,7 @@ const MoreInformationsBlock: React.FC<MoreInformationsBlockProps> = ({ blockEnti
     <BlockOutline
       blockEntity={blockEntity}
       content={
-        <div className="  md:hover:scale-105 transition-all   w-full ">
+        <div className={` h-[20rem]  w-full  ${!isEditing ? ' md:hover:scale-105 transition-all ' : ''}`}>
           <div
             style={{ backgroundColor: block.color }}
             className="p-4 opacity-60 text-white text-4xl h-40 rounded-lg"
