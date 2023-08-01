@@ -28,7 +28,6 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({
   content,
   blockEntity,
   onClick,
-  isFocused,
 }) => {
   const [text, id] = useEntityComponents(blockEntity, TextFacet, IdFacet);
   const isPressed = blockEntity?.hasTag(Tags.PRESSED);
