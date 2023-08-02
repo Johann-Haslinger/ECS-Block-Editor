@@ -1,7 +1,7 @@
-import { useEntities, useEntity, useEntityComponents } from '@leanscope/ecs-engine';
+import { ECSContext, Entity, useEntities, useEntity, useEntityComponents } from '@leanscope/ecs-engine';
 import { EntityProps } from '@leanscope/ecs-engine/react-api/classes/EntityProps';
 import { motion } from 'framer-motion';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { IsEditingFacet, TypeFacet } from '../../app/BlockFacets';
 import {
   IoArrowForwardCircle,
@@ -16,7 +16,8 @@ import {
   IoTrashOutline,
 } from 'react-icons/io5';
 import StyleOptions from './EditMenu/StyleOptions';
-import { Tags } from '../../base/Constants';
+import { BlockTypes, Tags } from '../../base/Constants';
+import DestructiveActionSheet from '../StyleLibary/DestructiveActionSheet';
 
 type option = {
   name: string;
@@ -24,6 +25,7 @@ type option = {
   color: string;
   bgColor: string;
   content?: React.ReactNode;
+  customFunc?: () => void;
 };
 
 interface EditOptionProps {
@@ -31,7 +33,7 @@ interface EditOptionProps {
   isVisible: boolean;
 }
 const EditOption: React.FC<EditOptionProps> = ({ option, isVisible }) => {
-  const { name, icon, color, bgColor, content } = option;
+  const { name, icon, color, bgColor, content, customFunc } = option;
   const [isOptionsVisible, setIsOptionsVisible] = useState(false);
 
   useEffect(() => {
@@ -45,6 +47,9 @@ const EditOption: React.FC<EditOptionProps> = ({ option, isVisible }) => {
         style={{ color: color, backgroundColor: bgColor, maxWidth: '10rem' }} // Max width set to 10rem
         onClick={() => {
           setIsOptionsVisible(true);
+          if (customFunc) {
+            customFunc();
+          }
         }}
       >
         <div className="text-2xl flex justify-center mt-2"> {icon}</div>
@@ -64,6 +69,9 @@ const EditOption: React.FC<EditOptionProps> = ({ option, isVisible }) => {
             if (info.offset.y >= 1) setIsOptionsVisible(false);
           }}
         >
+          <div className="w-full flex justify-center">
+            <div className="w-8 mt-1.5 h-1 rounded-full  bg-input-white-bg" />
+          </div>
           {content}
         </motion.div>
       </div>
@@ -72,18 +80,28 @@ const EditOption: React.FC<EditOptionProps> = ({ option, isVisible }) => {
 };
 
 const EditMenu = (props: EntityProps) => {
-
-
+  const ecs = useContext(ECSContext);
   const [isEditingFacet] = useEntityComponents(props.entity, IsEditingFacet);
   const isVisible = isEditingFacet.props.isEditing;
   const [pressedBlockEntities] = useEntities((e) => e.hasTag(Tags.PRESSED));
+  const [isDeleteSheetVisible, setIsDeleteSheetVisible] = useState(false);
+
+  const handleDeleteClick = () => {
+    pressedBlockEntities.map((entiy) => {
+      ecs.engine.removeEntity(entiy);
+    })
+  };
+
+  const toggleIsDeleteSheetVisible = () => {
+    setIsDeleteSheetVisible(!isDeleteSheetVisible);
+  };
   const [editOptions, setEditOptions] = useState([
     {
       name: 'Stil',
       icon: <IoColorPalette />,
       color: '#8547F0',
       bgColor: 'rgba(133, 71, 240, 0.1)',
-      content: <StyleOptions pressedBlockEntities={pressedBlockEntities} />,
+      content: <StyleOptions entity={props.entity} />,
     },
     {
       name: '+ Inhalt',
@@ -108,27 +126,36 @@ const EditMenu = (props: EntityProps) => {
       icon: <IoTrash />,
       color: '#FF5355',
       bgColor: 'rgba(255, 83, 85, 0.1)',
+      customFunc: toggleIsDeleteSheetVisible,
     },
   ]);
 
   return (
-    <div className="w-full flex justify-center">
-      <motion.div
-        transition={{ type: 'Tween' }}
-        animate={{ y: !isVisible ? 200 : 0 }}
-        initial={{ y: 200 }}
-        className="bg-white h-20 overflow-y-clip  rounded-lg pr-1 flex over md:overflow-hidden  w-11/12 md:w-[30rem] fixed bottom-6 shadow-[0_0px_40px_1px_rgba(0,0,0,0.12)]"
-        drag="y"
-        dragConstraints={{ top: 0, bottom: 0 }}
-      >
-        {/* Added a wrapping div with flex-auto class */}
-        <div className="flex overflow-x-scroll w flex-auto">
-          {editOptions.map((option) => (
-            <EditOption isVisible={isVisible} option={option} key={option.name} />
-          ))}
-        </div>
-      </motion.div>
-    </div>
+    <>
+      <div className="w-full flex justify-center">
+        <motion.div
+          transition={{ type: 'Tween' }}
+          animate={{ y: !isVisible ? 200 : 0 }}
+          initial={{ y: 200 }}
+          className="bg-white h-20 overflow-y-clip  rounded-lg pr-1 flex over md:overflow-hidden  w-11/12 md:w-[30rem] fixed bottom-6 shadow-[0_0px_40px_1px_rgba(0,0,0,0.12)]"
+          drag="y"
+          dragConstraints={{ top: 0, bottom: 0 }}
+        >
+          {/* Added a wrapping div with flex-auto class */}
+          <div className="flex overflow-x-scroll w flex-auto">
+            {editOptions.map((option) => (
+              <EditOption isVisible={isVisible} option={option} key={option.name} />
+            ))}
+          </div>
+        </motion.div>
+      </div>
+      <DestructiveActionSheet
+        isVisible={isDeleteSheetVisible && isVisible}
+        setIsVisible={setIsDeleteSheetVisible}
+        deleteFunc={handleDeleteClick}
+        length={pressedBlockEntities.length}
+      />
+    </>
   );
 };
 

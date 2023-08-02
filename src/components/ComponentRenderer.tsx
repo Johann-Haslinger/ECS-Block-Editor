@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 
 import {
+  ChildFacet,
   // Andere Imports bleiben gleich...
   IdFacet,
   IsEditingFacet,
@@ -50,13 +51,47 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
       return;
     }
   };
+  
+  // const sortBlocksByNeighbourId = (blocks: readonly Entity[]): Entity[] => {
+  //   const blockMap: Record<string, Entity> = {};
+  //   const sortedBlocks: Entity[] = [];
+  
+  //   for (const block of blocks) {
+  //     const id = block?.get(IdFacet)?.props.id;
+  //     const neighbourId = block?.get(NeighbourIdFacet)?.props.neighbourId;
+  //     if (id && neighbourId) {
+  //       blockMap[id] = block;
+  //       if (neighbourId === 'first') {
+  //         sortedBlocks.push(block); // Block mit Nachbar-ID "first" wird am Ende hinzugefügt
+  //       }
+  //     }
+  //   }
+  
+  //   let currentBlock = sortedBlocks[0];
+  //   while (currentBlock && currentBlock?.get(NeighbourIdFacet)?.props.neighbourId) {
+  //     const id = currentBlock.get(NeighbourIdFacet)?.props.neighbourId;
+  //     const nextBlock = blockMap[id || '']; // Nächster Block in der Verbindungskette
+  //     if (nextBlock) {
+  //       sortedBlocks.push(nextBlock);
+  //     }
+  //     currentBlock = nextBlock;
+  //   }
+  
+  //   return sortedBlocks;
+  // };
+  
+  
+  
+  
+  // const sortedBlockEntities = sortBlocksByNeighbourId(blockEntities);
 
+  
   return (
-    <div ref={editableAreaRef}>
+    <div className="pb-40 md:pb-60" ref={editableAreaRef}>
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="droppable">
           {(provided: any) => (
-            <div className="flex flex-wrap" ref={provided.innerRef} {...provided.droppableProps}>
+            <div className="flex  flex-wrap" ref={provided.innerRef} {...provided.droppableProps}>
               {blockEntities.map((blockEntity, idx) => (
                 <Draggable
                   key={blockEntity?.get(IdFacet)?.props.id.toString()}
@@ -73,6 +108,7 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
+                      
                     >
                       {blockEntity?.get(TypeFacet)?.props.type === BlockTypes.TEXT ? (
                         <TextBlock

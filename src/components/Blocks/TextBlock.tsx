@@ -1,35 +1,69 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import BlockOutline from './BlockOutline';
 import { ECSContext, Entity, useEntity, useEntityComponents } from '@leanscope/ecs-engine';
-import { ChildFacet, IdFacet, TextFacet, TypeFacet } from '../../app/BlockFacets';
+import { ChildFacet, IdFacet, TextFacet, TextTypeFacet, TypeFacet } from '../../app/BlockFacets';
 import { v4 as uuid } from 'uuid';
-import { BlockTypes } from '../../base/Constants';
+import { BlockTypes, TextTypes } from '../../base/Constants';
 
 interface TextBlockProps {
   blockEntity: Entity;
 }
 
 const TextBlock: React.FC<TextBlockProps> = ({ blockEntity }) => {
-  //const [textFacet] = blockEntity.get(TextFacet);
-  const text = blockEntity.get(TextFacet)?.props.text ?? "";
+  const [textFacet, textTypeFacet] = useEntityComponents(blockEntity, TextFacet, TextTypeFacet)
+  const text = textFacet.props.text
+  const textType = textTypeFacet.props.type
 
   const [isFocused, setIsFocused] = useState(false);
   const contentEditableRef = useRef<HTMLDivElement>(null);
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Enter' && contentEditableRef.current) {
-      const htmlText = contentEditableRef.current.innerHTML;
-
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(htmlText, 'text/html');
-
-      const divs = doc.querySelectorAll('div');
-      if (divs.length > 0) {
-        const lastDiv = divs[divs.length - 1];
-        console.log('lastDiv.innerHTML', lastDiv.innerHTML);
-      }
-    }
+  const textStyle = {
+    // color: formatting.color,
+    fontWeight:
+      textType === TextTypes.TITLE
+        ? "bold"
+        : textType === TextTypes.SUBTITLE
+        ? "bold"
+        : textType === TextTypes.HEADING
+        ? "bold"
+        : textType === TextTypes.BOLD
+        ? "bold"
+        : textType === TextTypes.TEXT
+        ? "normal"
+        : textType === TextTypes.CAPTION
+        ? "normal"
+        : "normal",
+    fontSize:
+      textType === TextTypes.TITLE
+        ? "1.5em"
+        : textType === TextTypes.SUBTITLE
+        ? "1.4em"
+        : textType === TextTypes.HEADING
+        ? "1.2em"
+        : textType === TextTypes.BOLD
+        ? "1em"
+        : textType === TextTypes.TEXT
+        ? "1em"
+        : textType === TextTypes.CAPTION
+        ? "0.8em"
+        : "1em",
   };
+  
+
+  // const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+  //   if (event.key === 'Enter' && contentEditableRef.current) {
+  //     const htmlText = contentEditableRef.current.innerHTML;
+
+  //     const parser = new DOMParser();
+  //     const doc = parser.parseFromString(htmlText, 'text/html');
+
+  //     const divs = doc.querySelectorAll('div');
+  //     if (divs.length > 0) {
+  //       const lastDiv = divs[divs.length - 1];
+  //       console.log('lastDiv.innerHTML', lastDiv.innerHTML);
+  //     }
+  //   }
+  // };
 
   // const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
   //   if (event.key === 'Enter' && contentEditableRef.current) {
@@ -133,13 +167,13 @@ const TextBlock: React.FC<TextBlockProps> = ({ blockEntity }) => {
       }}
       blockEntity={blockEntity}
       content={
-        <div className="w-full">
+        <div style={{...textStyle}} className="w-full">
           {isFocused ? (
             <div
               // onKeyUp={handleKeyUp}
               onBlur={handleBlur}
               ref={contentEditableRef}
-              className="w-full bg-blue-light bg-opacity-40 outline-none"
+              className="w-full  outline-none" //  bg-blue-light bg-opacity-40
               contentEditable
               dangerouslySetInnerHTML={{ __html: text }} // Here the HTML content is displayed
             />

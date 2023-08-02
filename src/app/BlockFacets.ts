@@ -1,6 +1,16 @@
-import { BlockTypes } from '../base/Constants';
+import { BlockTypes, TextTypes } from '../base/Constants';
 import { Facet } from '../base/Facet';
 
+
+export interface CurrentTextTypeProps {
+  textType: TextTypes;
+}
+
+export class CurrentTextTypeFacet extends Facet<CurrentTextTypeProps> {
+  constructor(props: CurrentTextTypeProps = { textType: TextTypes.TEXT }) {
+    super(props);
+  }
+}
 
 export interface IsSmallBlockProps {
   isSmall: boolean;
@@ -52,6 +62,17 @@ export class ChildFacet extends Facet<ChildProps> {
     super(props);
   }
 }
+
+export interface TextTypeProps {
+  type: TextTypes;
+}
+
+export class TextTypeFacet extends Facet<TextTypeProps> {
+  constructor(props: TextTypeProps = { type: TextTypes.TEXT }) {
+    super(props);
+  }
+}
+
 
 export interface TypeFacetProps {
   type: BlockTypes;
