@@ -1,10 +1,12 @@
-import { Entity, useEntities, useEntity } from '@leanscope/ecs-engine';
 import React, { useEffect, useRef } from 'react';
+import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
+
 import {
-  ChildFacet,
+  // Andere Imports bleiben gleich...
+  IdFacet,
   IsEditingFacet,
-  IsPressedFacet,
   IsSmallBlockFacet,
+  NeighbourIdFacet,
   TypeFacet,
 } from '../app/BlockFacets';
 import { BlockTypes, Tags } from '../base/Constants';
@@ -13,6 +15,7 @@ import ErrorBlock from './Blocks/ErrorBlock';
 import EditMenu from './Menus/EditMenu';
 import MoreInformationsBlock from './Blocks/MoreInformationsBlock';
 import SpacerBlock from './Blocks/SpacerBlock';
+import { Entity } from '@leanscope/ecs-engine';
 
 interface ComponentRendererProps {
   blockEntities: readonly Entity[];
@@ -27,12 +30,9 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
   const blockEditorEntity = blockEditorEntities[0];
 
   const handleClickOutside = (event: MouseEvent) => {
-    if (
-      editableAreaRef.current &&
-      !editableAreaRef.current.contains(event.target as Node)
-    ) {
-      blockEditorEntity?.addComponent(new IsEditingFacet({ isEditing:false}))
-      console.log("cliked outside")
+    if (editableAreaRef.current && !editableAreaRef.current.contains(event.target as Node)) {
+      blockEditorEntity?.addComponent(new IsEditingFacet({ isEditing: false }));
+      console.log('clicked outside');
     }
   };
 
@@ -45,29 +45,64 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
     };
   }, [blockEditorEntity]);
 
-  console.log(blockEntities)
+  const handleDragEnd = (result: DropResult) => {
+    if (!result.destination) {
+      return;
+    }
+  };
 
   return (
-    <div className="flex  w-full flex-wrap" ref={editableAreaRef}>
-      {blockEntities.map((blockEntity, idx) => (
-        <div key={idx}
-          className={
-            blockEntity?.get(IsSmallBlockFacet)?.props.isSmall == true
-              ? 'md:w-1/2 w-full  md:pr-1 pr-0.5 lg:w-1/3'
-              : 'w-full '
-          }
-        >
-          {blockEntity?.get(TypeFacet)?.props.type == BlockTypes.TEXT ? (
-            <TextBlock key={idx} blockEntity={blockEntity} />
-          ) : blockEntity?.get(TypeFacet)?.props.type == BlockTypes.MORE_INFORMATIONS ? (
-            <MoreInformationsBlock blockEditorEntity={blockEditorEntity} key={idx} blockEntity={blockEntity} />
-          ) : blockEntity?.get(TypeFacet)?.props.type == BlockTypes.SPACER ? (
-            <SpacerBlock key={idx} blockEntity={blockEntity} />
-          ) : (
-            <ErrorBlock key={idx} />
+    <div ref={editableAreaRef}>
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable droppableId="droppable">
+          {(provided: any) => (
+            <div className="flex flex-wrap" ref={provided.innerRef} {...provided.droppableProps}>
+              {blockEntities.map((blockEntity, idx) => (
+                <Draggable
+                  key={blockEntity?.get(IdFacet)?.props.id.toString()}
+                  draggableId={`${blockEntity?.get(IdFacet)?.props.id.toString()}`}
+                  index={idx}
+                >
+                  {(provided: any) => (
+                    <div
+                      className={
+                        blockEntity?.get(IsSmallBlockFacet)?.props.isSmall === true
+                          ? 'md:w-1/2 w-full md:pr-1 pr-0.5 lg:w-1/3'
+                          : 'w-full '
+                      }
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      {blockEntity?.get(TypeFacet)?.props.type === BlockTypes.TEXT ? (
+                        <TextBlock
+                          key={blockEntity?.get(IdFacet)?.props.id}
+                          blockEntity={blockEntity}
+                        />
+                      ) : blockEntity?.get(TypeFacet)?.props.type ===
+                        BlockTypes.MORE_INFORMATIONS ? (
+                        <MoreInformationsBlock
+                          blockEditorEntity={blockEditorEntity}
+                          key={blockEntity?.get(IdFacet)?.props.id}
+                          blockEntity={blockEntity}
+                        />
+                      ) : blockEntity?.get(TypeFacet)?.props.type === BlockTypes.SPACER ? (
+                        <SpacerBlock
+                          key={blockEntity?.get(IdFacet)?.props.id}
+                          blockEntity={blockEntity}
+                        />
+                      ) : (
+                        <ErrorBlock key={blockEntity?.get(IdFacet)?.props.id} />
+                      )}
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+              {provided.placeholder}
+            </div>
           )}
-        </div>
-      ))}
+        </Droppable>
+      </DragDropContext>
       {blockEditorEntity && <EditMenu entity={blockEditorEntity} />}
     </div>
   );

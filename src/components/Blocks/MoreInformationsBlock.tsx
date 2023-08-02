@@ -1,8 +1,8 @@
-import { Entity, useEntities } from '@leanscope/ecs-engine';
+import { Entity, useEntities, useEntityComponents } from '@leanscope/ecs-engine';
 import React from 'react';
 import BlockOutline from './BlockOutline';
 import { IoAccessibility, IoChevronForward, IoCode } from 'react-icons/io5';
-import { IsEditingFacet } from '../../app/BlockFacets';
+import { DescriptionFacet, IsEditingFacet, TextFacet } from '../../app/BlockFacets';
 
 interface MoreInformationsBlockProps {
   blockEntity: Entity;
@@ -12,6 +12,9 @@ const MoreInformationsBlock: React.FC<MoreInformationsBlockProps> = ({
   blockEntity,
   blockEditorEntity,
 }) => {
+  const [descriptionFacet, textFacet] = useEntityComponents(blockEntity, DescriptionFacet, TextFacet);
+  const description = descriptionFacet.props.description
+  const text = textFacet.props.text
   const isEditing = blockEditorEntity?.get(IsEditingFacet)?.props.isEditing;
   const block = {
     name: 'Programmierung',
@@ -24,20 +27,21 @@ const MoreInformationsBlock: React.FC<MoreInformationsBlockProps> = ({
     <BlockOutline
       blockEntity={blockEntity}
       content={
-        <div className={` h-[20rem]  w-full  ${!isEditing ? ' md:hover:scale-105 transition-all ' : ''}`}>
+        <div className={` h-[20rem] md:h-[24rem]  w-full  ${!isEditing ? ' md:hover:scale-105 transition-all ' : ''}`}>
           <div
             style={{ backgroundColor: block.color }}
             className="p-4 opacity-60 text-white text-4xl h-40 rounded-lg"
           />
           <div
+    
             style={{ color: block.color }}
             className="flex justify-center text-6xl relative bottom-28 mt-0.5"
           >
             {block.icon}
           </div>
           <div className=" relative bottom-10 pb-6 ">
-            <p className="lg:text-xl font-semibold">{block.name}</p>
-            <p className="text-sm md:text-base ">{block.description}</p>
+            <p     contentEditable className="lg:text-xl outline-none font-semibold">{text}</p>
+            <p contentEditable className="text-sm outline-none md:text-base ">{description}</p>
             <div className="mt-2  text-blue flex text-sm md:text-base">
               <p className="border-b-2 border-opacity-0 hover:border-opacity-100 border-blue ">
                 Mehr

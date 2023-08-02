@@ -12,6 +12,16 @@ export class IsSmallBlockFacet extends Facet<IsSmallBlockProps> {
   }
 }
 
+export interface NeighbourIdProps {
+  neighbourId: string;
+}
+
+export class NeighbourIdFacet extends Facet<NeighbourIdProps> {
+  constructor(props: NeighbourIdProps = { neighbourId: "" }) {
+    super(props);
+  }
+}
+
 
 export interface DescriptionProps {
   description: string;

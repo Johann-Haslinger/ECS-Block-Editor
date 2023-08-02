@@ -25,8 +25,9 @@ interface BlockOutlineProps {
 }
 
 const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onClick }) => {
-  const [text, id] = useEntityComponents(blockEntity, TextFacet, IdFacet);
-  const isPressed = blockEntity?.hasTag(Tags.PRESSED);
+  const [isPressed] = useEntityHasTags(blockEntity, Tags.PRESSED);
+  // console.log(tag)
+  // const isPressed = blockEntity?.hasTag(Tags.PRESSED);
   const [blockEditorEntities] = useEntities((e: Entity) => e.has(IsEditingFacet));
   const blockEditorEntity = blockEditorEntities[0];
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -34,7 +35,8 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
   const [startX, setStartX] = useState<number | null>(null);
   const [translateX, setTranslateX] = useState<number>(0);
   const [isSwiping, setIsSwiping] = useState<boolean>(false);
-  const isEditing = blockEditorEntity?.get(IsEditingFacet)?.props.isEditing;
+  const [isEditingFacet] = useEntityComponents(blockEditorEntity, IsEditingFacet)
+  const isEditing = isEditingFacet.props.isEditing
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -49,7 +51,9 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
   }, [textBlockRef]);
 
   useEffect(() => {
+   if (!isEditing) {
     blockEntity.removeTag(Tags.PRESSED);
+   }
   }, [isEditing]);
 
   const toggleActivePressed = () => {
