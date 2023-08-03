@@ -3,8 +3,6 @@ import ComponentRenderer from '../components/ComponentRenderer';
 import { ChildFacet, IdFacet, IsEditingFacet, TextFacet, TypeFacet } from '../app/BlockFacets';
 import Toolbar from '../components/Toolbar';
 import { useContext, useEffect } from 'react';
-import { BlockTypes, Tags } from '../base/Constants';
-import { v4 as uuid } from 'uuid';
 import { useWindowDimensions } from '../components/Size';
 import { useStateContext } from '../contexts/ContextProvider';
 

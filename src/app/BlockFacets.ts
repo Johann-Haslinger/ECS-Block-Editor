@@ -1,5 +1,30 @@
+import React from 'react';
 import { BlockTypes, TextTypes } from '../base/Constants';
 import { Facet } from '../base/Facet';
+import { IoBug } from 'react-icons/io5';
+
+
+export interface ColorProps {
+  color: string;
+}
+
+export class ColorFacet extends Facet<ColorProps> {
+  constructor(props: ColorProps = { color: "#ffffff" }) {
+    super(props);
+  }
+}
+
+
+export interface IconProps {
+  icon: React.ReactNode;
+}
+
+export class IconFacet extends Facet<IconProps> {
+  constructor(props: IconProps = { icon: IoBug }) {
+    super(props);
+  }
+}
+
 
 export interface TodoProps {
   state: number;

@@ -121,6 +121,7 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
                       ) : blockEntity?.get(TypeFacet)?.props.type ===
                         BlockTypes.CARD ? (
                         <CardBlock
+                        blockEditorEntity={blockEditorEntity}
                           key={blockEntity?.get(IdFacet)?.props.id}
                           blockEntity={blockEntity}
                         />

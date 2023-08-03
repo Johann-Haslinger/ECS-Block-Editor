@@ -14,10 +14,13 @@ import {
   CurrentTextTypeFacet,
   CurrentBlockTypeFacet,
   TodoFacet,
+  IconFacet,
+  ColorFacet,
 } from '../app/BlockFacets';
 import { BlockTypes, Tags, TextTypes } from '../base/Constants';
 import { ECSContext, Entity, System } from '@leanscope/ecs-engine';
 import { v4 as uuid } from 'uuid';
+import { IoAccessibility, IoAlarm, IoPaperPlane } from 'react-icons/io5';
 
 const InitSystem = () => {
   const ecs = useContext(ECSContext);
@@ -30,6 +33,8 @@ const InitSystem = () => {
     ecs.engine.addEntity(blockEntity3);
     blockEntity3.addComponent(new TextFacet({ text: 'Toller Header' }));
     blockEntity3.addComponent(new ChildFacet({ childOf: 'Block Editor' }));
+    blockEntity3.addComponent(new IconFacet({ icon: <IoPaperPlane/> }));
+    blockEntity3.addComponent(new ColorFacet({ color:  "#797AFF"}));
     blockEntity3.addComponent(
       new DescriptionFacet({
         description:
@@ -45,6 +50,7 @@ const InitSystem = () => {
     ecs.engine.addEntity(blockEntity4);
     blockEntity4.addComponent(new TextFacet({ text: 'Toller Header' }));
     blockEntity4.addComponent(new ChildFacet({ childOf: 'Block Editor' }));
+    blockEntity4.addComponent(new ColorFacet({ color:  "#1C8493"}));
     blockEntity4.addComponent(
       new DescriptionFacet({
         description:
@@ -54,18 +60,21 @@ const InitSystem = () => {
     blockEntity4.addComponent(new TypeFacet({ type: BlockTypes.MORE_INFORMATIONS }));
     blockEntity4.addComponent(new IdFacet({ id: '2' }));
     blockEntity4.addComponent(new IsSmallBlockFacet({ isSmall: true }));
+    blockEntity4.addComponent(new IconFacet({ icon: <IoAccessibility/> }));
     blockEntity4.addComponent(new NeighbourIdFacet({ neighbourId: '1' }));
 
     const blockEntity5 = new Entity();
     ecs.engine.addEntity(blockEntity5);
     blockEntity5.addComponent(new TextFacet({ text: 'Toller Header' }));
     blockEntity5.addComponent(new ChildFacet({ childOf: 'Block Editor' }));
+    blockEntity5.addComponent(new ColorFacet({ color:  "#F6D143"}));
     blockEntity5.addComponent(
       new DescriptionFacet({
         description:
           'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.',
       }),
     );
+    blockEntity5.addComponent(new IconFacet({ icon: <IoAlarm/> }));
     blockEntity5.addComponent(new TypeFacet({ type: BlockTypes.MORE_INFORMATIONS }));
     blockEntity5.addComponent(new IdFacet({ id: '3' }));
     blockEntity5.addComponent(new IsSmallBlockFacet({ isSmall: true }));
@@ -115,6 +124,33 @@ const InitSystem = () => {
     blockEntity9.addComponent(new IdFacet({ id: '8' }));
     blockEntity9.addComponent(new NeighbourIdFacet({ neighbourId: '3' }));
 
+
+    const blockEntity11 = new Entity();
+    ecs.engine.addEntity(blockEntity11);
+    blockEntity11.addComponent(new TypeFacet({ type: BlockTypes.SPACER }));
+    blockEntity11.addComponent(new IdFacet({ id: '10' }));
+    blockEntity11.addComponent(new NeighbourIdFacet({ neighbourId: '3' }));
+
+
+    const blockEntity10 = new Entity();
+    ecs.engine.addEntity(blockEntity10);
+    blockEntity10.addComponent(new TextFacet({ text: 'Lorem ipsum dolor sit amet',}),);
+    blockEntity10.addComponent(new TypeFacet({ type: BlockTypes.CARD }));
+    blockEntity10.addComponent(new IdFacet({ id: '9' }));
+    blockEntity10.addComponent(new NeighbourIdFacet({ neighbourId: '3' }));
+    blockEntity10.addComponent(new IsSmallBlockFacet({ isSmall: true }));
+    blockEntity10.addComponent(new ColorFacet({ color:  "#FF7F3B"}));
+
+
+    const blockEntity12 = new Entity();
+    ecs.engine.addEntity(blockEntity12);
+    blockEntity12.addComponent(new TextFacet({ text: 'Lorem ipsum dolor sit amet',}),);
+    blockEntity12.addComponent(new TypeFacet({ type: BlockTypes.CARD }));
+    blockEntity12.addComponent(new IdFacet({ id: '9' }));
+    blockEntity12.addComponent(new NeighbourIdFacet({ neighbourId: '3' }));
+    blockEntity12.addComponent(new IsSmallBlockFacet({ isSmall: true }));
+    blockEntity12.addComponent(new ColorFacet({ color:  "#608AFF"}));
+
     const blockEditor = new Entity();
     ecs.engine.addEntity(blockEditor);
     blockEditor.addComponent(new IsEditingFacet({ isEditing: false }));
@@ -137,6 +173,9 @@ const InitSystem = () => {
       ecs.engine.removeEntity(blockEntity7);
       ecs.engine.removeEntity(blockEntity8);
       ecs.engine.removeEntity(blockEntity9);
+      ecs.engine.removeEntity(blockEntity10);
+      ecs.engine.removeEntity(blockEntity11);
+      ecs.engine.removeEntity(blockEntity12);
       ecs.engine.removeEntity(blockEditor);
     };
   }, []);
