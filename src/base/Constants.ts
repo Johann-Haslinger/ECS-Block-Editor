@@ -3,12 +3,14 @@ export enum Tags {
   VISIBLE,
   PRESSED,
   IS_EDITING,
+  FURTHER
 }
 
 export enum BlockTypes {
   TEXT = "Text",
   IMAGE = "Bild",
   PAGE = "Seite",
+  PAGES = "Seiten",
   CARD = "Karte",
   MORE_INFORMATIONS = "Mehr Infos",
   SPACER = "Abstand",

@@ -18,6 +18,8 @@ import MoreInformationsBlock from './Blocks/MoreInformationsBlock';
 import SpacerBlock from './Blocks/SpacerBlock';
 import { Entity } from '@leanscope/ecs-engine';
 import CardBlock from './Blocks/CardBlock';
+import PageBlock from './Blocks/PageBlock';
+import PagesBlock from './Blocks/PagesBlock';
 
 interface ComponentRendererProps {
   blockEntities: readonly Entity[];
@@ -118,15 +120,26 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
                           key={blockEntity?.get(IdFacet)?.props.id}
                           blockEntity={blockEntity}
                         />
-                      ) : blockEntity?.get(TypeFacet)?.props.type ===
-                        BlockTypes.CARD ? (
+                      ) : blockEntity?.get(TypeFacet)?.props.type === BlockTypes.CARD ? (
                         <CardBlock
-                        blockEditorEntity={blockEditorEntity}
+                          blockEditorEntity={blockEditorEntity}
                           key={blockEntity?.get(IdFacet)?.props.id}
                           blockEntity={blockEntity}
                         />
                       ) : blockEntity?.get(TypeFacet)?.props.type === BlockTypes.SPACER ? (
                         <SpacerBlock
+                          key={blockEntity?.get(IdFacet)?.props.id}
+                          blockEntity={blockEntity}
+                        />
+                      ) : blockEntity?.get(TypeFacet)?.props.type === BlockTypes.PAGE ? (
+                        <PageBlock
+                          blockEditorEntity={blockEditorEntity}
+                          key={blockEntity?.get(IdFacet)?.props.id}
+                          blockEntity={blockEntity}
+                        />
+                      )  : blockEntity?.get(TypeFacet)?.props.type === BlockTypes.PAGES ? (
+                        <PagesBlock
+                          blockEditorEntity={blockEditorEntity}
                           key={blockEntity?.get(IdFacet)?.props.id}
                           blockEntity={blockEntity}
                         />

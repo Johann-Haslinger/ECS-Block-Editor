@@ -9,6 +9,7 @@ import {
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import { IoCheckmarkCircle, IoEllipseOutline } from 'react-icons/io5';
 import {
+  FurtherFacet,
   IdFacet,
   IsEditingFacet,
   IsFocusedFacet,
@@ -17,6 +18,7 @@ import {
   TodoFacet,
 } from '../../app/BlockFacets';
 import { Tags } from '../../base/Constants';
+import FurtherView from '../FurtherView';
 
 interface BlockOutlineProps {
   content: ReactNode;
@@ -38,6 +40,8 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
   const [isSwiping, setIsSwiping] = useState<boolean>(false);
   const [isEditingFacet] = useEntityComponents(blockEditorEntity, IsEditingFacet);
   const [todoFacet] = useEntityComponents(blockEntity, TodoFacet);
+  const [furtherFacet] = useEntityComponents(blockEntity, FurtherFacet);
+  const isFurtherViewVisible = furtherFacet.props.isGoingFurther;
   const isEditing = isEditingFacet.props.isEditing;
   const todoState = todoFacet.props.state;
 
@@ -133,51 +137,64 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
   };
 
   return (
-    <div
-      className={`${
-        isPressed
-          ? 'bg-[rgb(225,241,254)] w-full z-40 select-none rounded-md p-2  md:mb-1 mb-0.5'
-          : 'w-full p-2  md:mb-1 mb-0.5 border-white'
-      }`}
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-      ref={textBlockRef}
-      style={transitionStyle}
-    >
-      <div className="w-full  flex h-full relative">
-        {todoState === 1 ? (
-          <div onClick={()=>{blockEntity.addComponent(new TodoFacet({state: 2}))}} className="h-full flex items-center  text-xl pr-2 py-0.5 text-[rgb(212,212,212)]">
-            <IoEllipseOutline />
-          </div>
-        ) : todoState === 2 ? (
-          <div onClick={()=>{blockEntity.addComponent(new TodoFacet({state: 1}))}} className="h-full flex items-center  text-xl pr-2 py-0.5 text-blue">
-            <IoCheckmarkCircle />
-          </div>
-        ) : (
-          <></>
-        )}
+    <>
+      <div
+        className={`${
+          isPressed
+            ? 'bg-[rgb(225,241,254)] w-full z-40 select-none rounded-md p-2  md:mb-1 mb-0.5'
+            : 'w-full p-2  md:mb-1 mb-0.5 border-white'
+        }`}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        ref={textBlockRef}
+        style={transitionStyle}
+      >
+        <div className="w-full  flex h-full relative">
+          {todoState === 1 ? (
+            <div
+              onClick={() => {
+                blockEntity.addComponent(new TodoFacet({ state: 2 }));
+              }}
+              className="h-full flex items-center  text-xl pr-2 py-0.5 text-[rgb(212,212,212)]"
+            >
+              <IoEllipseOutline />
+            </div>
+          ) : todoState === 2 ? (
+            <div
+              onClick={() => {
+                blockEntity.addComponent(new TodoFacet({ state: 1 }));
+              }}
+              className="h-full flex items-center  text-xl pr-2 py-0.5 text-blue"
+            >
+              <IoCheckmarkCircle />
+            </div>
+          ) : (
+            <></>
+          )}
 
-        {content}
-        <div
-          className={`${
-            isEditing
-              ? 'w-6 h-full flex items-center absolute top-0 right-0'
-              : 'invisible h-full items-center absolute top-0 right-0'
-          }`}
-        >
+          {content}
           <div
             className={`${
-              isPressed
-                ? 'w-3 h-3 select-none rounded-full bg-blue'
-                : 'w-3 h-3 select-none rounded-full border border-[rgb(212,212,212)]'
+              isEditing
+                ? 'w-6 h-full flex items-center absolute top-0 right-0'
+                : 'invisible h-full items-center absolute top-0 right-0'
             }`}
-          ></div>
+          >
+            <div
+              className={`${
+                isPressed
+                  ? 'w-3 h-3 select-none rounded-full bg-blue'
+                  : 'w-3 h-3 select-none rounded-full border border-[rgb(212,212,212)]'
+              }`}
+            ></div>
+          </div>
         </div>
       </div>
-    </div>
+      {isFurtherViewVisible && <FurtherView blockEntity={blockEntity} />}
+    </>
   );
 };
 

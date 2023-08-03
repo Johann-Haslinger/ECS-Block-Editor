@@ -1,14 +1,17 @@
 import { Entity, useEntities, useEntityComponents } from '@leanscope/ecs-engine';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import BlockOutline from './BlockOutline';
 import { IoAccessibility, IoChevronForward, IoCode } from 'react-icons/io5';
 import {
   ColorFacet,
   DescriptionFacet,
+  FurtherFacet,
   IconFacet,
   IsEditingFacet,
   TextFacet,
 } from '../../app/BlockFacets';
+import { Tags } from '../../base/Constants';
+import FurtherView from '../FurtherView';
 
 interface MoreInformationsBlockProps {
   blockEntity: Entity;
@@ -57,7 +60,14 @@ const MoreInformationsBlock: React.FC<MoreInformationsBlockProps> = ({
               {description}
             </p>
             <div className="mt-2  text-blue flex text-sm md:text-base">
-              <p className="border-b-2 border-opacity-0 hover:border-opacity-100 border-blue ">
+              <p
+                onClick={() => {
+                  if (!isEditing) {
+                    blockEntity.addComponent(new FurtherFacet({ isGoingFurther: true }));
+                  }
+                }}
+                className="border-b-2 border-opacity-0 hover:border-opacity-100 border-blue "
+              >
                 Mehr
               </p>
               <IoChevronForward className="mt-1 ml-1" />

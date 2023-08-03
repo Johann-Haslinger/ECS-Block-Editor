@@ -3,17 +3,25 @@ import { BlockTypes, TextTypes } from '../base/Constants';
 import { Facet } from '../base/Facet';
 import { IoBug } from 'react-icons/io5';
 
+export interface FurtherProps {
+  isGoingFurther: boolean;
+}
+
+export class FurtherFacet extends Facet<FurtherProps> {
+  constructor(props: FurtherProps = { isGoingFurther: false }) {
+    super(props);
+  }
+}
 
 export interface ColorProps {
   color: string;
 }
 
 export class ColorFacet extends Facet<ColorProps> {
-  constructor(props: ColorProps = { color: "#ffffff" }) {
+  constructor(props: ColorProps = { color: '#ffffff' }) {
     super(props);
   }
 }
-
 
 export interface IconProps {
   icon: React.ReactNode;
@@ -25,7 +33,6 @@ export class IconFacet extends Facet<IconProps> {
   }
 }
 
-
 export interface TodoProps {
   state: number;
 }
@@ -36,7 +43,6 @@ export class TodoFacet extends Facet<TodoProps> {
   }
 }
 
-
 export interface CurrentBlockTypeProps {
   blockType: BlockTypes;
 }
@@ -46,7 +52,6 @@ export class CurrentBlockTypeFacet extends Facet<CurrentBlockTypeProps> {
     super(props);
   }
 }
-
 
 export interface CurrentTextTypeProps {
   textType: TextTypes;
@@ -73,11 +78,10 @@ export interface NeighbourIdProps {
 }
 
 export class NeighbourIdFacet extends Facet<NeighbourIdProps> {
-  constructor(props: NeighbourIdProps = { neighbourId: "" }) {
+  constructor(props: NeighbourIdProps = { neighbourId: '' }) {
     super(props);
   }
 }
-
 
 export interface DescriptionProps {
   description: string;
@@ -95,6 +99,16 @@ export interface TextProps {
 
 export class TextFacet extends Facet<TextProps> {
   constructor(props: TextProps = { text: '' }) {
+    super(props);
+  }
+}
+
+export interface ParentProps {
+  parentId: string;
+}
+
+export class ParentFacet extends Facet<ParentProps> {
+  constructor(props: ParentProps = { parentId: '0' }) {
     super(props);
   }
 }
@@ -118,7 +132,6 @@ export class TextTypeFacet extends Facet<TextTypeProps> {
     super(props);
   }
 }
-
 
 export interface TypeFacetProps {
   type: BlockTypes;
