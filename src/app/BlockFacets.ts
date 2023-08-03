@@ -1,6 +1,27 @@
 import { BlockTypes, TextTypes } from '../base/Constants';
 import { Facet } from '../base/Facet';
 
+export interface TodoProps {
+  state: number;
+}
+
+export class TodoFacet extends Facet<TodoProps> {
+  constructor(props: TodoProps = { state: 0 }) {
+    super(props);
+  }
+}
+
+
+export interface CurrentBlockTypeProps {
+  blockType: BlockTypes;
+}
+
+export class CurrentBlockTypeFacet extends Facet<CurrentBlockTypeProps> {
+  constructor(props: CurrentBlockTypeProps = { blockType: BlockTypes.TEXT }) {
+    super(props);
+  }
+}
+
 
 export interface CurrentTextTypeProps {
   textType: TextTypes;

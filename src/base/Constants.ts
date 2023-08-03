@@ -6,12 +6,12 @@ export enum Tags {
 }
 
 export enum BlockTypes {
-  TEXT,
-  IMAGE,
-  PAGE,
-  CARD,
-  MORE_INFORMATIONS,
-  SPACER,
+  TEXT = "Text",
+  IMAGE = "Bild",
+  PAGE = "Seite",
+  CARD = "Karte",
+  MORE_INFORMATIONS = "Mehr Infos",
+  SPACER = "Abstand",
 }
 
 export enum TextTypes {
@@ -21,4 +21,10 @@ export enum TextTypes {
   BOLD = "Fett",
   TEXT = "Text",
   CAPTION = "Beschriftung",
+}
+
+export enum StyleTypes {
+  TODO = "Todo",
+  BLOCK = "Block",
+
 }

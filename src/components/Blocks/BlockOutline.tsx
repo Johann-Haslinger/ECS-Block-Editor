@@ -7,13 +7,14 @@ import {
   useEntityProps,
 } from '@leanscope/ecs-engine';
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
-import { IoEllipseOutline } from 'react-icons/io5';
+import { IoCheckmarkCircle, IoEllipseOutline } from 'react-icons/io5';
 import {
   IdFacet,
   IsEditingFacet,
   IsFocusedFacet,
   IsPressedFacet,
   TextFacet,
+  TodoFacet,
 } from '../../app/BlockFacets';
 import { Tags } from '../../base/Constants';
 
@@ -35,8 +36,10 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
   const [startX, setStartX] = useState<number | null>(null);
   const [translateX, setTranslateX] = useState<number>(0);
   const [isSwiping, setIsSwiping] = useState<boolean>(false);
-  const [isEditingFacet] = useEntityComponents(blockEditorEntity, IsEditingFacet)
-  const isEditing = isEditingFacet.props.isEditing
+  const [isEditingFacet] = useEntityComponents(blockEditorEntity, IsEditingFacet);
+  const [todoFacet] = useEntityComponents(blockEntity, TodoFacet);
+  const isEditing = isEditingFacet.props.isEditing;
+  const todoState = todoFacet.props.state;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -51,9 +54,9 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
   }, [textBlockRef]);
 
   useEffect(() => {
-   if (!isEditing) {
-    blockEntity.removeTag(Tags.PRESSED);
-   }
+    if (!isEditing) {
+      blockEntity.removeTag(Tags.PRESSED);
+    }
   }, [isEditing]);
 
   const toggleActivePressed = () => {
@@ -145,6 +148,18 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
       style={transitionStyle}
     >
       <div className="w-full  flex h-full relative">
+        {todoState === 1 ? (
+          <div onClick={()=>{blockEntity.addComponent(new TodoFacet({state: 2}))}} className="h-full flex items-center  text-xl pr-2 py-0.5 text-[rgb(212,212,212)]">
+            <IoEllipseOutline />
+          </div>
+        ) : todoState === 2 ? (
+          <div onClick={()=>{blockEntity.addComponent(new TodoFacet({state: 1}))}} className="h-full flex items-center  text-xl pr-2 py-0.5 text-blue">
+            <IoCheckmarkCircle />
+          </div>
+        ) : (
+          <></>
+        )}
+
         {content}
         <div
           className={`${

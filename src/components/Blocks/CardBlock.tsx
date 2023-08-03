@@ -1,9 +1,14 @@
-import React from 'react'
+import { Entity } from '@leanscope/ecs-engine';
+import React from 'react';
+import BlockOutline from './BlockOutline';
 
-const CardBlock = () => {
-  return (
-    <div>CardBlock</div>
-  )
+interface CardBlockProps {
+  blockEntity: Entity;
 }
+const CardBlock: React.FC<CardBlockProps> = ({ blockEntity }) => {
+  return <BlockOutline blockEntity={blockEntity} content={<div>
+    Karte
+  </div>} />;
+};
 
-export default CardBlock
+export default CardBlock;

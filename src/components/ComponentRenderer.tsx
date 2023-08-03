@@ -17,6 +17,7 @@ import EditMenu from './Menus/EditMenu';
 import MoreInformationsBlock from './Blocks/MoreInformationsBlock';
 import SpacerBlock from './Blocks/SpacerBlock';
 import { Entity } from '@leanscope/ecs-engine';
+import CardBlock from './Blocks/CardBlock';
 
 interface ComponentRendererProps {
   blockEntities: readonly Entity[];
@@ -51,11 +52,11 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
       return;
     }
   };
-  
+
   // const sortBlocksByNeighbourId = (blocks: readonly Entity[]): Entity[] => {
   //   const blockMap: Record<string, Entity> = {};
   //   const sortedBlocks: Entity[] = [];
-  
+
   //   for (const block of blocks) {
   //     const id = block?.get(IdFacet)?.props.id;
   //     const neighbourId = block?.get(NeighbourIdFacet)?.props.neighbourId;
@@ -66,7 +67,7 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
   //       }
   //     }
   //   }
-  
+
   //   let currentBlock = sortedBlocks[0];
   //   while (currentBlock && currentBlock?.get(NeighbourIdFacet)?.props.neighbourId) {
   //     const id = currentBlock.get(NeighbourIdFacet)?.props.neighbourId;
@@ -76,16 +77,12 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
   //     }
   //     currentBlock = nextBlock;
   //   }
-  
+
   //   return sortedBlocks;
   // };
-  
-  
-  
-  
+
   // const sortedBlockEntities = sortBlocksByNeighbourId(blockEntities);
 
-  
   return (
     <div className="pb-40 md:pb-60" ref={editableAreaRef}>
       <DragDropContext onDragEnd={handleDragEnd}>
@@ -95,7 +92,7 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
               {blockEntities.map((blockEntity, idx) => (
                 <Draggable
                   key={blockEntity?.get(IdFacet)?.props.id.toString()}
-                  draggableId={`${blockEntity?.get(IdFacet)?.props.id.toString()}`}
+                  draggableId={`${blockEntity?.get(IdFacet)?.props.id.toString()}`} // multiple Select if pressed
                   index={idx}
                 >
                   {(provided: any) => (
@@ -108,7 +105,6 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
-                      
                     >
                       {blockEntity?.get(TypeFacet)?.props.type === BlockTypes.TEXT ? (
                         <TextBlock
@@ -119,6 +115,12 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
                         BlockTypes.MORE_INFORMATIONS ? (
                         <MoreInformationsBlock
                           blockEditorEntity={blockEditorEntity}
+                          key={blockEntity?.get(IdFacet)?.props.id}
+                          blockEntity={blockEntity}
+                        />
+                      ) : blockEntity?.get(TypeFacet)?.props.type ===
+                        BlockTypes.CARD ? (
+                        <CardBlock
                           key={blockEntity?.get(IdFacet)?.props.id}
                           blockEntity={blockEntity}
                         />

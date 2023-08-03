@@ -61,7 +61,7 @@ const EditOption: React.FC<EditOptionProps> = ({ option, isVisible }) => {
           transition={{ type: 'Tween' }}
           animate={{ y: isOptionsVisible && isVisible && content ? 0 : 300 }}
           initial={{ y: 200 }}
-          className="bg-white h-40 z-40 rounded-lg  md:w-[31rem]  w-11/12  fixed bottom-7 shadow-[0_0px_40px_1px_rgba(0,0,0,0.12)]"
+          className="bg-white h-40 z-40 rounded-lg  md:w-[31rem] px-4 w-11/12  fixed bottom-7 shadow-[0_0px_40px_1px_rgba(0,0,0,0.12)]"
           drag="y"
           dragConstraints={{ top: 0, bottom: 200 }}
           onDragEnd={(event, info) => {
