@@ -21,6 +21,7 @@ const CardBlock: React.FC<CardBlockProps> = ({ blockEntity, blockEditorEntity })
   const color = colorFacet.props.color;
   const text = textFacet.props.text;
   const isEditing = blockEditorEntity?.get(IsEditingFacet)?.props.isEditing;
+  
   return (
     <BlockOutline
       blockEntity={blockEntity}

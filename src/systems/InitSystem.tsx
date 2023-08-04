@@ -205,6 +205,14 @@ const InitSystem = () => {
     blockEntity15.addComponent(new NeighbourIdFacet({ neighbourId: '3' }));
     blockEntity15.addComponent(new TextFacet({ text: 'Lorem ipsum dolor ',}),);
 
+
+    const blockEntity16 = new Entity();
+    ecs.engine.addEntity(blockEntity16);
+    blockEntity16.addComponent(new TypeFacet({ type: BlockTypes.SPACER }));
+    blockEntity16.addComponent(new IdFacet({ id: '16' }));
+    blockEntity16.addComponent(new ParentFacet({ parentId: '1' }));
+    blockEntity16.addComponent(new NeighbourIdFacet({ neighbourId: '3' }));
+
     const blockEditor = new Entity();
     ecs.engine.addEntity(blockEditor);
     blockEditor.addComponent(new IsEditingFacet({ isEditing: false }));
@@ -233,6 +241,7 @@ const InitSystem = () => {
       ecs.engine.removeEntity(blockEntity13);
       ecs.engine.removeEntity(blockEntity14);
       ecs.engine.removeEntity(blockEntity15);
+      ecs.engine.removeEntity(blockEntity16);
       ecs.engine.removeEntity(blockEditor);
     };
   }, []);

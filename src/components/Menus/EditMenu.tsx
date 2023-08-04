@@ -1,4 +1,10 @@
-import { ECSContext, Entity, useEntities, useEntity, useEntityComponents } from '@leanscope/ecs-engine';
+import {
+  ECSContext,
+  Entity,
+  useEntities,
+  useEntity,
+  useEntityComponents,
+} from '@leanscope/ecs-engine';
 import { EntityProps } from '@leanscope/ecs-engine/react-api/classes/EntityProps';
 import { motion } from 'framer-motion';
 import React, { useContext, useEffect, useState } from 'react';
@@ -8,6 +14,8 @@ import {
   IoArrowForwardCircleOutline,
   IoColorPalette,
   IoColorPaletteOutline,
+  IoLayers,
+  IoLayersOutline,
   IoShare,
   IoShareOutline,
   IoSparkles,
@@ -31,8 +39,9 @@ type option = {
 interface EditOptionProps {
   option: option;
   isVisible: boolean;
+  canShow: boolean;
 }
-const EditOption: React.FC<EditOptionProps> = ({ option, isVisible }) => {
+const EditOption: React.FC<EditOptionProps> = ({ option, isVisible, canShow }) => {
   const { name, icon, color, bgColor, content, customFunc } = option;
   const [isOptionsVisible, setIsOptionsVisible] = useState(false);
 
@@ -42,19 +51,21 @@ const EditOption: React.FC<EditOptionProps> = ({ option, isVisible }) => {
 
   return (
     <>
-      <div
-        className={`w-full hover:opacity-80 transition-all  min-w-[4rem] p-2 bg-opacity-10 h-18 text-whitee rounded-lg mr-0 m-1 `}
-        style={{ color: color, backgroundColor: bgColor, maxWidth: '10rem' }} // Max width set to 10rem
-        onClick={() => {
-          setIsOptionsVisible(true);
-          if (customFunc) {
-            customFunc();
-          }
-        }}
-      >
-        <div className="text-2xl flex justify-center mt-2"> {icon}</div>
-        <p className="text-xs mt-1 opacity-60 w-full text-center font-light">{name}</p>
-      </div>
+      {canShow && (
+        <div
+          className={`w-full hover:opacity-80 transition-all  min-w-[4rem] p-2 bg-opacity-10 h-18 text-whitee rounded-lg mr-0 m-1 `}
+          style={{ color: color, backgroundColor: bgColor, maxWidth: '10rem' }} // Max width set to 10rem
+          onClick={() => {
+            setIsOptionsVisible(true);
+            if (customFunc) {
+              customFunc();
+            }
+          }}
+        >
+          <div className="text-2xl flex justify-center mt-2"> {icon}</div>
+          <p className="text-xs mt-1 opacity-60 w-full text-center font-light">{name}</p>
+        </div>
+      )}
 
       <div className="md:relative fixed z-40 md:right-[6.5rem] ">
         <motion.div
@@ -85,11 +96,63 @@ const EditMenu = (props: EntityProps) => {
   const isVisible = isEditingFacet.props.isEditing;
   const [pressedBlockEntities] = useEntities((e) => e.hasTag(Tags.PRESSED));
   const [isDeleteSheetVisible, setIsDeleteSheetVisible] = useState(false);
+  const [blockEntities] = useEntities((e) => e.hasTag(Tags.PRESSED));
 
   const handleDeleteClick = () => {
     pressedBlockEntities.map((entiy) => {
       ecs.engine.removeEntity(entiy);
+    });
+  };
+
+  const checkCanActivateLayout = () => {
+    let canActivateLayout = true;
+    blockEntities.map((block) => {
+      const type = block.get(TypeFacet)?.props.type;
+      console.log(type);
+      if (type !== BlockTypes.IMAGE) {
+        canActivateLayout = false;
+      }
+    });
+    return canActivateLayout;
+  };
+
+  const checkCanActivateStyle = () => {
+    let canActivateStyle = true;
+    blockEntities.map((block) => {
+      const type = block.get(TypeFacet)?.props.type;
+      if (type == BlockTypes.IMAGE) {
+        canActivateStyle = false;
+      }
+    });
+    return canActivateStyle;
+  };
+
+  const checkCanAddContent = () => {
+    let canAddContent = true;
+    if (pressedBlockEntities.length > 1) {
+     canAddContent = false
+    }
+    pressedBlockEntities.map((block)=>{
+      const type = block.get(TypeFacet)?.props.type;
+      if (type == BlockTypes.IMAGE) {
+        canAddContent = false;
+      }
     })
+    return canAddContent;
+  };
+
+  const checkCanGroupContent = () => {
+    let canGroupContent = false;
+    if (pressedBlockEntities.length > 1) {
+      canGroupContent = true;
+    }
+    return canGroupContent;
+  };
+
+  const checkCanUseAI = () => {
+    let canUseAI = true;
+
+    return canUseAI;
   };
 
   const toggleIsDeleteSheetVisible = () => {
@@ -104,10 +167,22 @@ const EditMenu = (props: EntityProps) => {
       content: <StyleOptions entity={props.entity} />,
     },
     {
+      name: 'Layout',
+      icon: <IoLayers />,
+      color: '#797AFF',
+      bgColor: 'rgba(121, 122, 255, 0.1)',
+    },
+    {
       name: '+ Inhalt',
       icon: <IoArrowForwardCircleOutline />,
       color: '#608AFF',
       bgColor: 'rgba(96, 138, 255, 0.1)',
+    },
+    {
+      name: 'Gruppieren',
+      icon: <IoArrowForwardCircleOutline />,
+      color: '#FF7F3B',
+      bgColor: 'rgba(255, 127, 59, 0.1)',
     },
     {
       name: 'Aktionen',
@@ -142,9 +217,29 @@ const EditMenu = (props: EntityProps) => {
           dragConstraints={{ top: 0, bottom: 0 }}
         >
           <div className="flex overflow-x-scroll w flex-auto">
-            {editOptions.map((option) => (
-              <EditOption isVisible={isVisible} option={option} key={option.name} />
-            ))}
+            <EditOption
+              canShow={checkCanActivateStyle()}
+              isVisible={isVisible}
+              option={editOptions[0]}
+            />
+            <EditOption
+              canShow={checkCanActivateLayout()}
+              isVisible={isVisible}
+              option={editOptions[1]}
+            />
+            <EditOption
+              canShow={checkCanAddContent()}
+              isVisible={isVisible}
+              option={editOptions[2]}
+            />
+            <EditOption
+              canShow={checkCanGroupContent()}
+              isVisible={isVisible}
+              option={editOptions[3]}
+            />
+            <EditOption canShow={true} isVisible={isVisible} option={editOptions[4]} />
+            <EditOption canShow={checkCanUseAI()} isVisible={isVisible} option={editOptions[5]} />
+            <EditOption canShow={true} isVisible={isVisible} option={editOptions[6]} />
           </div>
         </motion.div>
       </div>

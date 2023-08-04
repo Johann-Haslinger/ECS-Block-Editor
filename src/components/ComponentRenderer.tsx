@@ -51,7 +51,6 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
     };
   }, [blockEditorEntity]);
 
-
   useEffect(() => {
     let blocksPressed = false;
     blockEntities.map((block) => {
@@ -74,112 +73,53 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
     }
   };
 
-  // const sortBlocksByNeighbourId = (blocks: readonly Entity[]): Entity[] => {
-  //   const blockMap: Record<string, Entity> = {};
-  //   const sortedBlocks: Entity[] = [];
-
-  //   for (const block of blocks) {
-  //     const id = block?.get(IdFacet)?.props.id;
-  //     const neighbourId = block?.get(NeighbourIdFacet)?.props.neighbourId;
-  //     if (id && neighbourId) {
-  //       blockMap[id] = block;
-  //       if (neighbourId === 'first') {
-  //         sortedBlocks.push(block); // Block mit Nachbar-ID "first" wird am Ende hinzugefügt
-  //       }
-  //     }
-  //   }
-
-  //   let currentBlock = sortedBlocks[0];
-  //   while (currentBlock && currentBlock?.get(NeighbourIdFacet)?.props.neighbourId) {
-  //     const id = currentBlock.get(NeighbourIdFacet)?.props.neighbourId;
-  //     const nextBlock = blockMap[id || '']; // Nächster Block in der Verbindungskette
-  //     if (nextBlock) {
-  //       sortedBlocks.push(nextBlock);
-  //     }
-  //     currentBlock = nextBlock;
-  //   }
-
-  //   return sortedBlocks;
-  // };
-
-  // const sortedBlockEntities = sortBlocksByNeighbourId(blockEntities);
+  const blockTypeComponents: { [key: string]: React.FC<any> } = {
+    [BlockTypes.TEXT]: TextBlock,
+    [BlockTypes.MORE_INFORMATIONS]: MoreInformationsBlock,
+    [BlockTypes.CARD]: CardBlock,
+    [BlockTypes.SPACER]: SpacerBlock,
+    [BlockTypes.PAGE]: PageBlock,
+    [BlockTypes.PAGES]: PagesBlock,
+    [BlockTypes.IMAGE]: ImageBlock,
+  };
 
   return (
     <div className="pb-40 md:pb-60" ref={editableAreaRef}>
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="droppable">
           {(provided: any) => (
-            <div
-              key={provided}
-              className="flex  flex-wrap"
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-            >
-              {blockEntities.map((blockEntity, idx) => (
-                <Draggable
-                  key={blockEntity?.get(IdFacet)?.props.id.toString()}
-                  draggableId={`${blockEntity?.get(IdFacet)?.props.id.toString()}`} // multiple Select if pressed
-                  index={idx}
-                >
-                  {(provided: any) => (
-                    <div
-                      key={idx}
-                      className={
-                        blockEntity?.get(IsSmallBlockFacet)?.props.isSmall === true
-                          ? 'md:w-1/2 w-full md:pr-1 pr-0.5 lg:w-1/3'
-                          : 'w-full '
-                      }
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
-                      {blockEntity?.get(TypeFacet)?.props.type === BlockTypes.TEXT ? (
-                        <TextBlock
+            <div className="flex flex-wrap" ref={provided.innerRef} {...provided.droppableProps}>
+              {blockEntities.map((blockEntity, idx) => {
+                const blockType = blockEntity?.get(TypeFacet)?.props.type;
+                const BlockComponent = blockType !== undefined &&  blockTypeComponents[blockType] || ErrorBlock;
+
+                return (
+                  <Draggable
+                    key={blockEntity?.get(IdFacet)?.props.id.toString()}
+                    draggableId={`${blockEntity?.get(IdFacet)?.props.id.toString()}`}
+                    index={idx}
+                  >
+                    {(provided: any) => (
+                      <div
+                        className={
+                          blockEntity?.get(IsSmallBlockFacet)?.props.isSmall === true
+                            ? 'md:w-1/2 w-full md:pr-1 pr-0.5 lg:w-1/3'
+                            : 'w-full'
+                        }
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                      >
+                        <BlockComponent
                           key={blockEntity?.get(IdFacet)?.props.id}
                           blockEntity={blockEntity}
-                        />
-                      ) : blockEntity?.get(TypeFacet)?.props.type ===
-                        BlockTypes.MORE_INFORMATIONS ? (
-                        <MoreInformationsBlock
                           blockEditorEntity={blockEditorEntity}
-                          key={blockEntity?.get(IdFacet)?.props.id}
-                          blockEntity={blockEntity}
                         />
-                      ) : blockEntity?.get(TypeFacet)?.props.type === BlockTypes.CARD ? (
-                        <CardBlock
-                          blockEditorEntity={blockEditorEntity}
-                          key={blockEntity?.get(IdFacet)?.props.id}
-                          blockEntity={blockEntity}
-                        />
-                      ) : blockEntity?.get(TypeFacet)?.props.type === BlockTypes.SPACER ? (
-                        <SpacerBlock
-                          key={blockEntity?.get(IdFacet)?.props.id}
-                          blockEntity={blockEntity}
-                        />
-                      ) : blockEntity?.get(TypeFacet)?.props.type === BlockTypes.PAGE ? (
-                        <PageBlock
-                          blockEditorEntity={blockEditorEntity}
-                          key={blockEntity?.get(IdFacet)?.props.id}
-                          blockEntity={blockEntity}
-                        />
-                      ) : blockEntity?.get(TypeFacet)?.props.type === BlockTypes.PAGES ? (
-                        <PagesBlock
-                          blockEditorEntity={blockEditorEntity}
-                          key={blockEntity?.get(IdFacet)?.props.id}
-                          blockEntity={blockEntity}
-                        />
-                      ) : blockEntity?.get(TypeFacet)?.props.type === BlockTypes.IMAGE ? (
-                        <ImageBlock
-                          key={blockEntity?.get(IdFacet)?.props.id}
-                          blockEntity={blockEntity}
-                        />
-                      ) : (
-                        <ErrorBlock key={blockEntity?.get(IdFacet)?.props.id} />
-                      )}
-                    </div>
-                  )}
-                </Draggable>
-              ))}
+                      </div>
+                    )}
+                  </Draggable>
+                );
+              })}
               {provided.placeholder}
             </div>
           )}
