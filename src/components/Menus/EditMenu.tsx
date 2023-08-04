@@ -141,7 +141,6 @@ const EditMenu = (props: EntityProps) => {
           drag="y"
           dragConstraints={{ top: 0, bottom: 0 }}
         >
-          {/* Added a wrapping div with flex-auto class */}
           <div className="flex overflow-x-scroll w flex-auto">
             {editOptions.map((option) => (
               <EditOption isVisible={isVisible} option={option} key={option.name} />

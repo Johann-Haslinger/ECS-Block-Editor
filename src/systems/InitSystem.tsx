@@ -175,7 +175,7 @@ const InitSystem = () => {
     ecs.engine.addEntity(blockEntity12);
     blockEntity12.addComponent(new TextFacet({ text: 'Lorem ipsum dolor sit amet',}),);
     blockEntity12.addComponent(new TypeFacet({ type: BlockTypes.CARD }));
-    blockEntity12.addComponent(new IdFacet({ id: '9' }));
+    blockEntity12.addComponent(new IdFacet({ id: '91' }));
     blockEntity12.addComponent(new NeighbourIdFacet({ neighbourId: '3' }));
     blockEntity12.addComponent(new IsSmallBlockFacet({ isSmall: true }));
     blockEntity12.addComponent(new ColorFacet({ color:  "#608AFF"}));
@@ -209,7 +209,7 @@ const InitSystem = () => {
     ecs.engine.addEntity(blockEditor);
     blockEditor.addComponent(new IsEditingFacet({ isEditing: false }));
     blockEditor.addComponent(new IdFacet({ id: "1" }));
-    blockEditor.addTag(Tags.IS_EDITING);
+
 
     const editMenu = new Entity();
     ecs.engine.addEntity(editMenu);

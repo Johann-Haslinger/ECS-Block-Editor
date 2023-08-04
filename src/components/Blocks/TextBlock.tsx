@@ -174,7 +174,7 @@ const TextBlock: React.FC<TextBlockProps> = ({ blockEntity }) => {
               onBlur={handleBlur}
               ref={contentEditableRef}
               className="w-full  outline-none" //  bg-blue-light bg-opacity-40
-              contentEditable
+              
               dangerouslySetInnerHTML={{ __html: text }} // Here the HTML content is displayed
             />
           ) : (

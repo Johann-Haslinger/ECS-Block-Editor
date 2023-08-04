@@ -235,7 +235,7 @@ const StyleOptions = (props: EntityProps) => {
       <div className="flex w-full  overflow-x-scroll  py-1.5 border-t  border-[rgb(245,245,245)]  justify-between   ">
         <StyleOption
           getCurrentStyleType={() => {
-            console.log('check');
+       
             let styleType: StyleTypes | undefined = undefined;
 
             pressedBlockEntities.map((entity) => {

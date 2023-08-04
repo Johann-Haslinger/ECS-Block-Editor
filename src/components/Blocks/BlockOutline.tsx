@@ -65,6 +65,7 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
 
   const toggleActivePressed = () => {
     blockEditorEntity?.addComponent(new IsEditingFacet({ isEditing: true }));
+    blockEditorEntity.removeTag(Tags.IS_CREATEMENU_VISIBLE)
     console.log('activ');
     if (!isPressed) {
       blockEntity.addTag(Tags.PRESSED);
@@ -156,7 +157,9 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
           {todoState === 1 ? (
             <div
               onClick={() => {
-                blockEntity.addComponent(new TodoFacet({ state: 2 }));
+                if (!isEditing) {
+                  blockEntity.addComponent(new TodoFacet({ state: 2 }));
+                }
               }}
               className="h-full flex items-center  text-xl pr-2 py-0.5 text-[rgb(212,212,212)]"
             >
@@ -165,7 +168,9 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
           ) : todoState === 2 ? (
             <div
               onClick={() => {
-                blockEntity.addComponent(new TodoFacet({ state: 1 }));
+                if (!isEditing) {
+                  blockEntity.addComponent(new TodoFacet({ state: 1 }));
+                }
               }}
               className="h-full flex items-center  text-xl pr-2 py-0.5 text-blue"
             >

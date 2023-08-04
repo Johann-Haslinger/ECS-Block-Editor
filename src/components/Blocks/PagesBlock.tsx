@@ -41,7 +41,7 @@ const PagesBlock: React.FC<PagesBlockProps> = ({ blockEntity, blockEditorEntity 
               <div className="w-6 h-0.5  bg-secondery-bg rounded-full mt-0.5 ml-0.5" />
               <div className="w-3 h-0.5  bg-secondery-bg rounded-full mt-0.5 ml-0.5" />
             </div>
-            <div className={`h-10 w-8 absolute left-2.5 bg-white shadow  rounded-sm  mr-3   border-[rgb(245,245,245)]`}>
+            <div className={`h-10 w-8 absolute left-2.5 bg-white shadow  shadow-gray-200 rounded-sm  mr-3   border-[rgb(245,245,245)]`}>
               <div className="w-3 h-0.5  bg-secondery-bg rounded-full mt-2 ml-0.5" />
               <div className="w-6 h-0.5  bg-secondery-bg rounded-full mt-1.5 ml-0.5" />
               <div className="w-4 h-0.5  bg-secondery-bg rounded-full mt-0.5 ml-0.5" />

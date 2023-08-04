@@ -27,7 +27,7 @@ const PageBlock: React.FC<PageBlockProps> = ({ blockEntity, blockEditorEntity })
           className="flex h-full pl-0.5 items-center"
         >
           <div
-            className={`h-10 w-8 bg-white rounded-sm shadow mr-3   border-[rgb(245,245,245)] ${
+            className={`h-10 w-8 ml-1.5 bg-white rounded-sm shadow mr-3   border-[rgb(245,245,245)] ${
               !isEditing ? ' md:hover:scale-110 transition-all ' : ''
             }`}
           >
@@ -37,7 +37,7 @@ const PageBlock: React.FC<PageBlockProps> = ({ blockEntity, blockEditorEntity })
             <div className="w-6 h-0.5  bg-secondery-bg rounded-full mt-0.5 ml-0.5" />
             <div className="w-3 h-0.5  bg-secondery-bg rounded-full mt-0.5 ml-0.5" />
           </div>
-          <div className='pl-2'>
+          <div className='pl-0.5'>
             <p className="font-semibold">{text} </p>
             <p className="text-sm  relative bottom-0.5 text-text2">
               Seiteninhalt wird hier angezeigt

@@ -20,6 +20,8 @@ import { Entity } from '@leanscope/ecs-engine';
 import CardBlock from './Blocks/CardBlock';
 import PageBlock from './Blocks/PageBlock';
 import PagesBlock from './Blocks/PagesBlock';
+import CreateMenu from './Menus/CreateMenu';
+import ImageBlock from './Blocks/ImageBlock';
 
 interface ComponentRendererProps {
   blockEntities: readonly Entity[];
@@ -48,6 +50,23 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [blockEditorEntity]);
+
+
+  useEffect(() => {
+    let blocksPressed = false;
+    blockEntities.map((block) => {
+      if (block.hasTag(Tags.PRESSED)) {
+        blocksPressed = true;
+      }
+    });
+    if (!blocksPressed) {
+      blockEditorEntity?.addComponent(new IsEditingFacet({ isEditing: false }));
+    }
+  }, [
+    blockEntities.map((block) => {
+      block.hasTag(Tags.PRESSED);
+    }),
+  ]);
 
   const handleDragEnd = (result: DropResult) => {
     if (!result.destination) {
@@ -90,7 +109,12 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="droppable">
           {(provided: any) => (
-            <div className="flex  flex-wrap" ref={provided.innerRef} {...provided.droppableProps}>
+            <div
+              key={provided}
+              className="flex  flex-wrap"
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+            >
               {blockEntities.map((blockEntity, idx) => (
                 <Draggable
                   key={blockEntity?.get(IdFacet)?.props.id.toString()}
@@ -99,6 +123,7 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
                 >
                   {(provided: any) => (
                     <div
+                      key={idx}
                       className={
                         blockEntity?.get(IsSmallBlockFacet)?.props.isSmall === true
                           ? 'md:w-1/2 w-full md:pr-1 pr-0.5 lg:w-1/3'
@@ -137,9 +162,14 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
                           key={blockEntity?.get(IdFacet)?.props.id}
                           blockEntity={blockEntity}
                         />
-                      )  : blockEntity?.get(TypeFacet)?.props.type === BlockTypes.PAGES ? (
+                      ) : blockEntity?.get(TypeFacet)?.props.type === BlockTypes.PAGES ? (
                         <PagesBlock
                           blockEditorEntity={blockEditorEntity}
+                          key={blockEntity?.get(IdFacet)?.props.id}
+                          blockEntity={blockEntity}
+                        />
+                      ) : blockEntity?.get(TypeFacet)?.props.type === BlockTypes.IMAGE ? (
+                        <ImageBlock
                           key={blockEntity?.get(IdFacet)?.props.id}
                           blockEntity={blockEntity}
                         />
@@ -156,6 +186,7 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
         </Droppable>
       </DragDropContext>
       {blockEditorEntity && <EditMenu entity={blockEditorEntity} />}
+      {blockEditorEntity && <CreateMenu entity={blockEditorEntity} />}
     </div>
   );
 };

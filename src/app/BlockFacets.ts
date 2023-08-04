@@ -1,7 +1,37 @@
 import React from 'react';
-import { BlockTypes, TextTypes } from '../base/Constants';
+import { BlockTypes, FitTypes, SizeTypes, TextTypes } from '../base/Constants';
 import { Facet } from '../base/Facet';
 import { IoBug } from 'react-icons/io5';
+
+export interface SizeProps {
+  size: SizeTypes;
+}
+
+export class SizeFacet extends Facet<SizeProps> {
+  constructor(props: SizeProps = { size: SizeTypes.AUTO }) {
+    super(props);
+  }
+}
+
+export interface FitProps {
+  fit: FitTypes;
+}
+
+export class FitFacet extends Facet<FitProps> {
+  constructor(props: FitProps = { fit: FitTypes.AUTO }) {
+    super(props);
+  }
+}
+
+export interface SrcProps {
+  src: string;
+}
+
+export class SrcFacet extends Facet<SrcProps> {
+  constructor(props: SrcProps = { src: "" }) {
+    super(props);
+  }
+}
 
 export interface FurtherProps {
   isGoingFurther: boolean;

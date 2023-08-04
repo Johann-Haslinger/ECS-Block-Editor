@@ -53,10 +53,10 @@ const MoreInformationsBlock: React.FC<MoreInformationsBlockProps> = ({
             {icon}
           </div>
           <div className=" relative bottom-10 pb-6 ">
-            <p contentEditable className="lg:text-xl outline-none font-semibold">
+            <p  className="lg:text-xl outline-none font-semibold">
               {text}
             </p>
-            <p contentEditable className="text-sm outline-none md:text-base ">
+            <p  className="text-sm outline-none md:text-base ">
               {description}
             </p>
             <div className="mt-2  text-blue flex text-sm md:text-base">
