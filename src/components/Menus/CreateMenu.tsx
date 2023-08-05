@@ -74,7 +74,7 @@ const CreateOption: React.FC<CreateOptionProps> = ({ option, parentId, blockEdit
       blockEditorEntity.removeTag(Tags.IS_CREATEMENU_VISIBLE);
     }
   };
-  const addBlockByType = async (blockType: BlockTypes, parentId: string) => {
+  const addBlockByType = async (blockType: BlockTypes) => {
     const newBlockEntity = new Entity();
     ecs.engine.addEntity(newBlockEntity);
 
@@ -90,7 +90,7 @@ const CreateOption: React.FC<CreateOptionProps> = ({ option, parentId, blockEdit
         className={`w-full hover:opacity-80 transition-all  min-w-[4rem] p-2 bg-opacity-10 h-18 text-whitee rounded-lg mr-0 m-1 `}
         style={{ color: color, backgroundColor: bgColor, maxWidth: '10rem' }} // Max width set to 10rem
         onClick={() => {
-          addBlockByType(blockType, parentId);
+          addBlockByType(blockType);
         }}
       >
         <div className="text-2xl flex justify-center mt-2"> {icon}</div>
