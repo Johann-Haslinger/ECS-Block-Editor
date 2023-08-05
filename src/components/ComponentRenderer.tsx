@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 
 import {
@@ -23,6 +23,70 @@ import PagesBlock from './Blocks/PagesBlock';
 import CreateMenu from './Menus/CreateMenu';
 import ImageBlock from './Blocks/ImageBlock';
 
+const customSort = (entityArr: readonly Entity[]) => {
+  let arr = [...entityArr];
+  let sortedArray: Entity[] = [];
+
+  // Find the item with neighbourId = "first" and add it as the first element
+  const firstItem = arr.find((item) => item.get(NeighbourIdFacet)?.props.neighbourId === 'first');
+  if (firstItem) {
+    sortedArray.push(firstItem);
+
+    // Remove the first item from the array to prevent duplicate inclusion
+    arr = arr.filter((item) => item !== firstItem);
+  }
+
+  // Sort the remaining items based on neighbour relationships
+  while (arr.length > 0) {
+    let added = false;
+
+    for (let i = 0; i < arr.length; i++) {
+      const currentItem = arr[i];
+
+      if (
+        sortedArray.some(
+          (item) =>
+            item.get(IdFacet)?.props.id === currentItem.get(NeighbourIdFacet)?.props.neighbourId,
+        )
+      ) {
+        sortedArray.splice(
+          sortedArray.findIndex(
+            (item) =>
+              item.get(IdFacet)?.props.id === currentItem.get(NeighbourIdFacet)?.props.neighbourId,
+          ) + 1,
+          0,
+          currentItem,
+        );
+        arr.splice(i, 1);
+        added = true;
+        break;
+      }
+    }
+
+    if (!added) {
+      // If no more items can be added, break to prevent infinite loop
+      break;
+    }
+  }
+
+  while (arr.length > 0) {
+    const lastSortedItem = sortedArray[sortedArray.length - 1];
+    const lastSortedItemId = lastSortedItem.get(IdFacet)?.props.id ;
+
+    const remainingIndex = arr.findIndex(item => item.get(NeighbourIdFacet)?.props.neighbourId === lastSortedItemId);
+    if (remainingIndex !== -1) {
+      sortedArray.push(arr[remainingIndex]);
+      arr.splice(remainingIndex, 1);
+    } else {
+      // If no more items can be added, break to prevent infinite loop
+      break;
+    }
+  }
+
+
+  return sortedArray;
+};
+
 interface ComponentRendererProps {
   blockEntities: readonly Entity[];
   blockEditorEntities: readonly Entity[];
@@ -34,11 +98,15 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
 }) => {
   const editableAreaRef = useRef<HTMLDivElement>(null);
   const blockEditorEntity = blockEditorEntities[0];
+  const [sortedBlockEntities, setSortedBlockEntities] = useState(customSort(blockEntities));
+
+  useEffect(() => {
+    setSortedBlockEntities(customSort(blockEntities));
+  }, [blockEntities]);
 
   const handleClickOutside = (event: MouseEvent) => {
     if (editableAreaRef.current && !editableAreaRef.current.contains(event.target as Node)) {
       blockEditorEntity?.addComponent(new IsEditingFacet({ isEditing: false }));
-      console.log('clicked outside');
     }
   };
 
@@ -83,6 +151,7 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
     [BlockTypes.IMAGE]: ImageBlock,
   };
 
+  console.log(blockEditorEntity)
   return (
     <div className="pb-40 md:pb-60" ref={editableAreaRef}>
       <DragDropContext onDragEnd={handleDragEnd}>
@@ -91,7 +160,8 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
             <div className="flex flex-wrap" ref={provided.innerRef} {...provided.droppableProps}>
               {blockEntities.map((blockEntity, idx) => {
                 const blockType = blockEntity?.get(TypeFacet)?.props.type;
-                const BlockComponent = blockType !== undefined &&  blockTypeComponents[blockType] || ErrorBlock;
+                const BlockComponent =
+                  (blockType !== undefined && blockTypeComponents[blockType]) || ErrorBlock;
 
                 return (
                   <Draggable

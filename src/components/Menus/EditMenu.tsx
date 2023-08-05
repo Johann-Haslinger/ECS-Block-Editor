@@ -8,7 +8,14 @@ import {
 import { EntityProps } from '@leanscope/ecs-engine/react-api/classes/EntityProps';
 import { motion } from 'framer-motion';
 import React, { useContext, useEffect, useState } from 'react';
-import { FurtherFacet, IdFacet, IsEditingFacet, ParentFacet, TextFacet, TypeFacet } from '../../app/BlockFacets';
+import {
+  FurtherFacet,
+  IdFacet,
+  IsEditingFacet,
+  ParentFacet,
+  TextFacet,
+  TypeFacet,
+} from '../../app/BlockFacets';
 import {
   IoArrowForwardCircle,
   IoArrowForwardCircleOutline,
@@ -27,8 +34,7 @@ import StyleOptions from './EditMenu/StyleOptions';
 import { BlockTypes, Tags } from '../../base/Constants';
 import DestructiveActionSheet from '../StyleLibary/DestructiveActionSheet';
 import LayoutOptions from './EditMenu/LayoutOptions';
-import { v4 as uuid } from "uuid";
-
+import { v4 as uuid } from 'uuid';
 
 type option = {
   name: string;
@@ -100,7 +106,6 @@ const EditMenu = (props: EntityProps) => {
   const [pressedBlockEntities] = useEntities((e) => e.hasTag(Tags.PRESSED));
   const [isDeleteSheetVisible, setIsDeleteSheetVisible] = useState(false);
   const [blockEntities] = useEntities((e) => e.has(TypeFacet));
-  
 
   const handleDeleteClick = () => {
     pressedBlockEntities.map((entiy) => {
@@ -109,41 +114,46 @@ const EditMenu = (props: EntityProps) => {
   };
 
   const handleAddContent = () => {
-    blockEntities.map((block)=>{
-      if (block.hasTag(Tags.PRESSED)){
-        block.addComponent(new TypeFacet({type: BlockTypes.PAGE}))
-        block.addComponent(new FurtherFacet({isGoingFurther: true}))
+    blockEntities.map((block) => {
+      if (block.hasTag(Tags.PRESSED)) {
+        block.addComponent(new TypeFacet({ type: BlockTypes.PAGE }));
+        block.addComponent(new FurtherFacet({ isGoingFurther: true }));
       }
-    })
-  
-  }
-
+    });
+  };
 
   const handleGroupContent = () => {
-    const newParentId = uuid()
-    let currentParentId: string | undefined = "" 
-    let newText: string | undefined = ""
+    let newParentId: string | undefined = '';
+    let currentParentId: string | undefined = '';
+    let newText: string | undefined = '';
 
-    blockEntities.map((block)=>{
-      if (block.hasTag(Tags.PRESSED)){
-        if ( newText === ""){
-          newText = block.get(TextFacet)?.props.text
-          currentParentId =   block.get(ParentFacet)?.props.parentId
+    blockEntities.map((block) => {
+      if (block.hasTag(Tags.PRESSED)) {
+        if (newParentId === '') {
+          currentParentId = block.get(ParentFacet)?.props.parentId;
+          newParentId = block.get(IdFacet)?.props.id;
         }
-        block.addComponent(new ParentFacet({parentId: newParentId}))
+        if (newText === '') {
+          newText = block.get(TextFacet)?.props.text;
+        }
       }
-    })
+    });
 
+    blockEntities.map((block) => {
+      if (block.hasTag(Tags.PRESSED) && newParentId) {
+        block.addComponent(new ParentFacet({ parentId: newParentId }));
+      }
+    });
 
-        
     const newBlockEntity = new Entity();
     ecs.engine.addEntity(newBlockEntity);
-    newBlockEntity.addComponent(new ParentFacet({parentId: currentParentId}))
-    newBlockEntity.addComponent(new IdFacet({id: newParentId}))
-    newBlockEntity.addComponent(new TypeFacet({type: BlockTypes.PAGE}))
-    newBlockEntity.addComponent(new TextFacet({text: newText == undefined ? "Seitentitel" : newText}))
-  
-  }
+    newBlockEntity.addComponent(new ParentFacet({ parentId: currentParentId }));
+    newBlockEntity.addComponent(new IdFacet({ id: newParentId }));
+    newBlockEntity.addComponent(new TypeFacet({ type: BlockTypes.PAGE }));
+    newBlockEntity.addComponent(
+      new TextFacet({ text: newText == undefined ? 'Seitentitel' : newText }),
+    );
+  };
 
   const checkCanActivateLayout = () => {
     let canActivateLayout = true;
@@ -170,14 +180,14 @@ const EditMenu = (props: EntityProps) => {
   const checkCanAddContent = () => {
     let canAddContent = true;
     if (pressedBlockEntities.length > 1) {
-     canAddContent = false
+      canAddContent = false;
     }
-    pressedBlockEntities.map((block)=>{
+    pressedBlockEntities.map((block) => {
       const type = block.get(TypeFacet)?.props.type;
       if (type !== BlockTypes.TEXT) {
         canAddContent = false;
       }
-    })
+    });
     return canAddContent;
   };
 
@@ -216,21 +226,21 @@ const EditMenu = (props: EntityProps) => {
       icon: <IoLayers />,
       color: '#797AFF',
       bgColor: 'rgba(121, 122, 255, 0.1)',
-      content: <LayoutOptions />
+      content: <LayoutOptions />,
     },
     {
       name: '+ Inhalt',
       icon: <IoArrowForwardCircleOutline />,
       color: '#608AFF',
       bgColor: 'rgba(96, 138, 255, 0.1)',
-      customFunc: handleAddContent
+      customFunc: handleAddContent,
     },
     {
       name: 'Gruppieren',
       icon: <IoArrowForwardCircleOutline />,
       color: '#FF7F3B',
       bgColor: 'rgba(255, 127, 59, 0.1)',
-      customFunc: handleGroupContent
+      customFunc: handleGroupContent,
     },
     {
       name: 'Aktionen',

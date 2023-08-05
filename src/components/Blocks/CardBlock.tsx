@@ -25,13 +25,9 @@ const CardBlock: React.FC<CardBlockProps> = ({ blockEntity, blockEditorEntity })
   return (
     <BlockOutline
       blockEntity={blockEntity}
+      onClick={()=>   blockEntity.addComponent(new FurtherFacet({ isGoingFurther: true }))}
       content={
         <div
-          onClick={() => {
-            if (!isEditing) {
-              blockEntity.addComponent(new FurtherFacet({ isGoingFurther: true }));
-            }
-          }}
           className={` h-32  w-full  ${!isEditing ? ' md:hover:scale-105 transition-all ' : ''}`}
         >
           <div

@@ -252,11 +252,11 @@ const StyleOptions = (props: EntityProps) => {
         />
       </div>
 
-      <div className="  md:relative fixed z-40 md:right-[0.5rem]">
+      <div className="  flex w-screen fixed z-40 left-0 justify-center">
         <motion.div
           transition={{ type: 'Tween' }}
-          animate={{ y: isMoreTextOptionsVisible ? 0 : 350 }}
-          initial={{ y: 200 }}
+          animate={{ y: isMoreTextOptionsVisible ? 0 : 600 }}
+          initial={{ y: 600 }}
           className="bg-white h-44 rounded-lg px-4 md:w-[32rem]  w-11/12  fixed bottom-8 shadow-[0_0px_40px_1px_rgba(0,0,0,0.12)]"
           drag="y"
           dragConstraints={{ top: 0, bottom: 200 }}

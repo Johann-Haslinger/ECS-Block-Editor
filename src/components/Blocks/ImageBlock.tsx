@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import BlockOutline from './BlockOutline';
 import { FitFacet, SizeFacet, SrcFacet } from '../../app/BlockFacets';
 import { FitTypes, SizeTypes } from '../../base/Constants';
+import ImageView from '../BlockComponents/ImageBlock/ImageView';
 
 interface ImageBlockProps {
   blockEntity: Entity;
@@ -15,6 +16,7 @@ const ImageBlock: React.FC<ImageBlockProps> = ({ blockEntity }) => {
   const url = srcFacet.props.src;
   const size = sizeFacet.props.size;
   const fit = fitFacet.props.fit;
+  const [isImageViewVisible, setIsImageViewVisble] = useState(false);
 
   useEffect(() => {
     if (url.startsWith('blob:')) {
@@ -40,34 +42,45 @@ const ImageBlock: React.FC<ImageBlockProps> = ({ blockEntity }) => {
   }, [url]);
 
   return (
-    <BlockOutline
-      blockEntity={blockEntity}
-      content={
-        <>
-          {imageUrl ? (
-            <div
-              onClick={() => {}}
-              className="w-full rounded-lg  bg-[#f2f2f45f] flex justify-center"
-            >
-              <img
-                src={imageUrl}
-                className={
-                  size == SizeTypes.AUTO && fit == FitTypes.COVER
-                    ? 'md:max-h-96 max-h-56 object-cover w-full  rounded-lg'
-                    : size == SizeTypes.AUTO
-                    ? 'md:max-h-96  max-h-56 rounded-lg'
-                    : size == SizeTypes.LARGE
-                    ? 'w-full rounded-lg h-full '
-                    : ''
-                }
-              />
-            </div>
-          ) : (
-            <div>Failed to load image</div>
-          )}
-        </>
-      }
-    />
+    <>
+      <BlockOutline
+        blockEntity={blockEntity}
+        content={
+          <>
+            {imageUrl ? (
+              <div
+                onClick={() => {setIsImageViewVisble(true)}}
+                className="w-full rounded-lg  bg-[#f2f2f45f] flex justify-center"
+              >
+                <img
+                  src={imageUrl}
+                  className={
+                    size == SizeTypes.AUTO && fit == FitTypes.COVER
+                      ? 'md:max-h-96 max-h-56 object-cover w-full  rounded-lg'
+                      : size == SizeTypes.AUTO
+                      ? 'md:max-h-96  max-h-56 rounded-lg'
+                      : size == SizeTypes.LARGE
+                      ? 'w-full rounded-lg h-full '
+                      : ''
+                  }
+                />
+              </div>
+            ) : (
+              <div>Failed to load image</div>
+            )}
+          </>
+        }
+      />
+      {isImageViewVisible && (
+        <ImageView
+          url={url}
+          backfunc={() => {
+            setIsImageViewVisble(false);
+          }}
+        />
+      )}
+      
+    </>
   );
 };
 

@@ -64,7 +64,7 @@ const InitSystem = () => {
     blockEntity4.addComponent(new IdFacet({ id: '2' }));
     blockEntity4.addComponent(new IsSmallBlockFacet({ isSmall: true }));
     blockEntity4.addComponent(new IconFacet({ icon: <IoAccessibility/> }));
-    blockEntity4.addComponent(new NeighbourIdFacet({ neighbourId: '1' }));
+    blockEntity4.addComponent(new NeighbourIdFacet({ neighbourId: '100' }));
 
     const blockEntity5 = new Entity();
     ecs.engine.addEntity(blockEntity5);
@@ -97,7 +97,7 @@ const InitSystem = () => {
     blockEntity6.addComponent(new TextTypeFacet({ type: TextTypes.HEADING }));
     blockEntity6.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
     blockEntity6.addComponent(new IdFacet({ id: '5' }));
-    blockEntity6.addComponent(new NeighbourIdFacet({ neighbourId: '3' }));
+    blockEntity6.addComponent(new NeighbourIdFacet({ neighbourId: '4' }));
     blockEntity6.addComponent(new ParentFacet({ parentId: '1' }));
 
     const blockEntity7 = new Entity();
@@ -110,7 +110,7 @@ const InitSystem = () => {
     blockEntity7.addComponent(new TextTypeFacet({ type: TextTypes.TEXT }));
     blockEntity7.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
     blockEntity7.addComponent(new IdFacet({ id: '6' }));
-    blockEntity7.addComponent(new NeighbourIdFacet({ neighbourId: '3' }));
+    blockEntity7.addComponent(new NeighbourIdFacet({ neighbourId: '5' }));
     blockEntity7.addComponent(new ParentFacet({ parentId: '1' }));
 
     const blockEntity100 = new Entity();
@@ -127,9 +127,9 @@ const InitSystem = () => {
     );
     blockEntity100.addComponent(new IconFacet({ icon: <IoBeaker/> }));
     blockEntity100.addComponent(new TypeFacet({ type: BlockTypes.MORE_INFORMATIONS }));
-    blockEntity100.addComponent(new IdFacet({ id: '3' }));
+    blockEntity100.addComponent(new IdFacet({ id: '66' }));
     blockEntity100.addComponent(new IsSmallBlockFacet({ isSmall: true }));
-    blockEntity100.addComponent(new NeighbourIdFacet({ neighbourId: '2' }));
+    blockEntity100.addComponent(new NeighbourIdFacet({ neighbourId: 'first' }));
  
 
     const blockEntity8 = new Entity();
@@ -139,7 +139,7 @@ const InitSystem = () => {
     blockEntity8.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
     blockEntity8.addComponent(new TodoFacet({ state: 2 }));
     blockEntity8.addComponent(new IdFacet({ id: '7' }));
-    blockEntity8.addComponent(new NeighbourIdFacet({ neighbourId: '3' }));
+    blockEntity8.addComponent(new NeighbourIdFacet({ neighbourId: '6' }));
     blockEntity8.addComponent(new ParentFacet({ parentId: '1' }));
 
     const blockEntity9 = new Entity();
@@ -149,7 +149,7 @@ const InitSystem = () => {
     blockEntity9.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
     blockEntity9.addComponent(new TodoFacet({ state: 1 }));
     blockEntity9.addComponent(new IdFacet({ id: '8' }));
-    blockEntity9.addComponent(new NeighbourIdFacet({ neighbourId: '3' }));
+    blockEntity9.addComponent(new NeighbourIdFacet({ neighbourId: '7' }));
     blockEntity9.addComponent(new ParentFacet({ parentId: '1' }));
 
 
@@ -158,7 +158,7 @@ const InitSystem = () => {
     blockEntity11.addComponent(new TypeFacet({ type: BlockTypes.SPACER }));
     blockEntity11.addComponent(new IdFacet({ id: '10' }));
     blockEntity11.addComponent(new ParentFacet({ parentId: '1' }));
-    blockEntity11.addComponent(new NeighbourIdFacet({ neighbourId: '3' }));
+    blockEntity11.addComponent(new NeighbourIdFacet({ neighbourId: '8' }));
 
 
     const blockEntity10 = new Entity();
@@ -166,7 +166,7 @@ const InitSystem = () => {
     blockEntity10.addComponent(new TextFacet({ text: 'Lorem ipsum dolor sit amet',}),);
     blockEntity10.addComponent(new TypeFacet({ type: BlockTypes.CARD }));
     blockEntity10.addComponent(new IdFacet({ id: '9' }));
-    blockEntity10.addComponent(new NeighbourIdFacet({ neighbourId: '3' }));
+    blockEntity10.addComponent(new NeighbourIdFacet({ neighbourId: '10' }));
     blockEntity10.addComponent(new IsSmallBlockFacet({ isSmall: true }));
     blockEntity10.addComponent(new ColorFacet({ color:  "#FF7F3B"}));
     blockEntity10.addComponent(new ParentFacet({ parentId: '1' }));
@@ -176,7 +176,7 @@ const InitSystem = () => {
     blockEntity12.addComponent(new TextFacet({ text: 'Lorem ipsum dolor sit amet',}),);
     blockEntity12.addComponent(new TypeFacet({ type: BlockTypes.CARD }));
     blockEntity12.addComponent(new IdFacet({ id: '91' }));
-    blockEntity12.addComponent(new NeighbourIdFacet({ neighbourId: '3' }));
+    blockEntity12.addComponent(new NeighbourIdFacet({ neighbourId: '9' }));
     blockEntity12.addComponent(new IsSmallBlockFacet({ isSmall: true }));
     blockEntity12.addComponent(new ColorFacet({ color:  "#608AFF"}));
     blockEntity12.addComponent(new ParentFacet({ parentId: '1' }));
@@ -187,7 +187,7 @@ const InitSystem = () => {
     blockEntity13.addComponent(new TypeFacet({ type: BlockTypes.SPACER }));
     blockEntity13.addComponent(new IdFacet({ id: '13' }));
     blockEntity13.addComponent(new ParentFacet({ parentId: '1' }));
-    blockEntity13.addComponent(new NeighbourIdFacet({ neighbourId: '3' }));
+    blockEntity13.addComponent(new NeighbourIdFacet({ neighbourId: '91' }));
 
     const blockEntity14 = new Entity();
     ecs.engine.addEntity(blockEntity14);
@@ -195,14 +195,14 @@ const InitSystem = () => {
     blockEntity14.addComponent(new TextFacet({ text: 'Lorem ipsum dolor sit',}),);
     blockEntity14.addComponent(new IdFacet({ id: '14' }));
     blockEntity14.addComponent(new ParentFacet({ parentId: '1' }));
-    blockEntity14.addComponent(new NeighbourIdFacet({ neighbourId: '3' }));
+    blockEntity14.addComponent(new NeighbourIdFacet({ neighbourId: '13' }));
 
     const blockEntity15 = new Entity();
     ecs.engine.addEntity(blockEntity15);
     blockEntity15.addComponent(new TypeFacet({ type: BlockTypes.PAGES }));
     blockEntity15.addComponent(new IdFacet({ id: '15' }));
     blockEntity15.addComponent(new ParentFacet({ parentId: '1' }));
-    blockEntity15.addComponent(new NeighbourIdFacet({ neighbourId: '3' }));
+    blockEntity15.addComponent(new NeighbourIdFacet({ neighbourId: '14' }));
     blockEntity15.addComponent(new TextFacet({ text: 'Lorem ipsum dolor ',}),);
 
 
@@ -211,7 +211,7 @@ const InitSystem = () => {
     blockEntity16.addComponent(new TypeFacet({ type: BlockTypes.SPACER }));
     blockEntity16.addComponent(new IdFacet({ id: '16' }));
     blockEntity16.addComponent(new ParentFacet({ parentId: '1' }));
-    blockEntity16.addComponent(new NeighbourIdFacet({ neighbourId: '3' }));
+    blockEntity16.addComponent(new NeighbourIdFacet({ neighbourId: '15' }));
 
     const blockEditor = new Entity();
     ecs.engine.addEntity(blockEditor);
