@@ -45,10 +45,6 @@ const ImageView: React.FC<ImageViewProps> = ({ backfunc, url }) => {
     setTheme(isEditing ? "#ffffff" : isGoingBack || isFullView ? "#000000" : "rgb(247,247,247)");
   }, [isEditing, isGoingBack, isFullView]);
 
-  const handleDragStart = (e: React.DragEvent) => {
-    e.preventDefault();
-  };
-
   const handleBackClick = async () => {
     setIsGoingBack(true);
 

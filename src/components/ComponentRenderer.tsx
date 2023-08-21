@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 
 import {
   ChildFacet,
@@ -16,12 +15,14 @@ import ErrorBlock from './Blocks/ErrorBlock';
 import EditMenu from './Menus/EditMenu';
 import MoreInformationsBlock from './Blocks/MoreInformationsBlock';
 import SpacerBlock from './Blocks/SpacerBlock';
-import { Entity } from '@leanscope/ecs-engine';
+import { Entity, useEntityComponents, useEntityHasTags } from '@leanscope/ecs-engine';
 import CardBlock from './Blocks/CardBlock';
 import PageBlock from './Blocks/PageBlock';
 import PagesBlock from './Blocks/PagesBlock';
 import CreateMenu from './Menus/CreateMenu';
 import ImageBlock from './Blocks/ImageBlock';
+import InputBar from './Menus/InputBar';
+import { DropResult, DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 const customSort = (entityArr: readonly Entity[]) => {
   let arr = [...entityArr];
@@ -99,6 +100,10 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
   const editableAreaRef = useRef<HTMLDivElement>(null);
   const blockEditorEntity = blockEditorEntities[0];
   const [sortedBlockEntities, setSortedBlockEntities] = useState(customSort(blockEntities));
+  const [isEditingFacet] = useEntityComponents(blockEditorEntity, IsEditingFacet);
+  const isEditMenuVisible = isEditingFacet.props.isEditing;
+  const [isCreateMenuVisible] = useEntityHasTags(blockEditorEntity, Tags.IS_CREATEMENU_VISIBLE);
+
 
   useEffect(() => {
     setSortedBlockEntities(customSort(blockEntities));
@@ -151,7 +156,7 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
     [BlockTypes.IMAGE]: ImageBlock,
   };
 
-  console.log(blockEditorEntity)
+
   return (
     <div className="pb-40 md:pb-60" ref={editableAreaRef}>
       <DragDropContext onDragEnd={handleDragEnd}>
@@ -195,6 +200,7 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
           )}
         </Droppable>
       </DragDropContext>
+      <InputBar  isVisible={isCreateMenuVisible || isEditMenuVisible ? false  : true} toggleIsVisible={()=>{}}/>
       {blockEditorEntity && <EditMenu entity={blockEditorEntity} />}
       {blockEditorEntity && <CreateMenu entity={blockEditorEntity} />}
     </div>

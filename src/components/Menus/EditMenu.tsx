@@ -35,6 +35,7 @@ import { BlockTypes, Tags } from '../../base/Constants';
 import DestructiveActionSheet from '../StyleLibary/DestructiveActionSheet';
 import LayoutOptions from './EditMenu/LayoutOptions';
 import { v4 as uuid } from 'uuid';
+import CardOptions from './EditMenu/CardOptions';
 
 type option = {
   name: string;
@@ -301,6 +302,7 @@ const EditMenu = (props: EntityProps) => {
           </div>
         </motion.div>
       </div>
+  
       <DestructiveActionSheet
         isVisible={isDeleteSheetVisible && isVisible}
         setIsVisible={setIsDeleteSheetVisible}
