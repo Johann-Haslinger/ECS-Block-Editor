@@ -18,7 +18,7 @@ interface IconOptionsProps {
   toggleIsVisible: () => void;
 }
 
-const IconOptions: React.FC<IconOptionsProps> = ({ isVisible, toggleIsVisible }) => {
+const IconOptions: React.FC<IconOptionsProps> = ({ toggleIsVisible }) => {
   const [pressedBlockEntities] = useEntities((e) => e.hasTag(Tags.PRESSED));
   const [isGoingBack, setIsGoingBack] = useState(false);
 

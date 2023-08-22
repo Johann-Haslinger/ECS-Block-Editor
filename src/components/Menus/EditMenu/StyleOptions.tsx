@@ -46,6 +46,7 @@ const addstyle = (
           block.addComponent(new TodoFacet({ state: 1 }));
           setCurrentStyleType(StyleTypes.TODO);
         }
+        break
       case StyleTypes.BLOCK:
         if (styleType === currentStyleType) {
           block.removeTag(StyleTypes.BLOCK)
@@ -54,6 +55,7 @@ const addstyle = (
           block.add(StyleTypes.BLOCK)
           setCurrentStyleType(StyleTypes.BLOCK);
         }
+        break
     }
   });
 };

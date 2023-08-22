@@ -83,6 +83,7 @@ const addstyle = (
           block.add(new IconFacet({ icon: <IoReader /> }));
           setCurrentStyleType(StyleTypes.DESCRIPTION);
         }
+        break;
       case StyleTypes.LARGE:
         if (styleType === currentStyleType) {
           block.remove(IsSmallBlockFacet);
@@ -91,6 +92,7 @@ const addstyle = (
           block.add(new IsSmallBlockFacet({ isSmall: true }));
           setCurrentStyleType(StyleTypes.LARGE);
         }
+        break;
       case StyleTypes.BLOCK:
         if (styleType === currentStyleType) {
           block.removeTag(StyleTypes.BLOCK);
@@ -99,14 +101,15 @@ const addstyle = (
           block.add(StyleTypes.BLOCK);
           setCurrentStyleType(StyleTypes.BLOCK);
         }
+        break;
     }
   });
 };
 
-const CardOptions = (props: EntityProps) => {
+const CardOptions = () => {
   const [pressedBlockEntities] = useEntities((e) => e.hasTag(Tags.PRESSED));
   const [isColorOptionsVisible, setIsColorOptionsVisible] = useState(false);
-  const [isIconOptionsVisible, setIsIconOptionsVisible] = useState(false)
+  const [isIconOptionsVisible, setIsIconOptionsVisible] = useState(false);
 
   const getCurrentColor = () => {
     let currentColor: string | undefined = '';
@@ -179,7 +182,11 @@ const CardOptions = (props: EntityProps) => {
           onClick={() => {
             setIsIconOptionsVisible(true);
           }}
-          className={`py-2 items-center border  px-4 w-full flex  rounded-lg justify-center ${pressedBlockEntities[0] && pressedBlockEntities[0].get(IconFacet)?.props.icon ? "border-blue bg-blue-light text-blue": " border-white"} `}
+          className={`py-2 items-center border  px-4 w-full flex  rounded-lg justify-center ${
+            pressedBlockEntities[0] && pressedBlockEntities[0].get(IconFacet)?.props.icon
+              ? 'border-blue bg-blue-light text-blue'
+              : ' border-white'
+          } `}
         >
           Icon
         </div>
@@ -193,10 +200,13 @@ const CardOptions = (props: EntityProps) => {
           }}
         />
       )}
-      {isIconOptionsVisible &&(
-        <IconOptions isVisible={isIconOptionsVisible} toggleIsVisible={()=>{
-          setIsIconOptionsVisible(!isIconOptionsVisible)
-        }}/>
+      {isIconOptionsVisible && (
+        <IconOptions
+          isVisible={isIconOptionsVisible}
+          toggleIsVisible={() => {
+            setIsIconOptionsVisible(!isIconOptionsVisible);
+          }}
+        />
       )}
     </>
   );

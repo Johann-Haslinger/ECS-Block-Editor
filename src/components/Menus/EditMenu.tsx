@@ -286,7 +286,7 @@ const EditMenu = (props: EntityProps) => {
       icon: <IoColorPalette />,
       color: '#8547F0',
       bgColor: 'rgba(133, 71, 240, 0.1)',
-      content: <CardOptions entity={props.entity} />,
+      content: <CardOptions  />,
     },
   ]);
 

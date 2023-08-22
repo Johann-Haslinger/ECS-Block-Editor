@@ -48,7 +48,7 @@ const MoreInformationsBlock: React.FC<MoreInformationsBlockProps> = ({
           />
           <div
            
-            className="flex text-white justify-center opacity-70 text-6xl relative bottom-28 mt-0.5"
+            className="flex text-white justify-center opacity-60 text-6xl relative bottom-28 mt-0.5"
           >
             {icon}
           </div>
