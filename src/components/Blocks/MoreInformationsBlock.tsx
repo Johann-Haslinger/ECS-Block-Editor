@@ -10,7 +10,7 @@ import {
   IsEditingFacet,
   TextFacet,
 } from '../../app/BlockFacets';
-import { Tags } from '../../base/Constants';
+import { StyleTypes, Tags } from '../../base/Constants';
 import FurtherView from '../FurtherView';
 
 interface MoreInformationsBlockProps {
@@ -39,16 +39,16 @@ const MoreInformationsBlock: React.FC<MoreInformationsBlockProps> = ({
       content={
         <div
           className={` h-[20rem] md:h-[24rem]  w-full  ${
-            !isEditing ? ' md:hover:scale-105 transition-all ' : ''
+            !isEditing  &&  !blockEntity.has(StyleTypes.BLOCK) ? ' md:hover:scale-105 transition-all ' : 'md:hover:scale-95 transition-all'
           }`}
         >
           <div
             style={{ backgroundColor: color }}
-            className="p-4 opacity-60 text-white text-4xl h-40 rounded-lg"
+            className="p-4  text-white text-4xl h-40 rounded-lg"
           />
           <div
-            style={{ color: color }}
-            className="flex justify-center text-6xl relative bottom-28 mt-0.5"
+           
+            className="flex text-white justify-center opacity-70 text-6xl relative bottom-28 mt-0.5"
           >
             {icon}
           </div>
@@ -59,7 +59,7 @@ const MoreInformationsBlock: React.FC<MoreInformationsBlockProps> = ({
             <p  className="text-sm outline-none md:text-base ">
               {description}
             </p>
-            <div className="mt-2  text-blue flex text-sm md:text-base">
+            <div className={`mt-2   flex text-sm md:text-base ${blockEntity.has(StyleTypes.BLOCK )? "text-white": " text-blue"}`}>
               <p
                 onClick={() => {
                   if (!isEditing) {

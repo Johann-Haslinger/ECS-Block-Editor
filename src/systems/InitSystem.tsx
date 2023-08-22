@@ -19,7 +19,7 @@ import {
   ParentFacet,
   FurtherFacet,
 } from '../app/BlockFacets';
-import { BlockTypes, Tags, TextTypes } from '../base/Constants';
+import { BlockTypes, StyleTypes, Tags, TextTypes } from '../base/Constants';
 import { ECSContext, Entity, System } from '@leanscope/ecs-engine';
 import { v4 as uuid } from 'uuid';
 import { IoAccessibility, IoAlarm, IoAlert, IoAnalytics, IoBeaker, IoPaperPlane } from 'react-icons/io5';
@@ -112,6 +112,7 @@ const InitSystem = () => {
     blockEntity7.addComponent(new IdFacet({ id: '6' }));
     blockEntity7.addComponent(new NeighbourIdFacet({ neighbourId: '5' }));
     blockEntity7.addComponent(new ParentFacet({ parentId: '1' }));
+    blockEntity7.addTag(StyleTypes.BLOCK);
 
     const blockEntity100 = new Entity();
     ecs.engine.addEntity(blockEntity100);

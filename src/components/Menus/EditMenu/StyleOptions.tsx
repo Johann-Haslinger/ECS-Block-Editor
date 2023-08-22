@@ -24,7 +24,6 @@ const getCurrentTextType = (pressedBlockEntities: readonly Entity[], editMenuEnt
   if (textType) {
     editMenuEntity.addComponent(new CurrentTextTypeFacet({ textType: textType }));
   }
-  console.log(textType);
 };
 
 // const hasStyleType = (styleType: StyleTypes, pressedBlockEntities: readonly Entity[]) => {
@@ -46,6 +45,14 @@ const addstyle = (
         } else {
           block.addComponent(new TodoFacet({ state: 1 }));
           setCurrentStyleType(StyleTypes.TODO);
+        }
+      case StyleTypes.BLOCK:
+        if (styleType === currentStyleType) {
+          block.removeTag(StyleTypes.BLOCK)
+          setCurrentStyleType(undefined);
+        } else {
+          block.add(StyleTypes.BLOCK)
+          setCurrentStyleType(StyleTypes.BLOCK);
         }
     }
   });
@@ -113,6 +120,10 @@ const StyleOption: React.FC<StyleOptionsProps> = ({ styleType, getCurrentStyleTy
   const [pressedBlockEntities] = useEntities((e) => e.hasTag(Tags.PRESSED));
   const [currentStyleType, setCurrentStyleType] = useState(getCurrentStyleType());
 
+  useEffect(() => {
+    setCurrentStyleType(getCurrentStyleType());
+  }, []);
+  console.log('StyleType', currentStyleType, styleType);
   return (
     <TypeOption
       changeType={() => {
@@ -219,7 +230,7 @@ const StyleOptions = (props: EntityProps) => {
 
   return (
     <>
-      <div className="flex  w-full  overflow-x-scroll  h-14 items-center justify-between px-3  ">
+      <div className="flex  w-full  overflow-x-scroll  h-16 my-1 items-center justify-between px-3  ">
         <TextTypeOption textType={TextTypes.HEADING} />
         <TextTypeOption textType={TextTypes.TEXT} />
         <BlockTypeOption blockType={BlockTypes.CARD} />
@@ -232,10 +243,9 @@ const StyleOptions = (props: EntityProps) => {
           Mehr
         </div>
       </div>
-      <div className="flex w-full  overflow-x-scroll  py-1.5 border-t  border-[rgb(245,245,245)]  justify-between   ">
+      <div className="flex w-full   space-x-2 overflow-x-scroll  py-4 border-t  border-[rgb(245,245,245)]  justify-between   ">
         <StyleOption
           getCurrentStyleType={() => {
-       
             let styleType: StyleTypes | undefined = undefined;
 
             pressedBlockEntities.map((entity) => {
@@ -249,6 +259,20 @@ const StyleOptions = (props: EntityProps) => {
             return styleType;
           }}
           styleType={StyleTypes.TODO}
+        />
+        <StyleOption
+          getCurrentStyleType={() => {
+            let styleType: StyleTypes | undefined = undefined;
+
+            pressedBlockEntities.map((entity) => {
+              if (entity.hasTag(StyleTypes.BLOCK)) {
+                styleType = StyleTypes.BLOCK;
+                console.log('StyleType');
+              }
+            });
+            return styleType;
+          }}
+          styleType={StyleTypes.BLOCK}
         />
       </div>
 

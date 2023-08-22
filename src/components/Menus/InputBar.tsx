@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { delay } from '../Delay';
-import { IoArrowUp } from 'react-icons/io5';
+import { IoArrowUp, IoChevronUp } from 'react-icons/io5';
 import KIChatBox from './InputBar/KIChatBox';
 import { generateResponse } from '../../ai/generateResponse';
 import { act } from 'react-dom/test-utils';
@@ -32,17 +32,15 @@ const InputBar: React.FC<InputMenuProps> = ({ isVisible, toggleIsVisible }) => {
     };
   }, []);
 
-
-
   useEffect(() => {
     setInput('');
   }, [isChatBoxVisible]);
 
-  useEffect(()=>{
-if (!isChatBoxVisible){
-  setHistory([])
-}
-  }, [isChatBoxVisible])
+  // useEffect(() => {
+  //   if (!isChatBoxVisible) {
+  //     setHistory([]);
+  //   }
+  // }, [isChatBoxVisible]);
 
   async function handleClickOutside(e: MouseEvent) {
     if (refOne.current && !refOne.current.contains(e.target as Node)) {
@@ -86,12 +84,21 @@ if (!isChatBoxVisible){
           <div className=" ml-5">
             <Loader />
           </div>
-        ) : (
+        ) : input  ?  (
           <div
             onClick={handleClick}
             className=" bg-blue-light ml-4   hover:opacity-50 transition-all text-blue p-1 text-xl rounded-full"
           >
             <IoArrowUp />
+          </div>
+        ): (
+          <div
+            onClick={()=>{
+              setIsChatBoxVisible(true);
+            }}
+            className=" bg-blue-light ml-4   hover:opacity-50 transition-all text-blue p-1 text-xl rounded-full"
+          >
+            <IoChevronUp />
           </div>
         )}
       </motion.div>
@@ -107,6 +114,6 @@ if (!isChatBoxVisible){
       />
     </div>
   );
-};
+};  
 
 export default InputBar;

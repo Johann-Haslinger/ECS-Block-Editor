@@ -1,33 +1,203 @@
-import React from 'react';
+import React, { SetStateAction, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { IoFlower, IoSettings } from 'react-icons/io5';
+import { IoDocument, IoFlower, IoReader, IoSettings, IoStar } from 'react-icons/io5';
+import { EntityProps } from '@leanscope/ecs-engine/react-api/classes/EntityProps';
+import { Entity, useEntities } from '@leanscope/ecs-engine';
+import { BlockTypes, StyleTypes, Tags } from '../../../base/Constants';
+import {
+  ColorFacet,
+  DescriptionFacet,
+  IconFacet,
+  IsSmallBlockFacet,
+  TypeFacet,
+} from '../../../app/BlockFacets';
+import ColorOptions from './ColorOptions';
+import IconOptions from './IconOptions';
 
-interface CardOption {
-  isVisible: boolean;
+interface TypeOptionProps {
+  changeType: () => void;
+  currentType: any;
+  type: any;
+  customTextStyle?: any;
 }
 
-const CardOptions: React.FC<CardOption> = ({ isVisible }) => {
+const TypeOption: React.FC<TypeOptionProps> = ({
+  changeType,
+  currentType,
+  type,
+  customTextStyle,
+}) => {
+  return (
+    <div
+      onClick={changeType}
+      style={{ ...customTextStyle }}
+      className={` py-2 items-center rounded-lg px-4 w-full flex border justify-center ${
+        currentType == type ? 'text-blue  bg-blue-light border-blue' : ' border-white'
+      } ${customTextStyle ? '' : 'text-sm '} `}
+    >
+      {type}
+    </div>
+  );
+};
+
+interface StyleOptionsProps {
+  styleType: StyleTypes;
+  getCurrentStyleType: () => StyleTypes | undefined;
+}
+
+const StyleOption: React.FC<StyleOptionsProps> = ({ styleType, getCurrentStyleType }) => {
+  const [pressedBlockEntities] = useEntities((e) => e.hasTag(Tags.PRESSED));
+  const [currentStyleType, setCurrentStyleType] = useState(getCurrentStyleType());
+
+  useEffect(() => {
+    setCurrentStyleType(getCurrentStyleType());
+  }, []);
+
+  return (
+    <TypeOption
+      changeType={() => {
+        addstyle(styleType, currentStyleType, pressedBlockEntities, setCurrentStyleType);
+      }}
+      type={styleType}
+      currentType={currentStyleType}
+    />
+  );
+};
+
+const addstyle = (
+  styleType: StyleTypes,
+  currentStyleType: StyleTypes | undefined,
+  pressedBlockEntities: readonly Entity[],
+  setCurrentStyleType: React.Dispatch<SetStateAction<StyleTypes | undefined>>,
+) => {
+  pressedBlockEntities.map((block) => {
+    switch (styleType) {
+      case StyleTypes.DESCRIPTION:
+        if (styleType === currentStyleType) {
+          block.remove(DescriptionFacet);
+          block.add(new TypeFacet({ type: BlockTypes.CARD }));
+          setCurrentStyleType(undefined);
+        } else {
+          block.add(new DescriptionFacet({ description: 'Beschreibung' }));
+          block.add(new TypeFacet({ type: BlockTypes.MORE_INFORMATIONS }));
+          block.add(new IconFacet({ icon: <IoReader /> }));
+          setCurrentStyleType(StyleTypes.DESCRIPTION);
+        }
+      case StyleTypes.LARGE:
+        if (styleType === currentStyleType) {
+          block.remove(IsSmallBlockFacet);
+          setCurrentStyleType(undefined);
+        } else {
+          block.add(new IsSmallBlockFacet({ isSmall: true }));
+          setCurrentStyleType(StyleTypes.LARGE);
+        }
+      case StyleTypes.BLOCK:
+        if (styleType === currentStyleType) {
+          block.removeTag(StyleTypes.BLOCK);
+          setCurrentStyleType(undefined);
+        } else {
+          block.add(StyleTypes.BLOCK);
+          setCurrentStyleType(StyleTypes.BLOCK);
+        }
+    }
+  });
+};
+
+const CardOptions = (props: EntityProps) => {
+  const [pressedBlockEntities] = useEntities((e) => e.hasTag(Tags.PRESSED));
+  const [isColorOptionsVisible, setIsColorOptionsVisible] = useState(false);
+  const [isIconOptionsVisible, setIsIconOptionsVisible] = useState(false)
+
+  const getCurrentColor = () => {
+    let currentColor: string | undefined = '';
+    pressedBlockEntities.map((block) => {
+      if (currentColor == '') {
+        currentColor = block.get(ColorFacet)?.props.color;
+      } // else {
+      //   currentColor = "#ffffff"
+      // }
+    });
+
+    return currentColor;
+  };
+
   return (
     <>
-      <motion.div
-        transition={{ type: 'Tween' }}
-        animate={{ y: !isVisible ? 200 : 0 }}
-        initial={{ y: 200 }}
-        className="bg-white h-20 overflow-y-clip  rounded-lg pr-1 flex over md:overflow-hidden right-6  w-32 fixed bottom-6 shadow-[0_0px_40px_1px_rgba(0,0,0,0.12)]"
-        drag="y"
-        dragConstraints={{ top: 0, bottom: 0 }}
-      >
-        <div
-          className={`w-full hover:opacity-80 transition-all text-[#001539] bg-[#001539]  min-w-[4rem] p-2 bg-opacity-10 h-18 text-whitee rounded-lg mr-0 m-1 `}
-   
-          onClick={() => {
-           
+      <div className="flex  w-full  space-x-2 overflow-x-scroll  h-14 items-center justify-between px-3  ">
+        <StyleOption
+          getCurrentStyleType={() => {
+            let currentType: undefined | StyleTypes = undefined;
+
+            pressedBlockEntities.map((block) => {
+              if (block.get(DescriptionFacet)?.props.description !== undefined) {
+                currentType = StyleTypes.DESCRIPTION;
+              }
+            });
+            return currentType;
           }}
+          styleType={StyleTypes.DESCRIPTION}
+        />
+        <StyleOption
+          getCurrentStyleType={() => {
+            let currentType: undefined | StyleTypes = StyleTypes.LARGE;
+
+            pressedBlockEntities.map((block) => {
+              if (block.get(IsSmallBlockFacet)?.props.isSmall) {
+                currentType = undefined;
+              }
+            });
+            return currentType;
+          }}
+          styleType={StyleTypes.LARGE}
+        />
+        <StyleOption
+          getCurrentStyleType={() => {
+            let styleType: StyleTypes | undefined = undefined;
+
+            pressedBlockEntities.map((entity) => {
+              if (entity.hasTag(StyleTypes.BLOCK)) {
+                styleType = StyleTypes.BLOCK;
+                console.log('StyleType');
+              }
+            });
+            return styleType;
+          }}
+          styleType={StyleTypes.BLOCK}
+        />
+      </div>
+      <div className="flex w-full space-x-2  overflow-x-scroll  py-1.5 border-t  border-[rgb(245,245,245)]  justify-between   ">
+        <div
+          onClick={() => {
+            setIsColorOptionsVisible(true);
+          }}
+          style={{ backgroundColor: getCurrentColor() }}
+          className=" py-2 items-center border border-white text-white  rounded-lg px-4 w-full flex  justify-center "
         >
-          <div className="text-2xl flex justify-center mt-2"> <IoSettings/></div>
-          <p className="text-xs mt-1 opacity-60 w-full text-center font-light">Karte</p>
+          Farbe
         </div>
-      </motion.div>
+        <div
+          onClick={() => {
+            setIsIconOptionsVisible(true);
+          }}
+          className={`py-2 items-center border  px-4 w-full flex  rounded-lg justify-center ${pressedBlockEntities[0] && pressedBlockEntities[0].get(IconFacet)?.props.icon ? "border-blue bg-blue-light text-blue": " border-white"} `}
+        >
+          Icon
+        </div>
+      </div>
+
+      {isColorOptionsVisible && (
+        <ColorOptions
+          isVisible={isColorOptionsVisible}
+          toggleIsVisible={() => {
+            setIsColorOptionsVisible(!isColorOptionsVisible);
+          }}
+        />
+      )}
+      {isIconOptionsVisible &&(
+        <IconOptions isVisible={isIconOptionsVisible} toggleIsVisible={()=>{
+          setIsIconOptionsVisible(!isIconOptionsVisible)
+        }}/>
+      )}
     </>
   );
 };

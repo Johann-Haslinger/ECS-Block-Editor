@@ -1,6 +1,6 @@
 import { Configuration, OpenAIApi } from "openai";
 
-const key = process.env.OPEN_AI_KEY // process.env.OPEN_AI_KEY
+const key ="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" // "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" // process.env.OPEN_AI_KEY
 const configuration = new Configuration({
   apiKey: key,
   organization: 'org-zb0yfSvxb00isXRZfO2zhPoS',
@@ -19,7 +19,7 @@ export const generateResponse = async (question: string): Promise<string> => {
     stop: ['/'],
   };
 
-  let prompt = question;
+  let prompt = question 
 
   console.log("prompt", prompt)
 
@@ -40,9 +40,7 @@ export const generateResponse = async (question: string): Promise<string> => {
     });
 
     const data = await response.json();
-
     if (data.choices) {
-      console.log("data", data.choices[0].text);
       return data.choices[0].text;
     } else {
       return 'Error';

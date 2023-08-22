@@ -9,6 +9,7 @@ import {
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import { IoCheckmarkCircle, IoEllipseOutline } from 'react-icons/io5';
 import {
+  ColorFacet,
   FurtherFacet,
   IdFacet,
   IsEditingFacet,
@@ -16,8 +17,9 @@ import {
   IsPressedFacet,
   TextFacet,
   TodoFacet,
+  TypeFacet,
 } from '../../app/BlockFacets';
-import { Tags } from '../../base/Constants';
+import { BlockTypes, StyleTypes, Tags } from '../../base/Constants';
 import FurtherView from '../FurtherView';
 
 interface BlockOutlineProps {
@@ -65,7 +67,7 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
 
   const toggleActivePressed = () => {
     blockEditorEntity?.addComponent(new IsEditingFacet({ isEditing: true }));
-    blockEditorEntity.removeTag(Tags.IS_CREATEMENU_VISIBLE)
+    blockEditorEntity.removeTag(Tags.IS_CREATEMENU_VISIBLE);
     console.log('activ');
     if (!isPressed) {
       blockEntity.addTag(Tags.PRESSED);
@@ -142,16 +144,26 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
       <div
         className={`${
           isPressed
-            ? 'bg-[rgb(225,241,254)] w-full z-40 select-none rounded-md p-2  md:mb-1 mb-0.5'
-            : 'w-full p-2  md:mb-1 mb-0.5 border-white'
-        }`}
+            ?  blockEntity.hasTag(StyleTypes.BLOCK) ? 'bg-[rgb(225,241,254)] w-full z-40 select-none  p-2  ' :'bg-[rgb(225,241,254)] w-full z-40 select-none rounded-md p-2  md:mb-1 mb-0.5' 
+            : 'w-full p-2  border-white'
+        } ${blockEntity.hasTag(StyleTypes.BLOCK) ? 'p-4 ' : 'md:mb-1 mb-0.5'}`}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         ref={textBlockRef}
-        style={transitionStyle}
+        style={{
+          backgroundColor: 
+            blockEntity.hasTag(StyleTypes.BLOCK)
+              ? blockEntity.get(ColorFacet)?.props.color
+                ? blockEntity.get(ColorFacet)?.props.color
+                : 'rgb(250, 250, 250)'
+              : '',
+
+            color: blockEntity.hasTag(StyleTypes.BLOCK) ?  blockEntity.get(TypeFacet)?.props.type === BlockTypes.CARD ||  blockEntity.get(TypeFacet)?.props.type === BlockTypes.MORE_INFORMATIONS ? 'white' : '' : '',
+          ...transitionStyle,
+        }}
       >
         <div className="w-full  flex h-full relative">
           {todoState === 1 ? (

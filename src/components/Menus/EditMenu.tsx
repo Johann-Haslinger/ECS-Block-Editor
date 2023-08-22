@@ -21,6 +21,7 @@ import {
   IoArrowForwardCircleOutline,
   IoColorPalette,
   IoColorPaletteOutline,
+  IoFlash,
   IoLayers,
   IoLayersOutline,
   IoShare,
@@ -36,6 +37,8 @@ import DestructiveActionSheet from '../StyleLibary/DestructiveActionSheet';
 import LayoutOptions from './EditMenu/LayoutOptions';
 import { v4 as uuid } from 'uuid';
 import CardOptions from './EditMenu/CardOptions';
+import KIChatBox from './InputBar/KIChatBox';
+import BlockAIMenu from './BlockAIMenu';
 
 type option = {
   name: string;
@@ -44,6 +47,7 @@ type option = {
   bgColor: string;
   content?: React.ReactNode;
   customFunc?: () => void;
+  isLarge?: boolean
 };
 
 interface EditOptionProps {
@@ -52,7 +56,7 @@ interface EditOptionProps {
   canShow: boolean;
 }
 const EditOption: React.FC<EditOptionProps> = ({ option, isVisible, canShow }) => {
-  const { name, icon, color, bgColor, content, customFunc } = option;
+  const { name, icon, color, bgColor, content, customFunc, isLarge} = option;
   const [isOptionsVisible, setIsOptionsVisible] = useState(false);
 
   useEffect(() => {
@@ -77,12 +81,13 @@ const EditOption: React.FC<EditOptionProps> = ({ option, isVisible, canShow }) =
         </div>
       )}
 
-      <div className="w-screen left-0 fixed flex justify-center z-40">
+      {isVisible &&(
+        <div className="w-screen left-0 fixed flex justify-center z-40">
         <motion.div
           transition={{ type: 'Tween' }}
           animate={{ y: isOptionsVisible && isVisible && content ? 0 : 300 }}
           initial={{ y: 200 }}
-          className="bg-white h-40 z-40 rounded-lg  md:w-[31rem] px-4 w-11/12  fixed bottom-7 shadow-[0_0px_40px_1px_rgba(0,0,0,0.12)]"
+          className={`bg-white z-40 rounded-lg  md:w-[31rem] px-4 w-11/12  fixed bottom-7 shadow-[0_0px_40px_1px_rgba(0,0,0,0.12)] ${isLarge ? " h-60": " h-40"}`}
           drag="y"
           dragConstraints={{ top: 0, bottom: 200 }}
           onDragEnd={(event, info) => {
@@ -96,6 +101,7 @@ const EditOption: React.FC<EditOptionProps> = ({ option, isVisible, canShow }) =
           {content}
         </motion.div>
       </div>
+      )}
     </>
   );
 };
@@ -171,11 +177,22 @@ const EditMenu = (props: EntityProps) => {
     let canActivateStyle = true;
     pressedBlockEntities.map((block) => {
       const type = block.get(TypeFacet)?.props.type;
-      if (type == BlockTypes.IMAGE) {
+      if (type !== BlockTypes.TEXT) {
         canActivateStyle = false;
       }
     });
     return canActivateStyle;
+  };
+
+  const checkCanActivateCardStyle = () => {
+    let canActivateCardStyle = true;
+    pressedBlockEntities.map((block) => {
+      const type = block.get(TypeFacet)?.props.type;
+      if (type !== BlockTypes.CARD && type !== BlockTypes.MORE_INFORMATIONS  ) {
+        canActivateCardStyle = false;
+      }
+    });
+    return canActivateCardStyle;
   };
 
   const checkCanAddContent = () => {
@@ -251,9 +268,11 @@ const EditMenu = (props: EntityProps) => {
     },
     {
       name: 'Block AI',
-      icon: <IoSparkles />,
+      icon: <IoFlash />,
       color: '#EC76CB',
       bgColor: 'rgba(236, 118, 203, 0.1)',
+      content: <BlockAIMenu isVisible={isVisible} />,
+      isLarge: true
     },
     {
       name: 'Löschen',
@@ -261,6 +280,13 @@ const EditMenu = (props: EntityProps) => {
       color: '#FF5355',
       bgColor: 'rgba(255, 83, 85, 0.1)',
       customFunc: toggleIsDeleteSheetVisible,
+    },
+    {
+      name: 'Card Stil',
+      icon: <IoColorPalette />,
+      color: '#8547F0',
+      bgColor: 'rgba(133, 71, 240, 0.1)',
+      content: <CardOptions entity={props.entity} />,
     },
   ]);
 
@@ -280,6 +306,11 @@ const EditMenu = (props: EntityProps) => {
               canShow={checkCanActivateStyle()}
               isVisible={isVisible}
               option={editOptions[0]}
+            />
+             <EditOption
+              canShow={checkCanActivateCardStyle()}
+              isVisible={isVisible}
+              option={editOptions[7]}
             />
             <EditOption
               canShow={checkCanActivateLayout()}

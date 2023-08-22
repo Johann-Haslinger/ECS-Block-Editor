@@ -6,10 +6,12 @@ import {
   ColorFacet,
   DescriptionFacet,
   FurtherFacet,
+  IconFacet,
   IsEditingFacet,
   TextFacet,
 } from '../../app/BlockFacets';
 import FurtherView from '../FurtherView';
+import { StyleTypes } from '../../base/Constants';
 
 interface CardBlockProps {
   blockEntity: Entity;
@@ -21,20 +23,31 @@ const CardBlock: React.FC<CardBlockProps> = ({ blockEntity, blockEditorEntity })
   const color = colorFacet.props.color;
   const text = textFacet.props.text;
   const isEditing = blockEditorEntity?.get(IsEditingFacet)?.props.isEditing;
-  
+
   return (
     <BlockOutline
       blockEntity={blockEntity}
-      onClick={()=>   blockEntity.addComponent(new FurtherFacet({ isGoingFurther: true }))}
       content={
         <div
-          className={` h-32  w-full  ${!isEditing ? ' md:hover:scale-105 transition-all ' : ''}`}
+          onClick={() => {
+            if (!isEditing) {
+              blockEntity.addComponent(new FurtherFacet({ isGoingFurther: true }));
+            }
+          }}
+          className={`  h-40  w-full  ${
+            !isEditing && !blockEntity.has(StyleTypes.BLOCK)
+              ? ' md:hover:scale-105 transition-all '
+              : 'md:hover:scale-95 transition-all'
+          }`}
         >
           <div
             style={{ backgroundColor: color }}
-            className="p-5  opacity-60 text-white text-4xl h-32 rounded-lg"
+            className="p-5   text-white text-4xl  h-40 rounded-lg"
           >
-            <p className="text-lg   w-2/3 font-semibold ">{text}</p>
+            {blockEntity.get(IconFacet)?.props.icon && (
+              <div className='mb-2 opacity-70'>{blockEntity.get(IconFacet)?.props.icon}</div>
+            )}
+            <p className="text-xl   w-2/3 font-semibold ">{text}</p>
           </div>
         </div>
       }

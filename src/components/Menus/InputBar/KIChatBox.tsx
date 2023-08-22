@@ -80,7 +80,7 @@ const KIChatBox: React.FC<ChatBoxProps> = ({ isVisible, toggleISVisible, history
                         <div className="text-white p-1 rounded-full mr-2 text-xs bg-[#1C8493]">
                           <IoPerson />
                         </div>
-                        <p className="text-sm font-semibold  text-text2">BENUTZER</p>
+                        <p className="text-sm font-semibold  text-text2">DU</p>
                       </div>
                       <p className="mt-1 ml-7">{row.question}</p>
                     </div>
@@ -88,7 +88,7 @@ const KIChatBox: React.FC<ChatBoxProps> = ({ isVisible, toggleISVisible, history
                     {row.answer !== null && (
                       <div className="mt-5">
                         <div className="flex ">
-                          <div className="text-white p-1 rounded-full mr-2 text-xs bg-[#608AFF]">
+                          <div className="text-white p-1 rounded-full mr-2 text-xs bg-[#797AFF]">
                             <IoFlash />
                           </div>
                           <div className="flex text-text2  justify-between  w-full">
