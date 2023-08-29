@@ -1,14 +1,15 @@
-import React, { SetStateAction, useEffect, useState } from 'react';
+import React, { SetStateAction, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { IoDocument, IoFlower, IoReader, IoSettings, IoStar } from 'react-icons/io5';
 import { EntityProps } from '@leanscope/ecs-engine/react-api/classes/EntityProps';
-import { Entity, useEntities } from '@leanscope/ecs-engine';
+import { Entity, useEntities, useEntityComponents } from '@leanscope/ecs-engine';
 import { BlockTypes, StyleTypes, Tags } from '../../../base/Constants';
 import {
   ColorFacet,
   DescriptionFacet,
   IconFacet,
   IsSmallBlockFacet,
+  SrcFacet,
   TypeFacet,
 } from '../../../app/BlockFacets';
 import ColorOptions from './ColorOptions';
@@ -110,6 +111,43 @@ const CardOptions = () => {
   const [pressedBlockEntities] = useEntities((e) => e.hasTag(Tags.PRESSED));
   const [isColorOptionsVisible, setIsColorOptionsVisible] = useState(false);
   const [isIconOptionsVisible, setIsIconOptionsVisible] = useState(false);
+  const [hasSrcFacet, setHasSrcFacet] = useState(false);
+  
+  const [srcFacet] = useEntityComponents(pressedBlockEntities[0], SrcFacet  )
+  const [isSelectingImageSrc, setIsSelectingImageSrc] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const src = srcFacet.props.src
+
+  useEffect(() => {
+    if (isSelectingImageSrc && fileInputRef.current !== null) {
+      fileInputRef.current.click();
+    }
+  }, [isSelectingImageSrc]);
+
+  const handleImageSelect = (event: any) => {
+    const selectedFile = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      const base64data = reader.result;
+      if (typeof base64data == 'string') {
+        pressedBlockEntities.map((block) => {
+          block.add(new SrcFacet({ src: base64data }));
+        });
+      }
+    };
+
+    reader.readAsDataURL(selectedFile);
+    setIsSelectingImageSrc(false);
+    return '';
+  };
+
+  const openFilePicker = () => {
+    setIsSelectingImageSrc(true);
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
 
   const getCurrentColor = () => {
     let currentColor: string | undefined = '';
@@ -126,7 +164,7 @@ const CardOptions = () => {
 
   return (
     <>
-      <div className="flex  w-full  space-x-2 overflow-x-scroll  h-14 items-center justify-between px-3  ">
+      <div className="flex  w-full  overflow-x-scroll  h-16 my-1 items-center justify-between px-3  ">
         <StyleOption
           getCurrentStyleType={() => {
             let currentType: undefined | StyleTypes = undefined;
@@ -168,7 +206,7 @@ const CardOptions = () => {
           styleType={StyleTypes.BLOCK}
         />
       </div>
-      <div className="flex w-full space-x-2  overflow-x-scroll  py-1.5 border-t  border-[rgb(245,245,245)]  justify-between   ">
+      <div className="flex w-full   space-x-2 overflow-x-scroll  py-4 border-t  border-[rgb(245,245,245)]  justify-between   ">
         <div
           onClick={() => {
             setIsColorOptionsVisible(true);
@@ -177,6 +215,30 @@ const CardOptions = () => {
           className=" py-2 items-center border border-white text-white  rounded-lg px-4 w-full flex  justify-center "
         >
           Farbe
+        </div>
+        <div
+          onClick={() => {
+            if (pressedBlockEntities[0].get(SrcFacet)?.props.src) {
+              pressedBlockEntities.map((block) => {
+                block.remove(SrcFacet);
+              });
+            } else {
+              openFilePicker();
+            }
+          }}
+          className={`py-2 items-center border  px-4 w-full flex  rounded-lg justify-center ${
+            src ? 'text-white' : ' border-white'
+          } `}
+          style={{
+            backgroundImage:
+            src &&
+              `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(${
+                src
+              })`,
+            backgroundSize: 'cover',
+          }}
+        >
+          Bild
         </div>
         <div
           onClick={() => {
@@ -206,6 +268,15 @@ const CardOptions = () => {
           toggleIsVisible={() => {
             setIsIconOptionsVisible(!isIconOptionsVisible);
           }}
+        />
+      )}
+      {isSelectingImageSrc && (
+        <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          onChange={handleImageSelect}
+          style={{ display: 'none' }}
         />
       )}
     </>

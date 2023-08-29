@@ -1,10 +1,17 @@
 import { EntityProps } from '@leanscope/ecs-engine/react-api/classes/EntityProps';
 import { motion } from 'framer-motion';
 import { BlockTypes, FitTypes, SizeTypes, Tags } from '../../base/Constants';
-import { IoImage } from 'react-icons/io5';
+import { IoClose, IoImage, IoRemove } from 'react-icons/io5';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { ECS, ECSContext, Entity, useEntityHasTags } from '@leanscope/ecs-engine';
-import { FitFacet, ParentFacet, SizeFacet, SrcFacet, TypeFacet } from '../../app/BlockFacets';
+import {
+  FitFacet,
+  IsEditingFacet,
+  ParentFacet,
+  SizeFacet,
+  SrcFacet,
+  TypeFacet,
+} from '../../app/BlockFacets';
 import { string } from 'prop-types';
 
 type option = {
@@ -12,12 +19,6 @@ type option = {
   icon: React.ReactNode;
   color: string;
   bgColor: string;
-};
-
-const handleGetImageSrc = () => {
-  let url = '';
-
-  return url;
 };
 
 interface CreateOptionProps {
@@ -68,7 +69,7 @@ const CreateOption: React.FC<CreateOptionProps> = ({ option, parentId, blockEdit
     newBlockEntity.addComponent(new TypeFacet({ type: BlockTypes.IMAGE }));
     newBlockEntity.addComponent(new ParentFacet({ parentId: parentId }));
     newBlockEntity.addComponent(new SrcFacet({ src: url }));
-    newBlockEntity.addComponent(new FitFacet({ fit: FitTypes.COVER }));
+    newBlockEntity.addComponent(new FitFacet({ fit: FitTypes.AUTO }));
     newBlockEntity.addComponent(new SizeFacet({ size: SizeTypes.AUTO }));
     if (blockEditorEntity) {
       blockEditorEntity.removeTag(Tags.IS_CREATEMENU_VISIBLE);
@@ -78,9 +79,20 @@ const CreateOption: React.FC<CreateOptionProps> = ({ option, parentId, blockEdit
     const newBlockEntity = new Entity();
     ecs.engine.addEntity(newBlockEntity);
 
+  console.log("parentId", parentId)
+
     switch (blockType) {
       case BlockTypes.IMAGE:
         openFilePicker();
+        break;
+      case BlockTypes.SPACER:
+        const newBlockEntity = new Entity();
+        ecs.engine.addEntity(newBlockEntity);
+        newBlockEntity.addComponent(new TypeFacet({ type: BlockTypes.SPACER }));
+        newBlockEntity.addComponent(new ParentFacet({ parentId: parentId }));
+        if (blockEditorEntity) {
+          blockEditorEntity.removeTag(Tags.IS_CREATEMENU_VISIBLE);
+        }
     }
   };
 
@@ -109,8 +121,12 @@ const CreateOption: React.FC<CreateOptionProps> = ({ option, parentId, blockEdit
   );
 };
 
-const CreateMenu = (props: EntityProps) => {
-  const [isVisible] = useEntityHasTags(props.entity, Tags.IS_CREATEMENU_VISIBLE);
+interface CreateMenuProps {
+  entity: Entity,
+  parentId: string
+}
+const CreateMenu: React.FC<CreateMenuProps> = ({entity, parentId}) => {
+  const [isVisible] = useEntityHasTags(entity, Tags.IS_CREATEMENU_VISIBLE);
   const [editOptions, setEditOptions] = useState([
     {
       blockType: BlockTypes.IMAGE,
@@ -118,13 +134,19 @@ const CreateMenu = (props: EntityProps) => {
       color: '#8547F0',
       bgColor: 'rgba(133, 71, 240, 0.1)',
     },
+    {
+      blockType: BlockTypes.SPACER,
+      icon: <IoRemove />,
+      color: '#EC76CB',
+      bgColor: 'rgba(236, 118, 203, 0.1)',
+    },
   ]);
 
   const menuRef = useRef<any>(null);
 
   const handleClickOutside = (event: MouseEvent) => {
     if (menuRef.current && !menuRef.current.contains(event.target)) {
-      props.entity?.removeTag(Tags.IS_CREATEMENU_VISIBLE);
+     entity?.removeTag(Tags.IS_CREATEMENU_VISIBLE);
     }
   };
 
@@ -149,8 +171,8 @@ const CreateMenu = (props: EntityProps) => {
         <div className="flex overflow-x-scroll w flex-auto">
           {editOptions.map((option) => (
             <CreateOption
-              blockEditorEntity={props.entity}
-              parentId="1"
+              blockEditorEntity={entity}
+              parentId={parentId}
               isVisible={isVisible}
               option={option}
               key={option.blockType}

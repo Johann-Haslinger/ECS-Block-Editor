@@ -1,6 +1,6 @@
 import { Configuration, OpenAIApi } from "openai";
 
-const key ="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" // "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" // process.env.OPEN_AI_KEY
+const key = ""
 const configuration = new Configuration({
   apiKey: key,
   organization: 'org-zb0yfSvxb00isXRZfO2zhPoS',
@@ -12,7 +12,7 @@ export const generateResponse = async (question: string): Promise<string> => {
   const options = {
     model: 'text-davinci-003',
     temperature: 0,
-    max_tokens: 400,
+    max_tokens: 600,
     top_p: 1,
     frequency_penalty: 0.0,
     presence_penalty: 0.0,

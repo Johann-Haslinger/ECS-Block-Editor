@@ -1,7 +1,7 @@
 import { Entity, useEntityComponents } from '@leanscope/ecs-engine';
 import React from 'react';
 import BlockOutline from './BlockOutline';
-import { FurtherFacet, IsEditingFacet, TextFacet } from '../../app/BlockFacets';
+import { FurtherFacet, IdFacet, IsEditingFacet, ParentFacet, TextFacet } from '../../app/BlockFacets';
 
 interface PageBlockProps {
   blockEntity: Entity;
@@ -22,6 +22,9 @@ const PageBlock: React.FC<PageBlockProps> = ({ blockEntity, blockEditorEntity })
           onClick={() => {
             if (!isEditing) {
               blockEntity.addComponent(new FurtherFacet({ isGoingFurther: true }));
+              blockEditorEntity.addComponent(
+                new ParentFacet({ parentId: blockEntity.get(IdFacet)?.props.id || '1' }),
+              );
             }
           }}
           className="flex h-full pl-0.5 items-center"

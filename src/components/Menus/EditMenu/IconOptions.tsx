@@ -47,7 +47,7 @@ const IconOptions: React.FC<IconOptionsProps> = ({ toggleIsVisible }) => {
           <div className=" pb-10 flex justify-center w-full">
             <input
               type="text"
-              className="md:w-8/12 w-9/12 h-8 rounded-lg flex bg-[rgb(233,233,239)] outline-none px-3 placeholder:text-[rgb(122,122,128)]"
+              className="md:w-8/12 w-11/12 h-8 rounded-lg flex bg-[rgb(233,233,239)] outline-none px-3 placeholder:text-[rgb(122,122,128)]"
               placeholder="Suche nach Icons..."
               value={searchTerm}
               onChange={(e) => {

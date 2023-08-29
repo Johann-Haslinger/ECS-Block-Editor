@@ -27,7 +27,7 @@ const DestructiveActionSheet: React.FC<DestructiveActionSheetProps> = ({
     if (isVisible) {
       setTheme(width < 550 ? "rgb(214,214,214)" : "rgb(202,202,207)");
     }
-  }, [isVisible, setTheme, width]);
+  }, [isVisible, width]);
 
   useEffect(() => {
     document.addEventListener("click", handleClickOutside, true);

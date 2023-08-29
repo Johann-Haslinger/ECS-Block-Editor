@@ -1,10 +1,23 @@
-import { Entity, useEntities, useEntity, useEntityComponents } from '@leanscope/ecs-engine';
-import React, { SetStateAction, useEffect, useState } from 'react';
 import {
+  ECS,
+  ECSContext,
+  Entity,
+  useEntities,
+  useEntity,
+  useEntityComponents,
+} from '@leanscope/ecs-engine';
+import React, { SetStateAction, useContext, useEffect, useState } from 'react';
+import {
+  ColorFacet,
   CurrentBlockTypeFacet,
   CurrentTextTypeFacet,
+  IconFacet,
+  IdFacet,
   IsEditingFacet,
   IsSmallBlockFacet,
+  OrderFacet,
+  ParentFacet,
+  TextFacet,
   TextTypeFacet,
   TodoFacet,
   TypeFacet,
@@ -12,6 +25,9 @@ import {
 import { BlockTypes, StyleTypes, Tags, TextTypes } from '../../../base/Constants';
 import { motion } from 'framer-motion';
 import { EntityProps } from '@leanscope/ecs-engine/react-api/classes/EntityProps';
+import { Theme, Themes } from '../../Theme';
+import { IoReader } from 'react-icons/io5';
+import { v4 as uuid } from 'uuid';
 
 const getCurrentTextType = (pressedBlockEntities: readonly Entity[], editMenuEntity: Entity) => {
   let textType: TextTypes | undefined = undefined;
@@ -44,18 +60,29 @@ const addstyle = (
           setCurrentStyleType(undefined);
         } else {
           block.addComponent(new TodoFacet({ state: 1 }));
+          block.remove(StyleTypes.LIST);
           setCurrentStyleType(StyleTypes.TODO);
         }
-        break
+        break;
       case StyleTypes.BLOCK:
         if (styleType === currentStyleType) {
-          block.removeTag(StyleTypes.BLOCK)
+          block.removeTag(StyleTypes.BLOCK);
           setCurrentStyleType(undefined);
         } else {
-          block.add(StyleTypes.BLOCK)
+          block.add(StyleTypes.BLOCK);
           setCurrentStyleType(StyleTypes.BLOCK);
         }
-        break
+        break;
+      case StyleTypes.LIST:
+        if (styleType === currentStyleType) {
+          block.removeTag(StyleTypes.LIST);
+          setCurrentStyleType(undefined);
+        } else {
+          block.add(StyleTypes.LIST);
+          setCurrentStyleType(StyleTypes.LIST);
+          block.add(new TodoFacet({ state: 0 }));
+        }
+        break;
     }
   });
 };
@@ -64,6 +91,7 @@ const changeTextType = (
   type: TextTypes,
   pressedBlockEntities: readonly Entity[],
   editMenuEntity: Entity,
+
 ) => {
   pressedBlockEntities.map((entity) => {
     entity.addComponent(new TextTypeFacet({ type: type }));
@@ -79,12 +107,53 @@ const changeBlockType = (
   pressedBlockEntities: readonly Entity[],
   editMenuEntity: Entity,
 ) => {
+
+
   pressedBlockEntities.map((entity) => {
     entity.addComponent(new TypeFacet({ type: type }));
-    entity.addComponent(new IsSmallBlockFacet({ isSmall: true }));
+    let randomNumber = Math.floor(Math.random() * 15) + 1;
+
+    switch (type) {
+      case BlockTypes.CARD:
+        entity.addComponent(new IsSmallBlockFacet({ isSmall: true }));
+        entity.addComponent(new ColorFacet({ color: Theme(Themes[randomNumber]) }));
+        entity.addComponent(new IconFacet({ icon: <IoReader /> }));
+        entity.addComponent(new TodoFacet({ state: 0 }));
+
+        entity.remove(StyleTypes.LIST);
+
+        break;
+      case BlockTypes.MORE_INFORMATIONS:
+        entity.addComponent(new IsSmallBlockFacet({ isSmall: true }));
+        entity.addComponent(new ColorFacet({ color: Theme(Themes[randomNumber]) }));
+        entity.addComponent(new IconFacet({ icon: <IoReader /> }));
+        entity.addComponent(new TodoFacet({ state: 0 }));
+        entity.remove(StyleTypes.LIST);
+        break;
+    }
+
+    // if (
+    //   type == BlockTypes.CARD ||
+    //   type == BlockTypes.MORE_INFORMATIONS ||
+    //   type == BlockTypes.PAGE
+    // ) {
+    //   const newBlockEntity = new Entity();
+    //   ecs.engine.addEntity(newBlockEntity);
+    //   newBlockEntity.addComponent(new TextFacet({ text: '' }));
+    //   newBlockEntity.addComponent(new TextTypeFacet({ type: TextTypes.TEXT }));
+    //   newBlockEntity.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
+    //   newBlockEntity.addComponent(new IdFacet({ id: uuid() }));
+    //   newBlockEntity.addComponent(new OrderFacet({ order: 1 }));
+    //   newBlockEntity.addComponent(
+    //     new ParentFacet({ parentId: entity.get(IdFacet)?.props.id || '1' }),
+    //   );
+    //   newBlockEntity.addTag(Tags.FOCUSED);
+    // }
   });
   // editMenuEntity.addComponent(new CurrentTextTypeFacet({ textType: type }));
   editMenuEntity.addComponent(new CurrentBlockTypeFacet({ blockType: type }));
+
+  return <></>;
 };
 
 interface TypeOptionProps {
@@ -125,7 +194,7 @@ const StyleOption: React.FC<StyleOptionsProps> = ({ styleType, getCurrentStyleTy
   useEffect(() => {
     setCurrentStyleType(getCurrentStyleType());
   }, []);
-  console.log('StyleType', currentStyleType, styleType);
+
   return (
     <TypeOption
       changeType={() => {
@@ -149,6 +218,7 @@ const TextTypeOption: React.FC<TextTypeProps> = ({ textType }) => {
   const currentTextType = currentTextTypeFacet.props.textType;
   const [currentBlockTypeFacet] = useEntityComponents(editMenuOptions[0], CurrentBlockTypeFacet);
   const currentBlockType = currentBlockTypeFacet.props.blockType;
+
 
   const textStyle = {
     // color: formatting.color,
@@ -203,6 +273,7 @@ const BlockTypeOption: React.FC<BlockTypeOptionProps> = ({ blockType }) => {
   const [editMenuOptions] = useEntities((e) => e.has(CurrentTextTypeFacet));
   const [currentBlockTypeFacet] = useEntityComponents(editMenuOptions[0], CurrentBlockTypeFacet);
   const currentBlockType = currentBlockTypeFacet.props.blockType;
+  const ecs = useContext(ECSContext);
 
   return (
     <TypeOption
@@ -261,6 +332,19 @@ const StyleOptions = (props: EntityProps) => {
             return styleType;
           }}
           styleType={StyleTypes.TODO}
+        />
+        <StyleOption
+          getCurrentStyleType={() => {
+            let styleType: StyleTypes | undefined = undefined;
+
+            pressedBlockEntities.map((entity) => {
+              if (entity.hasTag(StyleTypes.LIST)) {
+                styleType = StyleTypes.LIST;
+              }
+            });
+            return styleType;
+          }}
+          styleType={StyleTypes.LIST}
         />
         <StyleOption
           getCurrentStyleType={() => {

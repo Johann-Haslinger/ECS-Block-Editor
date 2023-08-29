@@ -4,7 +4,9 @@ export enum Tags {
   PRESSED,
   IS_EDITING,
   FURTHER,
-  IS_CREATEMENU_VISIBLE
+  IS_CREATEMENU_VISIBLE,
+  IS_PageOptionsMenu_VISIBLE,
+  FOCUSED
 }
 
 export enum SizeTypes {
@@ -42,6 +44,7 @@ export enum StyleTypes {
   BLOCK = 'Block',
   DESCRIPTION = 'Beschreibung',
   LARGE = 'Groß',
+  LIST = 'Liste',
 }
 
 export const Colors = {

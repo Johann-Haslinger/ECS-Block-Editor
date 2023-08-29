@@ -13,12 +13,13 @@ import { Tags } from '../base/Constants';
 
 interface FurtherViewProps {
   blockEntity: Entity;
+  backfunc: () => void;
 }
 
-const FurtherView: React.FC<FurtherViewProps> = ({ blockEntity }) => {
+const FurtherView: React.FC<FurtherViewProps> = ({ blockEntity, backfunc }) => {
   const [idFacet, textFacet] = useEntityComponents(blockEntity, IdFacet, TextFacet);
   const id = idFacet.props.id;
-  const text = textFacet.props.text
+  const text = textFacet.props.text;
   const [blockEntities] = useEntities((e: Entity) => e.has(TypeFacet));
   const filteredBlocks = blockEntities.filter(
     (item) => item.get(ParentFacet)?.props.parentId == id,
@@ -28,8 +29,19 @@ const FurtherView: React.FC<FurtherViewProps> = ({ blockEntity }) => {
     <FurtherViewOutline
       backfunc={() => {
         blockEntity.addComponent(new FurtherFacet({ isGoingFurther: false }));
+        backfunc();
       }}
-      content={<BlockEditor blockEntities={filteredBlocks} header={text} />}
+      content={
+        <BlockEditor
+          setHeader={(header) => {
+            blockEntity.add(new TextFacet({ text: header }));
+            console.log("header", header)
+          }}
+          parentId={blockEntity.get(IdFacet)?.props.id || '1'}
+          blockEntities={filteredBlocks}
+          header={text}
+        />
+      }
     />
   );
 };

@@ -15,6 +15,7 @@ import {
   IsEditingFacet,
   IsFocusedFacet,
   IsPressedFacet,
+  ParentFacet,
   TextFacet,
   TodoFacet,
   TypeFacet,
@@ -47,6 +48,10 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
   const isEditing = isEditingFacet.props.isEditing;
   const todoState = todoFacet.props.state;
 
+  const [isFocused] = useEntityHasTags(blockEntity, Tags.FOCUSED);
+
+  
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (textBlockRef.current && !textBlockRef.current.contains(event.target as Node)) {
@@ -66,9 +71,10 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
   }, [isEditing]);
 
   const toggleActivePressed = () => {
+   if (!isFocused){
     blockEditorEntity?.addComponent(new IsEditingFacet({ isEditing: true }));
     blockEditorEntity.removeTag(Tags.IS_CREATEMENU_VISIBLE);
-    console.log('activ');
+  
     if (!isPressed) {
       blockEntity.addTag(Tags.PRESSED);
     } else {
@@ -77,6 +83,8 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
     blockEntity.addComponent(new IsFocusedFacet({ isFocused: false }));
   };
 
+ 
+  };
   const handleMouseDown = () => {
     if (isEditing) {
       toggleActivePressed();
@@ -85,10 +93,13 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
         onClick();
       }
       timeoutRef.current = setTimeout(() => {
-        toggleActivePressed();
+        if (!isFocused) {
+          toggleActivePressed();
+        }
+       
       }, 500);
     }
-  };
+   }
 
   const handleMouseUp = () => {
     if (timeoutRef.current) {
@@ -100,7 +111,9 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
     const touch = event.touches[0];
     setStartX(touch.clientX);
     timeoutRef.current = setTimeout(() => {
-      toggleActivePressed();
+      if (!isFocused) {
+        toggleActivePressed();
+      }
       if ('vibrate' in navigator) {
         navigator.vibrate(50);
       }
@@ -188,7 +201,11 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
             >
               <IoCheckmarkCircle />
             </div>
-          ) : (
+          ) : blockEntity.hasTag(StyleTypes.LIST) ? (
+            <div className=' p-2.5  '> 
+              <div className='w-1.5 h-1.5 rounded-full bg-black'/>
+            </div>
+          ): (
             <></>
           )}
 
@@ -210,7 +227,9 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
           </div>
         </div>
       </div>
-      {isFurtherViewVisible && <FurtherView blockEntity={blockEntity} />}
+      {isFurtherViewVisible && <FurtherView backfunc={()=>{
+        blockEditorEntity.add(new ParentFacet({parentId: blockEntity.get(ParentFacet)?.props.parentId || "1"}))
+      }} blockEntity={blockEntity} />}
     </>
   );
 };

@@ -3,6 +3,17 @@ import { BlockTypes, FitTypes, SizeTypes, TextTypes } from '../base/Constants';
 import { Facet } from '../base/Facet';
 import { IoBug } from 'react-icons/io5';
 
+
+export interface OrderProps {
+  order: number;
+}
+
+export class OrderFacet extends Facet<OrderProps> {
+  constructor(props: OrderProps = { order: 0 }) {
+    super(props);
+  }
+}
+
 export interface SizeProps {
   size: SizeTypes;
 }
@@ -103,15 +114,6 @@ export class IsSmallBlockFacet extends Facet<IsSmallBlockProps> {
   }
 }
 
-export interface NeighbourIdProps {
-  neighbourId: string;
-}
-
-export class NeighbourIdFacet extends Facet<NeighbourIdProps> {
-  constructor(props: NeighbourIdProps = { neighbourId: '' }) {
-    super(props);
-  }
-}
 
 export interface DescriptionProps {
   description: string;

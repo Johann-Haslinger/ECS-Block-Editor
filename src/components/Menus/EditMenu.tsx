@@ -177,7 +177,7 @@ const EditMenu = (props: EntityProps) => {
     let canActivateStyle = true;
     pressedBlockEntities.map((block) => {
       const type = block.get(TypeFacet)?.props.type;
-      if (type !== BlockTypes.TEXT) {
+      if (type !== BlockTypes.TEXT && type !== BlockTypes.PAGE) {
         canActivateStyle = false;
       }
     });

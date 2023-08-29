@@ -6,10 +6,13 @@ import KIChatBox from './InputBar/KIChatBox';
 import { generateResponse } from '../../ai/generateResponse';
 import { act } from 'react-dom/test-utils';
 import Loader from '../Loader';
+import { Entity } from '@leanscope/ecs-engine';
+import { Tags } from '../../base/Constants';
 
 interface InputMenuProps {
   isVisible: boolean;
   toggleIsVisible: () => void;
+  blockEntities: readonly Entity[]
 }
 
 type row = {
@@ -17,13 +20,27 @@ type row = {
   answer: string | null;
 };
 
-const InputBar: React.FC<InputMenuProps> = ({ isVisible, toggleIsVisible }) => {
+const InputBar: React.FC<InputMenuProps> = ({ isVisible, toggleIsVisible, blockEntities}) => {
   const refOne = useRef<HTMLDivElement>(null);
   const [back, setBack] = useState(false);
   const [input, setInput] = useState('');
   const [isChatBoxVisible, setIsChatBoxVisible] = useState(false);
   const [history, setHistory] = useState<row[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
+ 
+
+
+  const checkIsWriting = () => {
+    let updatedIsWriting = false;
+
+    blockEntities.map((block) => {
+      if (block.hasTag(Tags.FOCUSED)) {
+        updatedIsWriting = true;
+      }
+    });
+    return updatedIsWriting;
+  };
+
 
   useEffect(() => {
     document.addEventListener('click', handleClickOutside, true);
@@ -70,7 +87,7 @@ const InputBar: React.FC<InputMenuProps> = ({ isVisible, toggleIsVisible }) => {
           y: !isVisible ? 200 : 0,
         }}
         initial={{ y: 0 }}
-        className="bg-white md:h-14 h-20 md:pb-0 pb-[1.2rem] !opacity-100 items-center rounded-b-lg w-full flex justify-center shadow-[0px_-30px_20px_0px_rgba(0,0,0,0.022)]"
+        className="bg-white md:h-14 h-20 md:pb-0 pb-[1.2rem]  items-center rounded-b-lg w-full flex justify-center shadow-[0px_-30px_20px_0px_rgba(0,0,0,0.022)]"
       >
         <div className="md:w-7/12 w-9/12 h-8 rounded-lg flex bg-[#f2f2f4b6]">
           <input

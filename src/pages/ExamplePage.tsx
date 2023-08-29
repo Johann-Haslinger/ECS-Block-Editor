@@ -5,8 +5,11 @@ import { ParentFacet, TextFacet, TypeFacet } from '../app/BlockFacets';
 
 const ExamplePage = () => {
   const ecs = useContext(ECSContext);
+  const parentId = '1';
   const [blockEntities] = useEntities((e: Entity) => e.has(TypeFacet));
-  const filteredBlocks = blockEntities.filter((item) => item.get(ParentFacet)?.props.parentId == "1");
+  const filteredBlocks = blockEntities.filter(
+    (item) => item.get(ParentFacet)?.props.parentId == parentId,
+  );
 
   useAnimationFrame((dt: number) => {
     ecs.engine.update(dt);
@@ -14,7 +17,15 @@ const ExamplePage = () => {
 
   return (
     <div className="fixed w-screen h-screen  overflow-y-hidden">
-      <BlockEditor blockEntities={filteredBlocks} header={'ECS Block Editor'} />
+      <BlockEditor
+        parentId={parentId}
+        blockEntities={filteredBlocks}
+        header={'ECS Block Editor'}
+        setHeader={function (newHeader: string): void {
+          console.log(newHeader);
+          throw new Error('Function not implemented.');
+        }}
+      />
     </div>
   );
 };

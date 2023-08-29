@@ -44,12 +44,13 @@ const ImageBlock: React.FC<ImageBlockProps> = ({ blockEntity }) => {
   return (
     <>
       <BlockOutline
+      onClick={() => {setIsImageViewVisble(true)}}
         blockEntity={blockEntity}
         content={
           <>
             {imageUrl ? (
               <div
-                onClick={() => {setIsImageViewVisble(true)}}
+                
                 className="w-full rounded-lg  bg-[#f2f2f45f] flex justify-center"
               >
                 <img
