@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@leanscope/ecs-engine": "^0.1.69",
+    "@leanscope/ecs-models": "^0.1.95",
     "@supabase/supabase-js": "^2.31.0",
     "@types/react-beautiful-dnd": "^13.1.4",
     "autoprefixer": "^10.4.14",
@@ -27,6 +28,7 @@
     "uuidv4": "^6.2.13"
   },
   "devDependencies": {
+    "@convergencelabs/monaco-collab-ext": "^0.4.0",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.0.0",

@@ -27,15 +27,17 @@ import {
   getNextLowerOrderEntity,
   getNextHigherOrderEntity,
 } from '../OrderHelper';
+import * as MonacoCollabExt from '@convergencelabs/monaco-collab-ext';
 
 interface TextBlockProps {
   blockEntity: Entity;
   blockEntities: readonly Entity[];
+  blockEditorEntity: Entity;
 }
 
 const LINE_HEIGHT_PX = 24; // Annahme der Zeilenhöhe in Pixeln
 
-const TextBlock: React.FC<TextBlockProps> = ({ blockEntity, blockEntities }) => {
+const TextBlock: React.FC<TextBlockProps> = ({ blockEntity, blockEntities, blockEditorEntity }) => {
   const [textFacet, textTypeFacet] = useEntityComponents(blockEntity, TextFacet, TextTypeFacet);
   const text = textFacet.props.text;
   const textType = textTypeFacet.props.type;
@@ -102,9 +104,16 @@ const TextBlock: React.FC<TextBlockProps> = ({ blockEntity, blockEntities }) => 
   // Benutzerdefinierte Funktion, die aufgerufen wird, wenn Backspace gedrückt wird und keine Buchstaben vorhanden sind
   const handleBackspaceNoText = () => {
     if (editorInstance.current!.getValue().trim() === '') {
-      getNextLowerOrderEntity(blockEntity.get(OrderFacet)?.props.order || 1, blockEntities)?.addTag(
-        Tags.FOCUSED,
+      const lowerBlockEntity = getNextLowerOrderEntity(
+        blockEntity.get(OrderFacet)?.props.order || 1,
+        blockEntities,
       );
+      blockEditorEntity.removeTag(Tags.FOCUSED);
+      if (lowerBlockEntity?.get(TypeFacet)?.props.type === BlockTypes.TEXT) {
+        lowerBlockEntity.addTag(Tags.FOCUSED);
+        blockEditorEntity.addTag(Tags.FOCUSED);
+      }
+
       ecs.engine.removeEntity(blockEntity);
     }
   };
@@ -157,16 +166,28 @@ const TextBlock: React.FC<TextBlockProps> = ({ blockEntity, blockEntities }) => 
 
   const handleArrowUpPress = () => {
     blockEntity.removeTag(Tags.FOCUSED);
-    getNextLowerOrderEntity(blockEntity.get(OrderFacet)?.props.order || 1, blockEntities)?.addTag(
-      Tags.FOCUSED,
+    const lowerBlockEntity = getNextLowerOrderEntity(
+      blockEntity.get(OrderFacet)?.props.order || 1,
+      blockEntities,
     );
+    blockEditorEntity.removeTag(Tags.FOCUSED);
+    if (lowerBlockEntity?.get(TypeFacet)?.props.type === BlockTypes.TEXT) {
+      lowerBlockEntity.addTag(Tags.FOCUSED);
+      blockEditorEntity.addTag(Tags.FOCUSED);
+    }
   };
 
   const handleArrowDownPress = () => {
     blockEntity.removeTag(Tags.FOCUSED);
-    getNextHigherOrderEntity(blockEntity.get(OrderFacet)?.props.order || 1, blockEntities)?.addTag(
-      Tags.FOCUSED,
+    const higherBlockEntity = getNextHigherOrderEntity(
+      blockEntity.get(OrderFacet)?.props.order || 1,
+      blockEntities,
     );
+    blockEditorEntity.removeTag(Tags.FOCUSED);
+    if (higherBlockEntity?.get(TypeFacet)?.props.type === BlockTypes.TEXT) {
+      higherBlockEntity.addTag(Tags.FOCUSED);
+      blockEditorEntity.addTag(Tags.FOCUSED);
+    }
   };
 
   useEffect(() => {
@@ -174,40 +195,46 @@ const TextBlock: React.FC<TextBlockProps> = ({ blockEntity, blockEntities }) => 
       editorInstance.current = monaco.editor.create(editorRef.current, {
         value: value,
         language: 'markdown',
+
         lineNumbers: 'off',
         automaticLayout: true,
         fontFamily: '-apple-system, BlinkMacSystemFont,  sans-serif',
         selectionHighlight: false,
-        glyphMargin: false,
         overviewRulerBorder: false,
         suggestOnTriggerCharacters: false,
-scrollBeyondLastColumn: 0,
-scrollBeyondLastLine: false,
+        scrollBeyondLastLine: false,
         quickSuggestions: false,
         overviewRulerLanes: 0,
-        find: {
-          addExtraSpaceOnTop: false,
-          seedSearchStringFromSelection: 'never',
-          cursorMoveOnType: false,
-          autoFindInSelection: 'never', // Deaktiviere die automatische Hervorhebung von Wörtern
-        },
-        folding: false,
         // Undocumented see https://github.com/Microsoft/vscode/issues/30795#issuecomment-410998882
         lineDecorationsWidth: 0,
+        folding: false,
 
-        wordWrap: 'on', // Hier wird der Zeilenumbruch aktiviert
         cursorStyle: 'line-thin',
         cursorSmoothCaretAnimation: 'on',
-
         renderLineHighlight: 'none', // Deaktiviere die Hervorhebung der aktuelle
         minimap: {
           enabled: false, // Deaktiviere das Mini-Map
         },
         fontSize: textStyle.monacoFontSize,
         fontWeight: textStyle.fontWeight,
-
         // ... Weitere Stile und Optionen
       });
+
+      // const remoteSelectionManager = new MonacoCollabExt.RemoteSelectionManager({ editor:  editorInstance.current });
+
+      // const selection = remoteSelectionManager.addSelection('jDoe', 'blue');
+
+      // // Set the range of the selection using zero-based offsets.
+      // selection.setOffsets(45, 55);
+
+      // // Hide the selection
+      // selection.hide();
+
+      // // Show the selection
+      // selection.show();
+
+      // // // Remove the selection.
+      // // selection.dispose();
 
       editorInstance.current.updateOptions({
         lineHeight: LINE_HEIGHT_PX,
@@ -221,21 +248,16 @@ scrollBeyondLastLine: false,
 
       // Füge weitere Aktionen hinzu...
 
-      const model = editorInstance.current.getModel();
-      if (model) {
-        const lastLineNumber = model.getLineCount();
-        const lastColumn = model.getLineMaxColumn(lastLineNumber);
-        editorInstance.current.setPosition({ lineNumber: lastLineNumber, column: lastColumn });
-      }
-
-      editorInstance.current.focus(); // Fokussiere den Editor direkt beim Laden der Komponente
-
       const viewModel = (editorInstance.current as any)._getViewModel() as monaco.editor.ITextModel;
       const wrappingAwareLinesCount = viewModel.getLineCount();
       setLineContent(wrappingAwareLinesCount);
 
       editorRef.current!.style.height = (wrappingAwareLinesCount * 24).toString();
       editorInstance.current!.layout();
+      editorInstance.current.updateOptions({
+        wordWrap: 'on', // Setze die Option für Zeilenumbruch
+      });
+      const editor = editorInstance.current;
 
       return () => {
         if (editorInstance.current) {
@@ -247,28 +269,20 @@ scrollBeyondLastLine: false,
 
   useEffect(() => {
     if (editorInstance.current) {
-      const editor = editorInstance.current;
-
-      // Benutzerdefinierte Tastenaktionen
-      editorInstance.current.addAction({
-        id: 'custom-x-action',
-        label: 'Custom X Action',
-        keybindings:
-          editor.getValue().trim() === ''
-            ? [monaco.KeyCode.KeyX]
-            : [monaco.KeyCode.AudioVolumeDown],
-        run: handleTodoNoText,
-      });
-
-      if (value.trim() === '') {
-        editor.addAction({
-          id: 'custom-minus-action',
-          label: 'Custom Minus Action',
-          keybindings: value === '' ? [monaco.KeyCode.Minus] : [],
-
-          run: handleListNoText,
-        });
+      const model = editorInstance.current.getModel();
+      if (model) {
+        const lastLineNumber = model.getLineCount();
+        const lastColumn = model.getLineMaxColumn(lastLineNumber);
+        editorInstance.current.setPosition({ lineNumber: lastLineNumber, column: lastColumn });
       }
+
+      editorInstance.current.focus(); // Fokussiere den Editor direkt beim Laden der Komponente
+    }
+  }, [isFocused]);
+
+  useEffect(() => {
+    if (editorInstance.current) {
+      const editor = editorInstance.current;
 
       editorInstance.current.addAction({
         id: 'custom-arrow-up-action',
@@ -289,13 +303,6 @@ scrollBeyondLastLine: false,
         label: 'Custom Enter Action',
         keybindings: [monaco.KeyCode.Enter],
         run: handleEnterPress,
-      });
-      editor.addAction({
-        id: 'custom-backspace-action',
-        label: 'Custom Backspace Action',
-        keybindings: value === '' ? [monaco.KeyCode.Backspace] : [],
-        precondition: '!editorHasText',
-        run: handleBackspaceNoText,
       });
 
       editorInstance.current.addAction({
@@ -330,6 +337,42 @@ scrollBeyondLastLine: false,
         run: toggleMarkText,
       });
 
+      // Füge die Aktion nur hinzu, wenn der Editor leer ist
+      if (value.trim() === '') {
+        const minusAction = editorInstance.current.addAction({
+          id: 'custom-minus-action',
+          label: 'Custom Minus Action',
+          keybindings: value === '' ? [monaco.KeyCode.Minus] : [],
+
+          run: handleListNoText,
+        });
+
+        // Benutzerdefinierte Tastenaktionen
+        const xAction = editorInstance.current.addAction({
+          id: 'custom-x-action',
+          label: 'Custom X Action',
+          keybindings:
+            editorInstance.current.getValue().trim() === ''
+              ? [monaco.KeyCode.KeyX]
+              : [monaco.KeyCode.AudioVolumeDown],
+          run: handleTodoNoText,
+        });
+
+        const deleteAction = editorInstance.current.addAction({
+          id: 'custom-backspace-action',
+          label: 'Custom Backspace Action',
+          keybindings: value === '' ? [monaco.KeyCode.Backspace] : [],
+          precondition: '!editorHasText',
+          run: handleBackspaceNoText,
+        });
+
+        return () => {
+          minusAction.dispose();
+          xAction.dispose();
+          deleteAction.dispose();
+        };
+      }
+
       const viewModel = (editor as any)._getViewModel() as monaco.editor.ITextModel;
       if (viewModel) {
         const wrappingAwareLinesCount = viewModel.getLineCount();
@@ -337,6 +380,42 @@ scrollBeyondLastLine: false,
       }
 
       editor.layout();
+
+      if (editorInstance.current && isFocused) {
+        const remoteCursorManager = new MonacoCollabExt.RemoteCursorManager({
+          editor: editorInstance.current,
+          tooltips: true,
+          tooltipDuration: 2,
+        });
+
+        const cursor = remoteCursorManager.addCursor('jDoe', '#797AFF', 'John Doe');
+
+        // Set the position of the cursor.
+        cursor.setOffset(4);
+
+        // Hide the cursor
+        // cursor.hide();
+
+        // Show the cursor
+        cursor.show();
+
+        // Remove the cursor.
+        cursor.dispose();
+
+        const contentManager = new MonacoCollabExt.EditorContentManager({
+          editor: editorInstance.current,
+          onInsert(index, text) {
+            console.log('Insert', index, text);
+          },
+          onReplace(index, length, text) {
+            console.log('Replace', index, length, text);
+          },
+          onDelete(index, length) {
+            console.log('Delete', index, length);
+          },
+        });
+      }
+      editorInstance.current.focus();
     }
   }, [isFocused, editorInstance.current && editorInstance.current.getValue()]);
 
@@ -356,49 +435,29 @@ scrollBeyondLastLine: false,
     toggleTextFormat('--');
   };
 
-  function toggleTextFormat(format: string) {
+  const toggleTextFormat = (format: string) => {
     const editor = editorInstance.current;
     if (!editor) return;
-  
+
     const selection = editor.getSelection();
     if (!selection) return;
-  
+
     const selectedText = editor.getModel()?.getValueInRange(selection);
-  
+
     if (selectedText) {
       const currentText = selectedText.trim();
       const startsWithFormat = currentText.startsWith(format) && currentText.endsWith(format);
-  
+
       let newText;
       if (startsWithFormat) {
         newText = currentText.slice(format.length, -format.length);
       } else {
         newText = `${format}${currentText}${format}`;
       }
-  
+
       editor.executeEdits('applyFormat', [{ range: selection, text: newText }]);
     }
-  
-    // Entferne die Markdown-Syntax, die jetzt formatiert wurde
-    removeMarkdownSyntax(format);
-  }
-  
-  function removeMarkdownSyntax(format: string) {
-    const editor = editorInstance.current;
-    if (!editor) return;
-  
-    const selection = editor.getSelection();
-    if (!selection) return;
-  
-    const selectedText = editor.getModel()?.getValueInRange(selection);
-  
-    if (selectedText) {
-      const currentText = selectedText.trim();
-      const newText = currentText.replace(new RegExp(format, 'g'), '');
-  
-      editor.executeEdits('removeMarkdownSyntax', [{ range: selection, text: newText }]);
-    }
-  }
+  };
 
   // useEffect(() => {
   //   if (editorInstance.current) {
@@ -417,6 +476,7 @@ scrollBeyondLastLine: false,
       // Überprüfen, ob das angeklickte Element innerhalb von TextBlock ist
       if (textBlock.current && !textBlock.current.contains(event.target as Node)) {
         blockEntity.remove(Tags.FOCUSED);
+        blockEditorEntity.remove(Tags.FOCUSED);
       }
     };
 
@@ -439,8 +499,6 @@ scrollBeyondLastLine: false,
           {isFocused && !isPressed ? (
             <div className=" w-full ">
               <div
-          
-          
                 ref={editorRef}
                 style={{
                   width: '100%',
@@ -453,9 +511,10 @@ scrollBeyondLastLine: false,
             <div
               onClick={() => {
                 blockEntity.addTag(Tags.FOCUSED);
+                blockEditorEntity.addTag(Tags.FOCUSED);
               }}
               style={{ ...textStyle }}
-              className="w-full min-h-[24px] pr-2 text-base"
+              className="lg:w-[81%] md:w-[80%] min-h-[24px] md:pr-2 text-base"
               dangerouslySetInnerHTML={{ __html: text }}
             />
           )}

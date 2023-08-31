@@ -64,7 +64,7 @@ const IconOptions: React.FC<IconOptionsProps> = ({ toggleIsVisible }) => {
                     handleClick(icon);
                   }}
                   key={icon}
-                  className="w-10 my-4 transition-all hover:opacity-50 mx-10"
+                  className="md:my-4 my-3 transition-all hover:opacity-50 mx-6 md:mx-10"
                 >
                   {StringToIcon(icon)}
                 </div>
@@ -81,7 +81,7 @@ const IconOptions: React.FC<IconOptionsProps> = ({ toggleIsVisible }) => {
                       handleClick(icon);
                     }}
                     key={icon}
-                    className="my-4 transition-all hover:opacity-50 mx-10"
+                    className="md:my-4 my-3 transition-all hover:opacity-50 mx-6 md:mx-10"
                   >
                     {StringToIcon(icon)}
                   </div>

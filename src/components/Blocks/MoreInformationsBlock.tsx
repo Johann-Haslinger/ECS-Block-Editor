@@ -84,20 +84,39 @@ const MoreInformationsBlock: React.FC<MoreInformationsBlockProps> = ({
             {icon}
           </div>
           <div className=" relative bottom-10 pb-6 ">
-            <p
-              contentEditable
-              ref={contentEditableHeaderRef}
-              onBlur={handleHeaderBlur}
-              dangerouslySetInnerHTML={{ __html: text }}
-              className="lg:text-xl outline-none font-semibold"
-            />
-            <p
-              contentEditable
-              className="text-sm outline-none md:text-base"
-              ref={contentEditableRef}
-              onBlur={handleDescriptionBlur}
-              dangerouslySetInnerHTML={{ __html: description }}
-            />
+            {isEditing ? (
+              <p
+                ref={contentEditableHeaderRef}
+                onBlur={handleHeaderBlur}
+                dangerouslySetInnerHTML={{ __html: text }}
+                className="lg:text-xl outline-none font-semibold"
+              />
+            ) : (
+              <p
+                contentEditable
+                ref={contentEditableHeaderRef}
+                onBlur={handleHeaderBlur}
+                dangerouslySetInnerHTML={{ __html: text }}
+                className="lg:text-xl outline-none font-semibold"
+              />
+            )}
+            {isEditing ? (
+              <p
+                className="text-sm outline-none md:text-base"
+                ref={contentEditableRef}
+                onBlur={handleDescriptionBlur}
+                dangerouslySetInnerHTML={{ __html: description }}
+              />
+            ) : (
+              <p
+                contentEditable
+                className="text-sm outline-none md:text-base"
+                ref={contentEditableRef}
+                onBlur={handleDescriptionBlur}
+                dangerouslySetInnerHTML={{ __html: description }}
+              />
+            )}
+
             <div
               className={`mt-2   flex text-sm md:text-base ${
                 blockEntity.has(StyleTypes.BLOCK) ? 'text-white' : ' text-blue'

@@ -1,4 +1,10 @@
-import { Entity, useEntities, useEntity, useEntityComponents } from '@leanscope/ecs-engine';
+import {
+  Entity,
+  useEntities,
+  useEntity,
+  useEntityComponents,
+  useEntityHasTags,
+} from '@leanscope/ecs-engine';
 import React, { useEffect, useState } from 'react';
 import { IsEditingFacet } from '../app/BlockFacets';
 import {
@@ -16,27 +22,8 @@ interface ToolbarProps {
 }
 const Toolbar: React.FC<ToolbarProps> = ({ blockEditorEntity, blockEntities }) => {
   const [isEditingFacet] = useEntityComponents(blockEditorEntity, IsEditingFacet);
-  const [isWriting, setIsWriting] = useState(false);
+  const [isWriting] = useEntityHasTags(blockEditorEntity, Tags.FOCUSED);
   const isEditing = isEditingFacet.props.isEditing;
-
-  useEffect(() => {
-    setIsWriting(checkIsWriting);
-  }, [
-    blockEntities.map((block) => {
-      block.hasTag(Tags.FOCUSED);
-    }),
-  ]);
-
-  const checkIsWriting = () => {
-    let updatedIsWriting = false;
-
-    blockEntities.map((block) => {
-      if (block.hasTag(Tags.FOCUSED)) {
-        updatedIsWriting = true;
-      }
-    });
-    return updatedIsWriting;
-  };
 
   return (
     <div className="py-6 md:py-4 h-16 bg-white  w-full md:bg-opacity-0  absolute top-0 right-0  flex justify-end">
@@ -56,6 +43,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ blockEditorEntity, blockEntities }) =
               blockEntities.map((block) => {
                 block.removeTag(Tags.FOCUSED);
               });
+              blockEditorEntity.removeTag(Tags.FOCUSED)
             }}
             className="text-base font-bold  "
           >

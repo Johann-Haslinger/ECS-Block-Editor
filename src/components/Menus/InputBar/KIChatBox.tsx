@@ -247,7 +247,7 @@ const KIChatBox: React.FC<ChatBoxProps> = ({ isVisible, toggleISVisible, history
                 );
               })}
             </div>
-            <div className="flex bg-main-bg justify-center absolute  bottom-0  pt-3 md:bottom-28 w-full md:w-7/12">
+            <div className="flex bg-bg justify-center absolute  bottom-0  pt-3 md:bottom-28 w-full md:w-7/12">
               <input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}

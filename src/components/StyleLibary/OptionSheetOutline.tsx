@@ -28,13 +28,13 @@ const OptionSheetOutline: React.FC<OptionSheetOutlineProps> = ({ isVisible, setI
     };
   }, []);
 
-  function handleClickOutside(e: MouseEvent) {
+  const handleClickOutside = (e: MouseEvent)=> {
     if (refOne.current && !refOne.current.contains(e.target as Node)) {
       handleBackClick();
     }
   }
 
-  async function handleBackClick() {
+  const handleBackClick = async () => {
     setIsVisible(false);
     await delay(100);
     setActive(false);

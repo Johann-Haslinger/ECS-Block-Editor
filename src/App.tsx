@@ -4,7 +4,7 @@ import { ECSContext } from '@leanscope/ecs-engine';
 import ExamplePage from './pages/ExamplePage';
 import { useStateContext } from './contexts/ContextProvider';
 
-function App() {
+const  App = () =>{
   const ecs = useContext(ECSContext);
   const { theme } = useStateContext();
 

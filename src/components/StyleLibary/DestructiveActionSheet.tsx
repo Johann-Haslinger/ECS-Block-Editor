@@ -36,13 +36,13 @@ const DestructiveActionSheet: React.FC<DestructiveActionSheetProps> = ({
     };
   }, []);
 
-  function handleClickOutside(e: MouseEvent) {
+  const  handleClickOutside = (e: MouseEvent) =>{
     if (refOne.current && !refOne.current.contains(e.target as Node)) {
       handleBackClick();
     }
   }
 
-  async function handleBackClick() {
+  const handleBackClick = async()  =>{
     setBack(true);
     setTheme(width < 550 ? "#ffffff" : "rgb(243,243,248)");
     await delay(100);
@@ -50,7 +50,7 @@ const DestructiveActionSheet: React.FC<DestructiveActionSheetProps> = ({
     setBack(false);
   }
 
-  function handleDeleteClick() {
+  const handleDeleteClick = () =>{
     deleteFunc();
     handleBackClick();
   }

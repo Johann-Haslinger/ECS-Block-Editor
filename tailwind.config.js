@@ -24,9 +24,9 @@ module.exports = {
         14: "14px",
       },
       backgroundColor: {
-        'main-bg': 'rgb(243,243,248)',
-        'secondery-bg': 'rgb(243,243,248)',
-        bg: "rgb(245,245,247)",
+    
+  
+        bg: "rgb(242,241,246)",
         card: "rgb(250, 250, 250)",
         'input-white-bg': 'rgba(236, 236, 239, 1)',
       },

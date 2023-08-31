@@ -34,9 +34,15 @@ import InputBar from './Menus/InputBar';
 import { DropResult, DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import PageOptionsMenu from './Menus/PageOptionsMenu';
 import { v4 as uuid } from 'uuid';
-import { getHighestOrder, getNextLowerOrderEntity } from './OrderHelper';
+import {
+  findNumberBetween,
+  getHighestOrder,
+  getNextHigherOrder,
+  getNextLowerOrder,
+  getNextLowerOrderEntity,
+} from './OrderHelper';
 
-function updateBlockOrder(blocks: readonly Entity[]): Entity[] {
+const updateBlockOrder = (blocks: readonly Entity[]): Entity[] => {
   // Filter blocks without order and sort the rest
   const orderedBlocks = blocks
     .filter((block) => block.get(OrderFacet)?.props.order !== undefined)
@@ -52,7 +58,7 @@ function updateBlockOrder(blocks: readonly Entity[]): Entity[] {
     .map((block) => block.add(new OrderFacet({ order: nextOrder++ })));
 
   return orderedBlocks.concat(blocksWithNewOrder);
-}
+};
 
 interface ComponentRendererProps {
   blockEntities: readonly Entity[];
@@ -79,6 +85,7 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
   const ecs = useContext(ECSContext);
   const [allBlockEntities] = useEntities((e) => e.has(TypeFacet));
   const currentParentFacet = currentParentIdFacet.props.parentId;
+  const [isWriting] = useEntityHasTags(blockEditorEntity, Tags.FOCUSED);
 
   useEffect(() => {
     setSortedBlocks(updateBlockOrder(blockEntities));
@@ -102,7 +109,6 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
   useEffect(() => {
     let blocksPressed = false;
     allBlockEntities.map((block) => {
-
       if (block.hasTag(Tags.PRESSED)) {
         blocksPressed = true;
       }
@@ -122,24 +128,53 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
     }
   }, [isCreateMenuVisible]);
 
-  // useEffect(() => {
-  //   if (blockEntities.length == 0) {
-  //     const newBlockEntity = new Entity();
-  //     ecs.engine.addEntity(newBlockEntity);
-  //     newBlockEntity.addComponent(new TextFacet({ text: '' }));
-  //     newBlockEntity.addComponent(new TextTypeFacet({ type: TextTypes.TEXT }));
-  //     newBlockEntity.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
-  //     newBlockEntity.addComponent(new IdFacet({ id: uuid() }));
-  //     newBlockEntity.addComponent(new OrderFacet({ order: 1 }));
-  //     newBlockEntity.addComponent(new ParentFacet({ parentId: parentId }));
-  //     newBlockEntity.addTag(Tags.FOCUSED);
-  //   }
-  // }, [blockEntities]);
+  const recalculateOrder = (startIndex: number, endIndex: number) => {
+    const startOrder = sortedBlocks[startIndex].get(OrderFacet)?.props.order;
+    const endOrder = sortedBlocks[endIndex].get(OrderFacet)?.props.order || 1;
+
+    const nextHigherOrder = getNextHigherOrder(endOrder, blockEntities) || 1;
+    const nextLowerOrder = getNextLowerOrder(endOrder, blockEntities) || 1;
+
+    let newOrder = 1;
+
+    if (endIndex > startIndex) {
+      // Block wurde unterhalb platziert
+      newOrder = findNumberBetween(nextHigherOrder, endOrder);
+    } else {
+      // Block wurde oberhalb platziert
+      newOrder = findNumberBetween(nextLowerOrder, endOrder);
+    }
+
+    if (startOrder && endOrder) {
+      return newOrder;
+    } else {
+      return 1;
+    }
+  };
 
   const handleDragEnd = (result: DropResult) => {
-    if (!result.destination) {
-      return;
+    console.log('movedBlock', 'movedBlock');
+    if (!result.destination) return;
+
+    const { source, destination } = result;
+    const blocksCopy = [...sortedBlocks];
+    const [movedBlock] = blocksCopy.splice(source.index, 1);
+
+    blocksCopy.splice(destination.index, 0, movedBlock);
+
+    if (source.index !== destination.index) {
+      console.log('movedBlock', 'order', movedBlock.get(OrderFacet)?.props.order);
+      const newOrder = recalculateOrder(source.index, destination.index);
+      movedBlock.add(new OrderFacet({ order: newOrder }));
+      console.log('movedBlock', newOrder);
+      setSortedBlocks(updateBlockOrder(blockEntities));
+
+      // Perform any additional updates you need here
+      // (e.g., saving the updated order to the backend)
     }
+
+    // Update your state with the new sortedBlocks array
+    // (
   };
 
   const handleCreateBlockAreaClick = () => {
@@ -180,9 +215,9 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
   };
 
   return (
-   <div className="" ref={editableAreaRef}>
+    <div className="" ref={editableAreaRef}>
       <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId={'droppable'} isDropDisabled={!isEditMenuVisible}>
+        <Droppable droppableId={'droppable'}>
           {(provided: any) => (
             <div className="flex flex-wrap" ref={provided.innerRef} {...provided.droppableProps}>
               {sortedBlocks.map((blockEntity, idx) => {
@@ -195,7 +230,6 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
                     key={blockEntity?.get(IdFacet)?.props.id.toString()}
                     draggableId={`${blockEntity?.get(IdFacet)?.props.id.toString()}`}
                     index={idx}
-                    isDragDisabled={!isEditMenuVisible}
                   >
                     {(provided: any) => (
                       <div
@@ -224,7 +258,6 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
           )}
         </Droppable>
       </DragDropContext>
-   
 
       {isCreateMenuVisible && (
         <input ref={textareaRef} value={''} className=" outline-none w-full" />
@@ -238,7 +271,7 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
 
       <InputBar
         blockEntities={blockEditorEntities}
-        isVisible={isCreateMenuVisible || isEditMenuVisible ? false : true}
+        isVisible={isCreateMenuVisible || isEditMenuVisible  || isWriting ? false : true}
         toggleIsVisible={() => {}}
       />
       {blockEditorEntity && currentParentFacet == parentId && (

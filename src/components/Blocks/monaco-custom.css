@@ -2,16 +2,13 @@
   color: black;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-  overflow: hidden;
-  position: relative;
-
-  width: 100%;
+ 
 }
 
 .monaco-editor .view-line {
   border-bottom-color: white !important;
   box-shadow: none !important;
-
+width: 100% !important;
   /* background-color: antiquewhite; */
   overflow-x: hidden;
   overflow-y: hidden;
@@ -64,8 +61,10 @@
   color: #ffffff !important;
 }
 
-#editor {
+.monaco-editor {
   height: auto;
+  width: 100%;
+background-color: aqua !important;
 }
 
 .monaco-editor .monaco-editor {
@@ -83,4 +82,62 @@
 .monaco-editor .editor-scrollable,
 .monaco-editor .minimap {
   overflow: hidden !important;
+}
+
+.monaco-editor .monaco-remote-cursor-tooltip {
+  /* background-color: blueviolet !important; */
+  border-radius: 4px;
+  border-top-left-radius: 0px;
+   border-top-right-radius: 9px;
+  border-bottom-left-radius: 9px;
+  width: fit-content;
+  flex: auto;
+  color: #ffffff;
+  white-space: nowrap;
+  padding-inline: 5px;
+  font-size: small;
+  margin-top: 16px;
+  opacity: 0.9 !important;
+  backdrop-filter: blur(40px) !important; 
+}
+
+.monaco-editor .monaco-remote-cursor {
+  width: 1.5px;
+  height: 17px !important;
+  position: absolute;
+  animation: cursorPulse 1s infinite;
+  margin-top: 3.5px;
+  position: fixed;
+  z-index: 50;
+ 
+}
+
+@keyframes cursorPulse {
+  0% {
+    background-color: #00000000;
+  }
+  50% {
+    background-color: #00000000;
+  }
+  51% {
+    background-color: #00000000 !important;
+  }
+  100% {
+    background-color: #00000000 !important;
+  }
+}
+
+@keyframes cursorPulse2 {
+  0% {
+  opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  51% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1
+  }
 }

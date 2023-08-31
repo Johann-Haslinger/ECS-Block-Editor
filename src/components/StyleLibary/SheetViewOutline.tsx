@@ -62,7 +62,7 @@ const SheetViewOutline: React.FC<SheetViewProps> = ({
     };
   }, []);
 
-  function handleClickOutside(e: MouseEvent) {
+  const  handleClickOutside = (e: MouseEvent) =>{
     if (refOne.current && !refOne.current.contains(e.target as Node) && !clickOutside) {
       handleBackClick();
     }
@@ -90,8 +90,8 @@ const SheetViewOutline: React.FC<SheetViewProps> = ({
         initial={{ y: 1110 }}
         className={
           small
-            ? 'h-3/6  w-full md:w-8/12 text-black bg-secondery-bg md:rounded-xl rounded-t-2xl  '
-            : 'h-5/6  w-full md:w-8/12 text-black bg-secondery-bg md:rounded-xl rounded-t-2xl  '
+            ? 'h-3/6  w-full md:w-8/12 text-black bg-bg md:rounded-xl rounded-t-2xl  '
+            : 'h-5/6  w-full md:w-8/12 text-black bg-bg md:rounded-xl rounded-t-2xl  '
         }
       >
       

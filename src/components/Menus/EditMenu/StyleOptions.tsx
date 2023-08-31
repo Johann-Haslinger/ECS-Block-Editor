@@ -91,7 +91,6 @@ const changeTextType = (
   type: TextTypes,
   pressedBlockEntities: readonly Entity[],
   editMenuEntity: Entity,
-
 ) => {
   pressedBlockEntities.map((entity) => {
     entity.addComponent(new TextTypeFacet({ type: type }));
@@ -107,8 +106,6 @@ const changeBlockType = (
   pressedBlockEntities: readonly Entity[],
   editMenuEntity: Entity,
 ) => {
-
-
   pressedBlockEntities.map((entity) => {
     entity.addComponent(new TypeFacet({ type: type }));
     let randomNumber = Math.floor(Math.random() * 15) + 1;
@@ -184,17 +181,19 @@ const TypeOption: React.FC<TypeOptionProps> = ({
 
 interface StyleOptionsProps {
   styleType: StyleTypes;
-  getCurrentStyleType: () => StyleTypes | undefined;
+  isCurrentStyleType: boolean;
 }
 
-const StyleOption: React.FC<StyleOptionsProps> = ({ styleType, getCurrentStyleType }) => {
+const StyleOption: React.FC<StyleOptionsProps> = ({ styleType, isCurrentStyleType }) => {
   const [pressedBlockEntities] = useEntities((e) => e.hasTag(Tags.PRESSED));
-  const [currentStyleType, setCurrentStyleType] = useState(getCurrentStyleType());
+  const [currentStyleType, setCurrentStyleType] = useState<StyleTypes | undefined >(isCurrentStyleType && styleType || undefined );
 
   useEffect(() => {
-    setCurrentStyleType(getCurrentStyleType());
-  }, []);
-
+    if (isCurrentStyleType) {
+      setCurrentStyleType(styleType);
+    }
+  }, [isCurrentStyleType]);
+ 
   return (
     <TypeOption
       changeType={() => {
@@ -218,7 +217,6 @@ const TextTypeOption: React.FC<TextTypeProps> = ({ textType }) => {
   const currentTextType = currentTextTypeFacet.props.textType;
   const [currentBlockTypeFacet] = useEntityComponents(editMenuOptions[0], CurrentBlockTypeFacet);
   const currentBlockType = currentBlockTypeFacet.props.blockType;
-
 
   const textStyle = {
     // color: formatting.color,
@@ -292,6 +290,9 @@ const StyleOptions = (props: EntityProps) => {
   const [pressedBlockEntities] = useEntities((e) => e.hasTag(Tags.PRESSED));
   const [editMenuEntities] = useEntities((e) => e.has(CurrentTextTypeFacet));
   const [isMoreTextOptionsVisible, setIsMoreTextOptionsVisible] = useState(false);
+  const [isTodo, setIsTodo] = useState(false);
+  const [isList, setIsList] = useState(false);
+  const [isBlock, setIsBlock] = useState(false);
 
   useEffect(() => {
     getCurrentTextType(pressedBlockEntities, editMenuEntities[0]);
@@ -300,6 +301,25 @@ const StyleOptions = (props: EntityProps) => {
   useEffect(() => {
     setIsMoreTextOptionsVisible(false);
   }, [isVisible]);
+
+  useEffect(() => {
+    checkIsTodo();
+    checkIsList()
+    checkIsBlock( )
+  }, [pressedBlockEntities[0]?.get(TodoFacet)?.props.state]);
+
+  const checkIsTodo = () => {
+    const todoState = pressedBlockEntities[0]?.get(TodoFacet)?.props.state || 0;
+    if (todoState >= 1) setIsTodo(true);
+  };
+
+  const checkIsList = () => {
+    setIsList(pressedBlockEntities[0].hasTag(StyleTypes.LIST))
+  };
+
+  const checkIsBlock = () => {
+   setIsBlock(pressedBlockEntities[0].hasTag(StyleTypes.BLOCK))
+  };
 
   return (
     <>
@@ -317,49 +337,9 @@ const StyleOptions = (props: EntityProps) => {
         </div>
       </div>
       <div className="flex w-full   space-x-2 overflow-x-scroll  py-4 border-t  border-[rgb(245,245,245)]  justify-between   ">
-        <StyleOption
-          getCurrentStyleType={() => {
-            let styleType: StyleTypes | undefined = undefined;
-
-            pressedBlockEntities.map((entity) => {
-              if (
-                entity.get(TodoFacet)?.props.state !== 0 &&
-                entity.get(TodoFacet)?.props.state !== undefined
-              ) {
-                styleType = StyleTypes.TODO;
-              }
-            });
-            return styleType;
-          }}
-          styleType={StyleTypes.TODO}
-        />
-        <StyleOption
-          getCurrentStyleType={() => {
-            let styleType: StyleTypes | undefined = undefined;
-
-            pressedBlockEntities.map((entity) => {
-              if (entity.hasTag(StyleTypes.LIST)) {
-                styleType = StyleTypes.LIST;
-              }
-            });
-            return styleType;
-          }}
-          styleType={StyleTypes.LIST}
-        />
-        <StyleOption
-          getCurrentStyleType={() => {
-            let styleType: StyleTypes | undefined = undefined;
-
-            pressedBlockEntities.map((entity) => {
-              if (entity.hasTag(StyleTypes.BLOCK)) {
-                styleType = StyleTypes.BLOCK;
-                console.log('StyleType');
-              }
-            });
-            return styleType;
-          }}
-          styleType={StyleTypes.BLOCK}
-        />
+        <StyleOption isCurrentStyleType={isTodo} styleType={StyleTypes.TODO} />
+        <StyleOption isCurrentStyleType={isList} styleType={StyleTypes.LIST} />
+        <StyleOption isCurrentStyleType={isBlock} styleType={StyleTypes.BLOCK} />
       </div>
 
       <div className="  flex w-screen fixed z-40 left-0 justify-center">

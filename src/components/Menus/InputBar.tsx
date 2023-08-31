@@ -59,7 +59,7 @@ const InputBar: React.FC<InputMenuProps> = ({ isVisible, toggleIsVisible, blockE
   //   }
   // }, [isChatBoxVisible]);
 
-  async function handleClickOutside(e: MouseEvent) {
+  const  handleClickOutside = async (e: MouseEvent) => {
     if (refOne.current && !refOne.current.contains(e.target as Node)) {
       setBack(true);
       toggleIsVisible();

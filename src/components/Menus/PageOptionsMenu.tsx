@@ -39,13 +39,13 @@ const PageOptionsMenu = (props: EntityProps) => {
     };
   }, []);
 
-  function handleClickOutside(e: MouseEvent) {
+  const  handleClickOutside = (e: MouseEvent)  => {
     if (refOne.current && !refOne.current.contains(e.target as Node) && visibleContent === '') {
       handleBackClick();
     }
   }
 
-  async function handleBackClick() {
+   const  handleBackClick = async () => {
     props.entity?.removeTag(Tags.IS_PageOptionsMenu_VISIBLE);
     await delay(100);
   }

@@ -26,7 +26,7 @@ const ColorOptions: React.FC<ColorOptionsProps> = ({ isVisible, toggleIsVisible 
         transition={{ type: 'Tween' }}
         animate={{ y: isVisible ? 0 : 600 }}
         initial={{ y: 600 }}
-        className="bg-white h-44 rounded-lg px-4 md:w-[32rem]  w-11/12  fixed bottom-8 shadow-[0_0px_40px_1px_rgba(0,0,0,0.12)]"
+        className="bg-white h-44 overflow-y-scroll pb-6 rounded-lg px-4 md:w-[32rem]  w-11/12  fixed bottom-8 shadow-[0_0px_40px_1px_rgba(0,0,0,0.12)]"
         drag="y"
         dragConstraints={{ top: 0, bottom: 200 }}
         onDragEnd={(event, info) => {

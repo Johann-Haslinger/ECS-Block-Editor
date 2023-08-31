@@ -18,6 +18,29 @@ export const getNextHigherOrder = (order: number, blockEntities: readonly Entity
   return null; // Wenn keine höhere Zahl gefunden wurde
 };
 
+export const getNextLowerOrder = (order: number, blockEntities: readonly Entity[]) => {
+  const sortedEntities = blockEntities.slice().sort((a, b) => {
+    const orderA = a.get(OrderFacet)?.props.order || 0;
+    const orderB = b.get(OrderFacet)?.props.order || 0;
+    return orderA - orderB;
+  });
+
+  let lowerOrder = null;
+
+  for (let entity of sortedEntities) {
+    const entityOrder = entity.get(OrderFacet)?.props.order;
+    if (entityOrder && entityOrder < order) {
+      lowerOrder = entityOrder;
+    } else {
+      // Since the entities are sorted, once we encounter an entity with order greater or equal to the desired order, we can break the loop.
+      break;
+    }
+  }
+
+  return lowerOrder;
+};
+
+
 export const getNextLowerOrderEntity = (order: number, blockEntities: readonly Entity[]) => {
   const sortedEntities = blockEntities.slice().sort((a, b) => {
     const orderA = a.get(OrderFacet)?.props.order || 0;
