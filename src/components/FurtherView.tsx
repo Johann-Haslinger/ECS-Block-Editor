@@ -6,10 +6,11 @@ import {
   useEntityHasTags,
 } from '@leanscope/ecs-engine';
 import React from 'react';
-import { FurtherFacet, IdFacet, ParentFacet, TextFacet, TypeFacet } from '../app/BlockFacets';
+
 import FurtherViewOutline from './StyleLibary/FurtherViewOutline';
 import BlockEditor from '../pages/BlockEditor';
 import { Tags } from '../base/Constants';
+import { TextFacet, TypeFacet, ParentFacet, FurtherFacet, IdentifierFacet } from '@leanscope/ecs-models';
 
 interface FurtherViewProps {
   blockEntity: Entity;
@@ -17,9 +18,9 @@ interface FurtherViewProps {
 }
 
 const FurtherView: React.FC<FurtherViewProps> = ({ blockEntity, backfunc }) => {
-  const [idFacet, textFacet] = useEntityComponents(blockEntity, IdFacet, TextFacet);
-  const id = idFacet.props.id;
-  const text = textFacet.props.text;
+  const [identifierFacet, textFacet] = useEntityComponents(blockEntity, IdentifierFacet, TextFacet);
+  const id = identifierFacet?.props.guid;
+  const text = textFacet?.props.text;
   const [blockEntities] = useEntities((e: Entity) => e.has(TypeFacet));
   const filteredBlocks = blockEntities.filter(
     (item) => item.get(ParentFacet)?.props.parentId == id,
@@ -37,9 +38,9 @@ const FurtherView: React.FC<FurtherViewProps> = ({ blockEntity, backfunc }) => {
             blockEntity.add(new TextFacet({ text: header }));
             console.log("header", header)
           }}
-          parentId={blockEntity.get(IdFacet)?.props.id || '1'}
+          parentId={blockEntity.get(IdentifierFacet)?.props.guid || '1'}
           blockEntities={filteredBlocks}
-          header={text}
+          header={text || "Fehler"}
         />
       }
     />

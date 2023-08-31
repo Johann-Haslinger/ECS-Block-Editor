@@ -6,11 +6,11 @@ import {
   IoScanOutline,
   IoSquareOutline,
 } from 'react-icons/io5';
-import { FitFacet, SizeFacet, TypeFacet } from '../../../app/BlockFacets';
-import { BlockTypes, FitTypes, SizeTypes, Tags } from '../../../base/Constants';
+
 import { Entity, useEntities } from '@leanscope/ecs-engine';
-import { EntityProps } from '@leanscope/ecs-engine/react-api/classes/EntityProps';
 import { useStateContext } from '../../../contexts/ContextProvider';
+import {  FitTypes, SizeTypes, SizeFacet, TypeFacet, BlockTypes, ImageSizeFacet, ImageFitFacet } from '@leanscope/ecs-models';
+import { Tags } from '../../../base/Constants';
 
 
 
@@ -43,14 +43,14 @@ const LayoutOptions = () => {
 
   const changeSize = (size: SizeTypes) => {
     pressedBlockEntities.forEach((block) => {
-      block.addComponent(new SizeFacet({ size }));
+      block.addComponent(new ImageSizeFacet({size: size }));
     });
     setCurrentSize(size)
   };
   
   const changeFit = (fit: FitTypes) => {
     pressedBlockEntities.forEach((block) => {
-      block.addComponent(new FitFacet({ fit }));
+      block.addComponent(new ImageFitFacet({ fit: fit }));
     });
     setCurrentFit(fit)
   };
@@ -58,8 +58,8 @@ const LayoutOptions = () => {
   useEffect(() => {
     pressedBlockEntities.map((block) => {
       if (block.get(TypeFacet)?.props.type === BlockTypes.IMAGE) {
-        setCurrentFit(block.get(FitFacet)?.props.fit);
-        setCurrentSize(block.get(SizeFacet)?.props.size);
+        setCurrentFit(block.get(ImageFitFacet)?.props.fit);
+        setCurrentSize(block.get(ImageSizeFacet)?.props.size);
       }
     });
   }, [pressedBlockEntities]);
@@ -70,8 +70,8 @@ const LayoutOptions = () => {
         <p className="text-sm w-full text-center text-deaktive">Bild Anpassen</p>
         <div className="flex w-full pt-4 px-3">
           <LayoutOptionButton
-            isActive={currentFit === FitTypes.AUTO}
-            onClick={() => changeFit(FitTypes.AUTO)}
+            isActive={currentFit === FitTypes.AUTO_FIT}
+            onClick={() => changeFit(FitTypes.AUTO_FIT)}
             icon={<IoScanOutline />}
             label="Anpassen"
           />
@@ -87,8 +87,8 @@ const LayoutOptions = () => {
         <p className="text-sm w-full text-center text-deaktive">Bildgröße</p>
         <div className="flex w-full pt-4 px-3">
           <LayoutOptionButton
-            isActive={currentSize === SizeTypes.AUTO}
-            onClick={() => changeSize(SizeTypes.AUTO)}
+            isActive={currentSize === SizeTypes.AUTO_SIZE}
+            onClick={() => changeSize(SizeTypes.AUTO_SIZE)}
             icon={<IoCropOutline />}
             label="Auto"
           />

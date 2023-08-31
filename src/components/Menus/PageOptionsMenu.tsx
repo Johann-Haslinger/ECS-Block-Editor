@@ -13,9 +13,8 @@ import {
 } from 'react-icons/io5';
 import OptionRow from '../StyleLibary/OptionRow';
 import { delay } from '../Delay';
-import { EntityProps } from '@leanscope/ecs-engine/react-api/classes/EntityProps';
 import { Tags } from '../../base/Constants';
-import { useEntityHasTags } from '@leanscope/ecs-engine';
+import { EntityProps, useEntityHasTags } from '@leanscope/ecs-engine';
 
 const PageOptionsMenu = (props: EntityProps) => {
   const refOne = useRef<HTMLDivElement | null>(null);

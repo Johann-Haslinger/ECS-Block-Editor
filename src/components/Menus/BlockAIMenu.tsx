@@ -4,8 +4,8 @@ import Loader from '../Loader';
 import { generateResponse } from '../../ai/generateResponse';
 import { useEntities } from '@leanscope/ecs-engine';
 import { Tags } from '../../base/Constants';
-import { TextFacet, TypeFacet } from '../../app/BlockFacets';
 import TypingAnimation from '../TypingAnimation';
+import { TextFacet } from '@leanscope/ecs-models';
 
 interface MenuProps {
   isVisible: boolean;

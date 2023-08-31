@@ -1,7 +1,8 @@
 import React, { useContext } from 'react';
 import BlockEditor from './BlockEditor';
 import { ECSContext, Entity, useAnimationFrame, useEntities } from '@leanscope/ecs-engine';
-import { ParentFacet, TextFacet, TypeFacet } from '../app/BlockFacets';
+import { TypeFacet, ParentFacet } from '@leanscope/ecs-models';
+;
 
 const ExamplePage = () => {
   const ecs = useContext(ECSContext);

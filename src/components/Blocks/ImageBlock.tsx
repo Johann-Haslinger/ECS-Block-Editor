@@ -1,21 +1,23 @@
 import { Entity, useEntityComponents } from '@leanscope/ecs-engine';
 import React, { useEffect, useState } from 'react';
 import BlockOutline from './BlockOutline';
-import { FitFacet, SizeFacet, SrcFacet } from '../../app/BlockFacets';
-import { FitTypes, SizeTypes } from '../../base/Constants';
+
+
 import ImageView from '../BlockComponents/ImageBlock/ImageView';
+import { Base64Facet, SizeFacet, SizeTypes, FitTypes, ImageSizeFacet, ImageFacet, ImageFitFacet } from '@leanscope/ecs-models';
 
 interface ImageBlockProps {
   blockEntity: Entity;
+  blockEditorEntity: Entity
 }
 
-const ImageBlock: React.FC<ImageBlockProps> = ({ blockEntity }) => {
-  const [srcFacet] = useEntityComponents(blockEntity, SrcFacet);
-  const [sizeFacet, fitFacet] = useEntityComponents(blockEntity, SizeFacet, FitFacet);
+const ImageBlock: React.FC<ImageBlockProps> = ({ blockEntity , blockEditorEntity}) => {
+  const [base64Facet] = useEntityComponents(blockEntity, Base64Facet);
+  const [sizeFacet, fitFacet] = useEntityComponents(blockEntity, ImageSizeFacet, ImageFitFacet);
   const [imageUrl, setImageUrl] = useState<string>('');
-  const url = srcFacet.props.src;
-  const size = sizeFacet.props.size;
-  const fit = fitFacet.props.fit;
+  const url = base64Facet?.props.data || "";
+  const size = sizeFacet?.props.size;
+  const fit = fitFacet?.props.fit;
   const [isImageViewVisible, setIsImageViewVisble] = useState(false);
 
   useEffect(() => {
@@ -44,6 +46,7 @@ const ImageBlock: React.FC<ImageBlockProps> = ({ blockEntity }) => {
   return (
     <>
       <BlockOutline
+      blockEditorEntity={blockEditorEntity}
       onClick={() => {setIsImageViewVisble(true)}}
         blockEntity={blockEntity}
         content={
@@ -56,9 +59,9 @@ const ImageBlock: React.FC<ImageBlockProps> = ({ blockEntity }) => {
                 <img
                   src={imageUrl}
                   className={
-                    size == SizeTypes.AUTO && fit == FitTypes.COVER
+                    size == SizeTypes.AUTO_SIZE && fit == FitTypes.COVER
                       ? 'md:max-h-96 max-h-56 object-cover w-full  rounded-lg'
-                      : size == SizeTypes.AUTO
+                      : size == SizeTypes.AUTO_SIZE
                       ? 'md:max-h-96  max-h-56 rounded-lg'
                       : size == SizeTypes.LARGE
                       ? 'w-full rounded-lg h-full '

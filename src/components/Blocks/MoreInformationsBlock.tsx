@@ -1,20 +1,11 @@
-import { Entity, useEntities, useEntityComponents } from '@leanscope/ecs-engine';
+import { Entity, useEntities, useEntityComponents, useEntityHasTags } from '@leanscope/ecs-engine';
 import React, { useEffect, useRef, useState } from 'react';
 import BlockOutline from './BlockOutline';
 import { IoAccessibility, IoChevronForward, IoCode } from 'react-icons/io5';
-import {
-  ColorFacet,
-  DescriptionFacet,
-  FurtherFacet,
-  IconFacet,
-  IdFacet,
-  IsEditingFacet,
-  ParentFacet,
-  SrcFacet,
-  TextFacet,
-} from '../../app/BlockFacets';
-import { StyleTypes, Tags } from '../../base/Constants';
 import FurtherView from '../FurtherView';
+import { Base64Facet, ColorFacet, DescriptionFacet, FurtherFacet, IconNameFacet, IdentifierFacet, ParentFacet, TextFacet } from '@leanscope/ecs-models';
+import { StyleTypes, Tags } from '../../base/Constants';
+import { StringToIcon } from '../Icons';
 
 interface MoreInformationsBlockProps {
   blockEntity: Entity;
@@ -27,16 +18,16 @@ const MoreInformationsBlock: React.FC<MoreInformationsBlockProps> = ({
   const [descriptionFacet, textFacet] = useEntityComponents(
     blockEntity,
     DescriptionFacet,
-    TextFacet,
+    TextFacet
   );
-  const [iconFacet, colorFacet] = useEntityComponents(blockEntity, IconFacet, ColorFacet);
-  const [srcFacet] = useEntityComponents(blockEntity, SrcFacet, IconFacet);
-  const description = descriptionFacet.props.description;
-  const text = textFacet.props.text;
-  const icon = iconFacet.props.icon;
-  const color = colorFacet.props.color;
-  const src = srcFacet.props.src;
-  const isEditing = blockEditorEntity?.get(IsEditingFacet)?.props.isEditing;
+  const [iconNameFacet, colorFacet] = useEntityComponents(blockEntity, IconNameFacet, ColorFacet);
+  const [base64Facet] = useEntityComponents(blockEntity, Base64Facet, IconNameFacet);
+  const description = descriptionFacet?.props.description || "";
+  const text = textFacet?.props.text || "" ;
+  const icon = iconNameFacet?.props.iconName;
+  const color = colorFacet?.props.colorName|| "";
+  const src = base64Facet?.props.data;
+  const [isEditing] = useEntityHasTags(blockEditorEntity, Tags.IS_EDITING)
   const contentEditableRef = useRef<HTMLDivElement>(null);
   const contentEditableHeaderRef = useRef<HTMLDivElement>(null);
 
@@ -58,6 +49,7 @@ const MoreInformationsBlock: React.FC<MoreInformationsBlockProps> = ({
 
   return (
     <BlockOutline
+    blockEditorEntity={blockEditorEntity}
       blockEntity={blockEntity}
       content={
         <div
@@ -81,7 +73,7 @@ const MoreInformationsBlock: React.FC<MoreInformationsBlockProps> = ({
               src ? ' opacity-90' : 'opacity-60'
             }`}
           >
-            {icon}
+            {StringToIcon(icon || "")}
           </div>
           <div className=" relative bottom-10 pb-6 ">
             {isEditing ? (
@@ -127,7 +119,7 @@ const MoreInformationsBlock: React.FC<MoreInformationsBlockProps> = ({
                   if (!isEditing) {
                     blockEntity.addComponent(new FurtherFacet({ isGoingFurther: true }));
                     blockEditorEntity.addComponent(
-                      new ParentFacet({ parentId: blockEntity.get(IdFacet)?.props.id || '1' }),
+                      new ParentFacet({ parentId: blockEntity.get(IdentifierFacet)?.props.guid || '1' }),
                     );
                   }
                 }}

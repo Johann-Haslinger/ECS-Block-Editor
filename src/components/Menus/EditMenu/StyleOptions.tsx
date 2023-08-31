@@ -2,32 +2,20 @@ import {
   ECS,
   ECSContext,
   Entity,
+  EntityProps,
   useEntities,
   useEntity,
   useEntityComponents,
+  useEntityHasTags,
 } from '@leanscope/ecs-engine';
 import React, { SetStateAction, useContext, useEffect, useState } from 'react';
-import {
-  ColorFacet,
-  CurrentBlockTypeFacet,
-  CurrentTextTypeFacet,
-  IconFacet,
-  IdFacet,
-  IsEditingFacet,
-  IsSmallBlockFacet,
-  OrderFacet,
-  ParentFacet,
-  TextFacet,
-  TextTypeFacet,
-  TodoFacet,
-  TypeFacet,
-} from '../../../app/BlockFacets';
-import { BlockTypes, StyleTypes, Tags, TextTypes } from '../../../base/Constants';
+
 import { motion } from 'framer-motion';
-import { EntityProps } from '@leanscope/ecs-engine/react-api/classes/EntityProps';
 import { Theme, Themes } from '../../Theme';
 import { IoReader } from 'react-icons/io5';
 import { v4 as uuid } from 'uuid';
+import { TextTypes, TypeFacet, BlockTypes, TextTypeFacet, CurrentTextTypeFacet, TodoFacet, CurrentBlockTypeFacet, ColorFacet, IconNameFacet } from '@leanscope/ecs-models';
+import { StyleTypes, Tags } from '../../../base/Constants';
 
 const getCurrentTextType = (pressedBlockEntities: readonly Entity[], editMenuEntity: Entity) => {
   let textType: TextTypes | undefined = undefined;
@@ -95,7 +83,6 @@ const changeTextType = (
   pressedBlockEntities.map((entity) => {
     entity.addComponent(new TextTypeFacet({ type: type }));
     entity.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
-    entity.addComponent(new IsSmallBlockFacet({ isSmall: false }));
   });
   editMenuEntity.addComponent(new CurrentTextTypeFacet({ textType: type }));
   editMenuEntity.addComponent(new CurrentBlockTypeFacet({ blockType: BlockTypes.TEXT }));
@@ -112,18 +99,17 @@ const changeBlockType = (
 
     switch (type) {
       case BlockTypes.CARD:
-        entity.addComponent(new IsSmallBlockFacet({ isSmall: true }));
-        entity.addComponent(new ColorFacet({ color: Theme(Themes[randomNumber]) }));
-        entity.addComponent(new IconFacet({ icon: <IoReader /> }));
+        entity.addComponent(new ColorFacet({ colorName: Theme(Themes[randomNumber]) }));
+        entity.addComponent(new IconNameFacet({ iconName: "<IoReader />" }));
         entity.addComponent(new TodoFacet({ state: 0 }));
 
         entity.remove(StyleTypes.LIST);
 
         break;
       case BlockTypes.MORE_INFORMATIONS:
-        entity.addComponent(new IsSmallBlockFacet({ isSmall: true }));
-        entity.addComponent(new ColorFacet({ color: Theme(Themes[randomNumber]) }));
-        entity.addComponent(new IconFacet({ icon: <IoReader /> }));
+        
+        entity.addComponent(new ColorFacet({ colorName: Theme(Themes[randomNumber]) }));
+        entity.addComponent(new IconNameFacet({ iconName: "<IoReader />" }));
         entity.addComponent(new TodoFacet({ state: 0 }));
         entity.remove(StyleTypes.LIST);
         break;
@@ -139,10 +125,10 @@ const changeBlockType = (
     //   newBlockEntity.addComponent(new TextFacet({ text: '' }));
     //   newBlockEntity.addComponent(new TextTypeFacet({ type: TextTypes.TEXT }));
     //   newBlockEntity.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
-    //   newBlockEntity.addComponent(new IdFacet({ id: uuid() }));
-    //   newBlockEntity.addComponent(new OrderFacet({ order: 1 }));
+    //   newBlockEntity.addComponent(new IdentifierFacet({ guid: uuid() }));
+    //   newBlockEntity.addComponent(new OrderFacet({ index: 1 }));
     //   newBlockEntity.addComponent(
-    //     new ParentFacet({ parentId: entity.get(IdFacet)?.props.id || '1' }),
+    //     new ParentFacet({ parentId: entity.get(IdentifierFacet)?.props.id || '1' }),
     //   );
     //   newBlockEntity.addTag(Tags.FOCUSED);
     // }
@@ -214,12 +200,12 @@ const TextTypeOption: React.FC<TextTypeProps> = ({ textType }) => {
   const [pressedBlockEntities] = useEntities((e) => e.hasTag(Tags.PRESSED));
   const [editMenuOptions] = useEntities((e) => e.has(CurrentTextTypeFacet));
   const [currentTextTypeFacet] = useEntityComponents(editMenuOptions[0], CurrentTextTypeFacet);
-  const currentTextType = currentTextTypeFacet.props.textType;
+  const currentTextType = currentTextTypeFacet?.props.textType;
   const [currentBlockTypeFacet] = useEntityComponents(editMenuOptions[0], CurrentBlockTypeFacet);
-  const currentBlockType = currentBlockTypeFacet.props.blockType;
+  const currentBlockType = currentBlockTypeFacet?.props.blockType;
 
   const textStyle = {
-    // color: formatting.color,
+    // color: formatting.colorName,
     fontWeight:
       textType === TextTypes.TITLE
         ? 'bold'
@@ -229,7 +215,7 @@ const TextTypeOption: React.FC<TextTypeProps> = ({ textType }) => {
         ? 'bold'
         : textType === TextTypes.BOLD
         ? 'bold'
-        : textType === TextTypes.TEXT
+        : textType === TextTypes.NORMAL
         ? 'normal'
         : textType === TextTypes.CAPTION
         ? 'normal'
@@ -243,7 +229,7 @@ const TextTypeOption: React.FC<TextTypeProps> = ({ textType }) => {
         ? '0.9em'
         : textType === TextTypes.BOLD
         ? '0.9em'
-        : textType === TextTypes.TEXT
+        : textType === TextTypes.NORMAL
         ? '0.9em'
         : textType === TextTypes.CAPTION
         ? '0.8em'
@@ -270,7 +256,7 @@ const BlockTypeOption: React.FC<BlockTypeOptionProps> = ({ blockType }) => {
   const [pressedBlockEntities] = useEntities((e) => e.hasTag(Tags.PRESSED));
   const [editMenuOptions] = useEntities((e) => e.has(CurrentTextTypeFacet));
   const [currentBlockTypeFacet] = useEntityComponents(editMenuOptions[0], CurrentBlockTypeFacet);
-  const currentBlockType = currentBlockTypeFacet.props.blockType;
+  const currentBlockType = currentBlockTypeFacet?.props.blockType;
   const ecs = useContext(ECSContext);
 
   return (
@@ -285,8 +271,7 @@ const BlockTypeOption: React.FC<BlockTypeOptionProps> = ({ blockType }) => {
 };
 
 const StyleOptions = (props: EntityProps) => {
-  const [isEditingFacet] = useEntityComponents(props.entity, IsEditingFacet);
-  const isVisible = isEditingFacet.props.isEditing;
+  const isVisible = useEntityHasTags(props.entity, Tags.IS_EDITING)
   const [pressedBlockEntities] = useEntities((e) => e.hasTag(Tags.PRESSED));
   const [editMenuEntities] = useEntities((e) => e.has(CurrentTextTypeFacet));
   const [isMoreTextOptionsVisible, setIsMoreTextOptionsVisible] = useState(false);
@@ -314,18 +299,18 @@ const StyleOptions = (props: EntityProps) => {
   };
 
   const checkIsList = () => {
-    setIsList(pressedBlockEntities[0].hasTag(StyleTypes.LIST))
+    // setIsList(pressedBlockEntities[0].hasTag(StyleTypes.LIST))
   };
 
   const checkIsBlock = () => {
-   setIsBlock(pressedBlockEntities[0].hasTag(StyleTypes.BLOCK))
+  //  setIsBlock(pressedBlockEntities[0].hasTag(StyleTypes.BLOCK))
   };
 
   return (
     <>
       <div className="flex  w-full  overflow-x-scroll  h-16 my-1 items-center justify-between px-3  ">
         <TextTypeOption textType={TextTypes.HEADING} />
-        <TextTypeOption textType={TextTypes.TEXT} />
+        <TextTypeOption textType={TextTypes.NORMAL} />
         <BlockTypeOption blockType={BlockTypes.CARD} />
         <div
           onClick={() => {
@@ -366,7 +351,7 @@ const StyleOptions = (props: EntityProps) => {
           </div>
           <div className="flex w-full  overflow-x-scroll  py-1.5 border-t  border-[rgb(245,245,245)]  justify-between   ">
             <TextTypeOption textType={TextTypes.BOLD} />
-            <TextTypeOption textType={TextTypes.TEXT} />
+            <TextTypeOption textType={TextTypes.NORMAL} />
             <TextTypeOption textType={TextTypes.CAPTION} />
           </div>
           <div className="flex w-full  overflow-x-scroll  py-1.5 border-t  border-[rgb(245,245,245)]  justify-between   ">

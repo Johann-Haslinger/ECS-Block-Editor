@@ -7,18 +7,8 @@ import {
   useEntityComponents,
   useEntityHasTags,
 } from '@leanscope/ecs-engine';
-import {
-  ChildFacet,
-  IdFacet,
-  OrderFacet,
-  ParentFacet,
-  TextFacet,
-  TextTypeFacet,
-  TodoFacet,
-  TypeFacet,
-} from '../../app/BlockFacets';
+
 import { v4 as uuid } from 'uuid';
-import { BlockTypes, StyleTypes, Tags, TextTypes } from '../../base/Constants';
 import * as monaco from 'monaco-editor';
 import './monaco-custom.css';
 import {
@@ -28,6 +18,8 @@ import {
   getNextHigherOrderEntity,
 } from '../OrderHelper';
 import * as MonacoCollabExt from '@convergencelabs/monaco-collab-ext';
+import { TextFacet, TextTypeFacet, OrderFacet, TodoFacet, TextTypes, TypeFacet, BlockTypes, IdentifierFacet, ParentFacet } from '@leanscope/ecs-models';
+import { StyleTypes, Tags } from '../../base/Constants';
 
 interface TextBlockProps {
   blockEntity: Entity;
@@ -39,8 +31,8 @@ const LINE_HEIGHT_PX = 24; // Annahme der Zeilenhöhe in Pixeln
 
 const TextBlock: React.FC<TextBlockProps> = ({ blockEntity, blockEntities, blockEditorEntity }) => {
   const [textFacet, textTypeFacet] = useEntityComponents(blockEntity, TextFacet, TextTypeFacet);
-  const text = textFacet.props.text;
-  const textType = textTypeFacet.props.type;
+  const text = textFacet?.props.text || "";
+  const textType = textTypeFacet?.props.type;
   const [lineContent, setLineContent] = useState(1);
   const [isFocused, isPressed] = useEntityHasTags(blockEntity, Tags.FOCUSED, Tags.PRESSED);
   const [isList] = useEntityHasTags(blockEntity, StyleTypes.LIST);
@@ -48,13 +40,13 @@ const TextBlock: React.FC<TextBlockProps> = ({ blockEntity, blockEntities, block
   const textBlock = useRef<HTMLDivElement>(null);
   const ecs = useContext(ECSContext);
   const editorRef = useRef<HTMLDivElement | null>(null);
-  const value = text;
-  const order = orderFacet.props.order;
-  const todoState = todoFacet.props.state;
+  const value = text ;
+  const order = orderFacet?.props.index || 1;
+  const todoState = todoFacet?.props.state;
   const editorInstance = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
 
   const textStyle = {
-    // color: formatting.color,
+    // color: formatting.colorName,
     fontWeight:
       textType === TextTypes.TITLE
         ? 'bold'
@@ -64,7 +56,7 @@ const TextBlock: React.FC<TextBlockProps> = ({ blockEntity, blockEntities, block
         ? 'bold'
         : textType === TextTypes.BOLD
         ? 'bold'
-        : textType === TextTypes.TEXT
+        : textType === TextTypes.NORMAL
         ? 'normal'
         : textType === TextTypes.CAPTION
         ? 'normal'
@@ -79,7 +71,7 @@ const TextBlock: React.FC<TextBlockProps> = ({ blockEntity, blockEntities, block
         ? '1.2em'
         : textType === TextTypes.BOLD
         ? '1em'
-        : textType === TextTypes.TEXT
+        : textType === TextTypes.NORMAL
         ? '1em'
         : textType === TextTypes.CAPTION
         ? '0.8em'
@@ -94,7 +86,7 @@ const TextBlock: React.FC<TextBlockProps> = ({ blockEntity, blockEntities, block
         ? 19.15
         : textType === TextTypes.BOLD
         ? 16
-        : textType === TextTypes.TEXT
+        : textType === TextTypes.NORMAL
         ? 16
         : textType === TextTypes.CAPTION
         ? 12.8
@@ -105,7 +97,7 @@ const TextBlock: React.FC<TextBlockProps> = ({ blockEntity, blockEntities, block
   const handleBackspaceNoText = () => {
     if (editorInstance.current!.getValue().trim() === '') {
       const lowerBlockEntity = getNextLowerOrderEntity(
-        blockEntity.get(OrderFacet)?.props.order || 1,
+        blockEntity.get(OrderFacet)?.props.index || 1,
         blockEntities,
       );
       blockEditorEntity.removeTag(Tags.FOCUSED);
@@ -142,12 +134,12 @@ const TextBlock: React.FC<TextBlockProps> = ({ blockEntity, blockEntities, block
       const newBlockEntity = new Entity();
       ecs.engine.addEntity(newBlockEntity);
       newBlockEntity.addComponent(new TextFacet({ text: '' }));
-      newBlockEntity.addComponent(new TextTypeFacet({ type: TextTypes.TEXT }));
+      newBlockEntity.addComponent(new TextTypeFacet({ type: TextTypes.NORMAL }));
       newBlockEntity.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
-      newBlockEntity.addComponent(new IdFacet({ id: uuid() }));
+      newBlockEntity.addComponent(new IdentifierFacet({ guid: uuid() }));
       newBlockEntity.addComponent(
         new OrderFacet({
-          order: findNumberBetween(order, getNextHigherOrder(order, blockEntities) || 1),
+          index: findNumberBetween(order, getNextHigherOrder(order, blockEntities) || 1),
         }),
       );
       newBlockEntity.addComponent(
@@ -155,7 +147,7 @@ const TextBlock: React.FC<TextBlockProps> = ({ blockEntity, blockEntities, block
       );
       newBlockEntity.addTag(Tags.FOCUSED);
 
-      if (todoState >= 1) {
+      if (todoState && todoState >= 1) {
         newBlockEntity.addComponent(new TodoFacet({ state: 1 }));
       }
       if (isList) {
@@ -167,7 +159,7 @@ const TextBlock: React.FC<TextBlockProps> = ({ blockEntity, blockEntities, block
   const handleArrowUpPress = () => {
     blockEntity.removeTag(Tags.FOCUSED);
     const lowerBlockEntity = getNextLowerOrderEntity(
-      blockEntity.get(OrderFacet)?.props.order || 1,
+      blockEntity.get(OrderFacet)?.props.index || 1,
       blockEntities,
     );
     blockEditorEntity.removeTag(Tags.FOCUSED);
@@ -180,7 +172,7 @@ const TextBlock: React.FC<TextBlockProps> = ({ blockEntity, blockEntities, block
   const handleArrowDownPress = () => {
     blockEntity.removeTag(Tags.FOCUSED);
     const higherBlockEntity = getNextHigherOrderEntity(
-      blockEntity.get(OrderFacet)?.props.order || 1,
+      blockEntity.get(OrderFacet)?.props.index || 1,
       blockEntities,
     );
     blockEditorEntity.removeTag(Tags.FOCUSED);
@@ -338,7 +330,7 @@ const TextBlock: React.FC<TextBlockProps> = ({ blockEntity, blockEntities, block
       });
 
       // Füge die Aktion nur hinzu, wenn der Editor leer ist
-      if (value.trim() === '') {
+      if (value?.trim() === '') {
         const minusAction = editorInstance.current.addAction({
           id: 'custom-minus-action',
           label: 'Custom Minus Action',
@@ -382,25 +374,25 @@ const TextBlock: React.FC<TextBlockProps> = ({ blockEntity, blockEntities, block
       editor.layout();
 
       if (editorInstance.current && isFocused) {
-        const remoteCursorManager = new MonacoCollabExt.RemoteCursorManager({
-          editor: editorInstance.current,
-          tooltips: true,
-          tooltipDuration: 2,
-        });
+        // const remoteCursorManager = new MonacoCollabExt.RemoteCursorManager({
+        //   editor: editorInstance.current,
+        //   tooltips: true,
+        //   tooltipDuration: 2,
+        // });
 
-        const cursor = remoteCursorManager.addCursor('jDoe', '#797AFF', 'John Doe');
+        // const cursor = remoteCursorManager.addCursor('jDoe', '#797AFF', 'John Doe');
 
-        // Set the position of the cursor.
-        cursor.setOffset(4);
+        // // Set the position of the cursor.
+        // cursor.setOffset(4);
 
-        // Hide the cursor
-        // cursor.hide();
+        // // Hide the cursor
+        // // cursor.hide();
 
-        // Show the cursor
-        cursor.show();
+        // // Show the cursor
+        // cursor.show();
 
-        // Remove the cursor.
-        cursor.dispose();
+        // // Remove the cursor.
+        // cursor.dispose();
 
         const contentManager = new MonacoCollabExt.EditorContentManager({
           editor: editorInstance.current,
@@ -493,6 +485,7 @@ const TextBlock: React.FC<TextBlockProps> = ({ blockEntity, blockEntities, block
 
   return (
     <BlockOutline
+    blockEditorEntity={blockEditorEntity}
       blockEntity={blockEntity}
       content={
         <div ref={textBlock} className="w-full">

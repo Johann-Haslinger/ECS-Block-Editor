@@ -1,18 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
-import {
-  ChildFacet,
-  // Andere Imports bleiben gleich...
-  IdFacet,
-  IsEditingFacet,
-  IsSmallBlockFacet,
-  OrderFacet,
-  ParentFacet,
-  TextFacet,
-  TextTypeFacet,
-  TypeFacet,
-} from '../app/BlockFacets';
-import { BlockTypes, Tags, TextTypes } from '../base/Constants';
 import TextBlock from './Blocks/TextBlock';
 import ErrorBlock from './Blocks/ErrorBlock';
 import EditMenu from './Menus/EditMenu';
@@ -41,21 +28,53 @@ import {
   getNextLowerOrder,
   getNextLowerOrderEntity,
 } from './OrderHelper';
+import {
+  OrderFacet,
+  ParentFacet,
+  TypeFacet,
+  TextFacet,
+  TextTypeFacet,
+  TextTypes,
+  BlockTypes,
+  IdentifierFacet,
+} from '@leanscope/ecs-models';
+import { Tags } from '../base/Constants';
+
+interface CheckIsPressedProps {
+  entity: Entity;
+  addCount: () => void;
+  increaseCount: () => void;
+}
+const CheckIsPressed: React.FC<CheckIsPressedProps> = ({
+  entity,
+  increaseCount,
+  addCount,
+}) => {
+  const [isPressed] = useEntityHasTags(entity, Tags.PRESSED);
+  useEffect(() => {
+    if (!isPressed) {
+      addCount();
+    } else {
+      increaseCount();
+    }
+  }, [isPressed]);
+  return <></>;
+};
 
 const updateBlockOrder = (blocks: readonly Entity[]): Entity[] => {
   // Filter blocks without order and sort the rest
   const orderedBlocks = blocks
-    .filter((block) => block.get(OrderFacet)?.props.order !== undefined)
-    .sort((a, b) => a.get(OrderFacet)?.props.order! - b.get(OrderFacet)?.props.order!);
+    .filter((block) => block.get(OrderFacet)?.props.index !== undefined)
+    .sort((a, b) => a.get(OrderFacet)?.props.index! - b.get(OrderFacet)?.props.index!);
 
   // Assign orders to blocks without order
   let nextOrder =
     orderedBlocks.length > 0
-      ? orderedBlocks[orderedBlocks.length - 1].get(OrderFacet)?.props.order! + 1
+      ? orderedBlocks[orderedBlocks.length - 1].get(OrderFacet)?.props.index! + 1
       : 1;
   const blocksWithNewOrder = blocks
-    .filter((block) => block.get(OrderFacet)?.props.order === undefined)
-    .map((block) => block.add(new OrderFacet({ order: nextOrder++ })));
+    .filter((block) => block.get(OrderFacet)?.props.index === undefined)
+    .map((block) => block.add(new OrderFacet({ index: nextOrder++ })));
 
   return orderedBlocks.concat(blocksWithNewOrder);
 };
@@ -73,19 +92,27 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
 }) => {
   const editableAreaRef = useRef<HTMLDivElement>(null);
   const blockEditorEntity = blockEditorEntities[0];
-  const [isEditingFacet, currentParentIdFacet] = useEntityComponents(
+  const [currentParentIdentifierFacet] = useEntityComponents(
     blockEditorEntity,
-    IsEditingFacet,
+
     ParentFacet,
   );
-  const isEditMenuVisible = isEditingFacet.props.isEditing;
+  const isEditMenuVisible = useEntityHasTags(blockEditorEntity, Tags.IS_EDITING);
   const [isCreateMenuVisible] = useEntityHasTags(blockEditorEntity, Tags.IS_CREATEMENU_VISIBLE);
   const textareaRef = useRef<HTMLInputElement>(null);
   const [sortedBlocks, setSortedBlocks] = useState(updateBlockOrder(blockEntities));
   const ecs = useContext(ECSContext);
   const [allBlockEntities] = useEntities((e) => e.has(TypeFacet));
-  const currentParentFacet = currentParentIdFacet.props.parentId;
+  const currentParentFacet = currentParentIdentifierFacet?.props.parentId;
   const [isWriting] = useEntityHasTags(blockEditorEntity, Tags.FOCUSED);
+  const [pressedBlocksCount, setPrssedBlockCount] = useState(0);
+
+  useEffect(() => {
+    console.log(pressedBlocksCount)
+    if (pressedBlocksCount === 0) {
+      blockEditorEntity?.removeTag(Tags.IS_EDITING);
+    }
+  }, [pressedBlocksCount]);
 
   useEffect(() => {
     setSortedBlocks(updateBlockOrder(blockEntities));
@@ -93,7 +120,7 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
 
   const handleClickOutside = (event: MouseEvent) => {
     if (editableAreaRef.current && !editableAreaRef.current.contains(event.target as Node)) {
-      blockEditorEntity?.addComponent(new IsEditingFacet({ isEditing: false }));
+      blockEditorEntity?.removeTag(Tags.IS_EDITING);
     }
   };
 
@@ -107,6 +134,7 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
   }, [blockEditorEntity]);
 
   useEffect(() => {
+    console.log('rerendert');
     let blocksPressed = false;
     allBlockEntities.map((block) => {
       if (block.hasTag(Tags.PRESSED)) {
@@ -114,12 +142,12 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
       }
     });
     if (!blocksPressed) {
-      blockEditorEntity?.addComponent(new IsEditingFacet({ isEditing: false }));
+      blockEditorEntity?.removeTag(Tags.IS_EDITING);
     }
   }, [
     allBlockEntities.map((block) => {
       block.hasTag(Tags.PRESSED);
-    }), // Rerender !!
+    }),
   ]);
 
   useEffect(() => {
@@ -129,8 +157,8 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
   }, [isCreateMenuVisible]);
 
   const recalculateOrder = (startIndex: number, endIndex: number) => {
-    const startOrder = sortedBlocks[startIndex].get(OrderFacet)?.props.order;
-    const endOrder = sortedBlocks[endIndex].get(OrderFacet)?.props.order || 1;
+    const startOrder = sortedBlocks[startIndex].get(OrderFacet)?.props.index;
+    const endOrder = sortedBlocks[endIndex].get(OrderFacet)?.props.index || 1;
 
     const nextHigherOrder = getNextHigherOrder(endOrder, blockEntities) || 1;
     const nextLowerOrder = getNextLowerOrder(endOrder, blockEntities) || 1;
@@ -163,9 +191,9 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
     blocksCopy.splice(destination.index, 0, movedBlock);
 
     if (source.index !== destination.index) {
-      console.log('movedBlock', 'order', movedBlock.get(OrderFacet)?.props.order);
+      console.log('movedBlock', 'order', movedBlock.get(OrderFacet)?.props.index);
       const newOrder = recalculateOrder(source.index, destination.index);
-      movedBlock.add(new OrderFacet({ order: newOrder }));
+      movedBlock.add(new OrderFacet({ index: newOrder }));
       console.log('movedBlock', newOrder);
       setSortedBlocks(updateBlockOrder(blockEntities));
 
@@ -186,12 +214,12 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
       const newBlockEntity = new Entity();
       ecs.engine.addEntity(newBlockEntity);
       newBlockEntity.addComponent(new TextFacet({ text: '' }));
-      newBlockEntity.addComponent(new TextTypeFacet({ type: TextTypes.TEXT }));
+      newBlockEntity.addComponent(new TextTypeFacet({ type: TextTypes.NORMAL }));
       newBlockEntity.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
-      newBlockEntity.addComponent(new IdFacet({ id: uuid() }));
+      newBlockEntity.addComponent(new IdentifierFacet({ guid: uuid() }));
       newBlockEntity.addComponent(
         new OrderFacet({
-          order:
+          index:
             blockEntities.length !== 0 && getHighestOrder(blockEntities) !== null
               ? getHighestOrder(blockEntities)! + 1
               : 1,
@@ -227,14 +255,15 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
 
                 return (
                   <Draggable
-                    key={blockEntity?.get(IdFacet)?.props.id.toString()}
-                    draggableId={`${blockEntity?.get(IdFacet)?.props.id.toString()}`}
+                    key={blockEntity?.get(IdentifierFacet)?.props.guid.toString()}
+                    draggableId={`${blockEntity?.get(IdentifierFacet)?.props.guid.toString()}`}
                     index={idx}
                   >
                     {(provided: any) => (
                       <div
                         className={
-                          blockEntity?.get(IsSmallBlockFacet)?.props.isSmall === true
+                          blockEntity?.get(TypeFacet)?.props.type == BlockTypes.CARD ||
+                          blockEntity?.get(TypeFacet)?.props.type == BlockTypes.MORE_INFORMATIONS
                             ? 'md:w-1/2 w-full md:pr-1 pr-0.5 lg:w-1/3'
                             : 'w-full'
                         }
@@ -243,7 +272,7 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
                         {...provided.dragHandleProps}
                       >
                         <BlockComponent
-                          key={blockEntity?.get(IdFacet)?.props.id}
+                          key={blockEntity?.get(IdentifierFacet)?.props.guid}
                           blockEntity={blockEntity}
                           blockEditorEntity={blockEditorEntity}
                           blockEntities={blockEntities}
@@ -271,7 +300,7 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
 
       <InputBar
         blockEntities={blockEditorEntities}
-        isVisible={isCreateMenuVisible || isEditMenuVisible  || isWriting ? false : true}
+        isVisible={isCreateMenuVisible || isEditMenuVisible || isWriting ? false : true}
         toggleIsVisible={() => {}}
       />
       {blockEditorEntity && currentParentFacet == parentId && (
@@ -283,6 +312,10 @@ const ComponentRenderer: React.FC<ComponentRendererProps> = ({
       {blockEditorEntity && currentParentFacet == parentId && (
         <PageOptionsMenu entity={blockEditorEntity} />
       )}
+
+      {allBlockEntities.map((entity) => (
+        <CheckIsPressed entity={entity} addCount={()=> setPrssedBlockCount(pressedBlocksCount + 1)}  increaseCount={()=> setPrssedBlockCount(pressedBlocksCount - 1)}/>
+      ))}
     </div>
   );
 };

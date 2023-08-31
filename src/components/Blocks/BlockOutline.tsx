@@ -8,49 +8,41 @@ import {
 } from '@leanscope/ecs-engine';
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import { IoCheckmarkCircle, IoEllipseOutline } from 'react-icons/io5';
-import {
-  ColorFacet,
-  FurtherFacet,
-  IdFacet,
-  IsEditingFacet,
-  IsFocusedFacet,
-  IsPressedFacet,
-  ParentFacet,
-  TextFacet,
-  TodoFacet,
-  TypeFacet,
-} from '../../app/BlockFacets';
-import { BlockTypes, StyleTypes, Tags } from '../../base/Constants';
+
 import FurtherView from '../FurtherView';
+import { StyleTypes, Tags } from '../../base/Constants';
+import {
+  TodoFacet,
+  FurtherFacet,
+  ColorFacet,
+  TypeFacet,
+  BlockTypes,
+  ParentFacet,
+} from '@leanscope/ecs-models';
 
 interface BlockOutlineProps {
   content: ReactNode;
   blockEntity: Entity;
   isFocused?: boolean;
   onClick?: () => void;
+  blockEditorEntity: Entity
 }
 
-const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onClick }) => {
-  const [isPressed] = useEntityHasTags(blockEntity, Tags.PRESSED);
+const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onClick, blockEditorEntity }) => {
+  const [isPressed, isFocused] = useEntityHasTags(blockEntity, Tags.PRESSED, Tags.FOCUSED);
   // console.log(tag)
   // const isPressed = blockEntity?.hasTag(Tags.PRESSED);
-  const [blockEditorEntities] = useEntities((e: Entity) => e.has(IsEditingFacet));
-  const blockEditorEntity = blockEditorEntities[0];
+ 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const textBlockRef = useRef<HTMLDivElement | null>(null);
   const [startX, setStartX] = useState<number | null>(null);
   const [translateX, setTranslateX] = useState<number>(0);
   const [isSwiping, setIsSwiping] = useState<boolean>(false);
-  const [isEditingFacet] = useEntityComponents(blockEditorEntity, IsEditingFacet);
   const [todoFacet] = useEntityComponents(blockEntity, TodoFacet);
   const [furtherFacet] = useEntityComponents(blockEntity, FurtherFacet);
-  const isFurtherViewVisible = furtherFacet.props.isGoingFurther;
-  const isEditing = isEditingFacet.props.isEditing;
-  const todoState = todoFacet.props.state;
-
-  const [isFocused] = useEntityHasTags(blockEntity, Tags.FOCUSED);
-
-  
+  const isFurtherViewVisible = furtherFacet?.props.isGoingFurther;
+  const [isEditing] = useEntityHasTags(blockEditorEntity, Tags.IS_EDITING);
+  const todoState = todoFacet?.props.state;
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -71,19 +63,17 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
   }, [isEditing]);
 
   const toggleActivePressed = () => {
-   if (!isFocused){
-    blockEditorEntity?.addComponent(new IsEditingFacet({ isEditing: true }));
-    blockEditorEntity.removeTag(Tags.IS_CREATEMENU_VISIBLE);
-  
-    if (!isPressed) {
-      blockEntity.addTag(Tags.PRESSED);
-    } else {
-      blockEntity.removeTag(Tags.PRESSED);
-    }
-    blockEntity.addComponent(new IsFocusedFacet({ isFocused: false }));
-  };
+    if (!isFocused) {
+      blockEditorEntity?.addTag(Tags.IS_EDITING);
+      blockEditorEntity.removeTag(Tags.IS_CREATEMENU_VISIBLE);
 
- 
+      if (!isPressed) {
+        blockEntity.addTag(Tags.PRESSED);
+      } else {
+        blockEntity.removeTag(Tags.PRESSED);
+      }
+      // blockEntity.addTag(Tags.FOCUSED);
+    }
   };
   const handleMouseDown = () => {
     if (isEditing) {
@@ -96,10 +86,9 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
         if (!isFocused) {
           toggleActivePressed();
         }
-       
       }, 500);
     }
-   }
+  };
 
   const handleMouseUp = () => {
     if (timeoutRef.current) {
@@ -157,7 +146,9 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
       <div
         className={`${
           isPressed
-            ?  blockEntity.hasTag(StyleTypes.BLOCK) ? 'bg-[rgb(225,241,254)] w-full z-40 select-none  p-2  ' :'bg-[rgb(225,241,254)] w-full z-40 select-none rounded-md p-2  md:mb-1 mb-0.5' 
+            ? blockEntity.hasTag(StyleTypes.BLOCK)
+              ? 'bg-[rgb(225,241,254)] w-full z-40 select-none  p-2  '
+              : 'bg-[rgb(225,241,254)] w-full z-40 select-none rounded-md p-2  md:mb-1 mb-0.5'
             : 'w-full p-2  border-white'
         } ${blockEntity.hasTag(StyleTypes.BLOCK) ? 'p-4 ' : 'md:mb-1 mb-0.5'}`}
         onMouseDown={handleMouseDown}
@@ -167,14 +158,18 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
         onTouchEnd={handleTouchEnd}
         ref={textBlockRef}
         style={{
-          backgroundColor: 
-            blockEntity.hasTag(StyleTypes.BLOCK)
-              ? blockEntity.get(ColorFacet)?.props.color
-                ? blockEntity.get(ColorFacet)?.props.color
-                : 'rgb(250, 250, 250)'
-              : '',
+          backgroundColor: blockEntity.hasTag(StyleTypes.BLOCK)
+            ? blockEntity.get(ColorFacet)?.props.colorName
+              ? blockEntity.get(ColorFacet)?.props.colorName
+              : 'rgb(250, 250, 250)'
+            : '',
 
-            color: blockEntity.hasTag(StyleTypes.BLOCK) ?  blockEntity.get(TypeFacet)?.props.type === BlockTypes.CARD ||  blockEntity.get(TypeFacet)?.props.type === BlockTypes.MORE_INFORMATIONS ? 'white' : '' : '',
+          color: blockEntity.hasTag(StyleTypes.BLOCK)
+            ? blockEntity.get(TypeFacet)?.props.type === BlockTypes.CARD ||
+              blockEntity.get(TypeFacet)?.props.type === BlockTypes.MORE_INFORMATIONS
+              ? 'white'
+              : ''
+            : '',
           ...transitionStyle,
         }}
       >
@@ -202,10 +197,10 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
               <IoCheckmarkCircle />
             </div>
           ) : blockEntity.hasTag(StyleTypes.LIST) ? (
-            <div className=' p-2.5  '> 
-              <div className='w-1.5 h-1.5 rounded-full bg-black'/>
+            <div className=" p-2.5  ">
+              <div className="w-1.5 h-1.5 rounded-full bg-black" />
             </div>
-          ): (
+          ) : (
             <></>
           )}
 
@@ -227,9 +222,16 @@ const BlockOutline: React.FC<BlockOutlineProps> = ({ content, blockEntity, onCli
           </div>
         </div>
       </div>
-      {isFurtherViewVisible && <FurtherView backfunc={()=>{
-        blockEditorEntity.add(new ParentFacet({parentId: blockEntity.get(ParentFacet)?.props.parentId || "1"}))
-      }} blockEntity={blockEntity} />}
+      {isFurtherViewVisible && (
+        <FurtherView
+          backfunc={() => {
+            blockEditorEntity.add(
+              new ParentFacet({ parentId: blockEntity.get(ParentFacet)?.props.parentId || '1' }),
+            );
+          }}
+          blockEntity={blockEntity}
+        />
+      )}
     </>
   );
 };

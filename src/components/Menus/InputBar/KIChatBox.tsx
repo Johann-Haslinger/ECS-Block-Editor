@@ -15,15 +15,9 @@ import {
 import { delay } from '../../Delay';
 import Loader from '../../Loader';
 import { ECSContext, Entity, useEntities } from '@leanscope/ecs-engine';
-import {
-  IdFacet,
-  ParentFacet,
-  TextFacet,
-  TextTypeFacet,
-  TypeFacet,
-} from '../../../app/BlockFacets';
+import {  TypeFacet, BlockTypes, TextFacet, IdentifierFacet, ParentFacet } from '@leanscope/ecs-models';
+import { Tags } from '../../../base/Constants';
 import { v4 as uuid } from 'uuid';
-import { BlockTypes, Tags, TextTypes } from '../../../base/Constants';
 
 type row = {
   question: string;
@@ -91,7 +85,7 @@ const KIChatBox: React.FC<ChatBoxProps> = ({ isVisible, toggleISVisible, history
     ecs.engine.addEntity(newParentBlockEntity);
     newParentBlockEntity.addComponent(new TypeFacet({ type: BlockTypes.PAGE }));
     newParentBlockEntity.addComponent(new TextFacet({ text: parentBlockName }));
-    newParentBlockEntity.addComponent(new IdFacet({ id: parentIdBlocks }));
+    newParentBlockEntity.addComponent(new IdentifierFacet({ guid: parentIdBlocks }));
     newParentBlockEntity.addComponent(new ParentFacet({ parentId: '1' }));
 
     console.log('prompt', parentBlockName);
@@ -108,7 +102,7 @@ const KIChatBox: React.FC<ChatBoxProps> = ({ isVisible, toggleISVisible, history
 
     2. Füge die Standardkomponenten hinzu, die immer gleich sind:
        blockEntity1.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
-       blockEntity1.addComponent(new IdFacet({ id: uuid() }));
+       blockEntity1.addComponent(new IdentifierFacet({ guid: uuid() }));
        blockEntity1.addComponent(new ParentFacet({ parentId: parentIdBlocks })); 
    
     3. Füge die variable Komponente hinzu, je nachdem, was in ** ** steht:
@@ -132,7 +126,7 @@ const KIChatBox: React.FC<ChatBoxProps> = ({ isVisible, toggleISVisible, history
     //     const blockEntity1 = new Entity();
     //     ecs.engine.addEntity(blockEntity1);
     //     blockEntity1.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
-    //     blockEntity1.addComponent(new IdFacet({ id: uuid() }));
+    //     blockEntity1.addComponent(new IdentifierFacet({ guid: uuid() }));
     //     blockEntity1.addComponent(new ParentFacet({ parentId: 1 }));
     //     blockEntity1.addComponent(new TextFacet({ text: '...' }));
     //     blockEntity1.addComponent(new TextTypeFacet({ type: TextTypes.HEADING }));
@@ -140,7 +134,7 @@ const KIChatBox: React.FC<ChatBoxProps> = ({ isVisible, toggleISVisible, history
     //     const blockEntity2 = new Entity();
     //     ecs.engine.addEntity(blockEntity2);
     //     blockEntity2.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
-    //     blockEntity2.addComponent(new IdFacet({ id: uuid() }));
+    //     blockEntity2.addComponent(new IdentifierFacet({ guid: uuid() }));
     //     blockEntity2.addComponent(new ParentFacet({ parentId: 1 }));
     //     blockEntity2.addComponent(new TextFacet({ text: '...' }));
     //     blockEntity2.addComponent(new TextTypeFacet({ type: TextTypes.TEXT }));
@@ -148,7 +142,7 @@ const KIChatBox: React.FC<ChatBoxProps> = ({ isVisible, toggleISVisible, history
     // const blockEntity3 = new Entity();
     // ecs.engine.addEntity(blockEntity3);
     // blockEntity3.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
-    // blockEntity3.addComponent(new IdFacet({ id: uuid() }));
+    // blockEntity3.addComponent(new IdentifierFacet({ guid: uuid() }));
     // blockEntity3.addComponent(new ParentFacet({ parentId: 1 }));
     // blockEntity3.addComponent(new TextFacet({ text: '*Text*',}),);
     // blockEntity3.addComponent(new TextTypeFacet({ type: TextTypes.HEADING }));
@@ -156,7 +150,7 @@ const KIChatBox: React.FC<ChatBoxProps> = ({ isVisible, toggleISVisible, history
     // const blockEntity4 = new Entity();
     // ecs.engine.addEntity(blockEntity4);
     // blockEntity4.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
-    // blockEntity4.addComponent(new IdFacet({ id: uuid() }));
+    // blockEntity4.addComponent(new IdentifierFacet({ guid: uuid() }));
     // blockEntity4.addComponent(new ParentFacet({ parentId: parentIdBlocks }));
     // blockEntity4.addComponent(new TextFacet({ text: '*Text*',}),);
     // blockEntity4.addComponent(new TextTypeFacet({ type: TextTypes.TEXT }));
@@ -179,7 +173,7 @@ const KIChatBox: React.FC<ChatBoxProps> = ({ isVisible, toggleISVisible, history
     // ecs.engine.addEntity(newBlock);
     // newBlock.addComponent(new TypeFacet({ type: BlockTypes.TEXT }));
     // newBlock.addComponent(new TextFacet({ text: row.answer ? row.answer : "" }));
-    // newBlock.addComponent(new IdFacet({ id: uuid() }));
+    // newBlock.addComponent(new IdentifierFacet({ guid: uuid() }));
     // newBlock.addComponent(new ParentFacet({ parentId: parentIdBlocks }));
     // newBlock.addComponent(new TextTypeFacet({ type: TextTypes.TEXT }));
 

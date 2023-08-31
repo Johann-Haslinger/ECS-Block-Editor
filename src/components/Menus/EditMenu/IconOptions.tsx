@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useEntities } from '@leanscope/ecs-engine';
 import { Colors, Tags } from '../../../base/Constants';
-import { ColorFacet, IconFacet } from '../../../app/BlockFacets';
 import { Theme, Themes } from '../../Theme';
 import {
   IoEllipsisHorizontal,
@@ -12,6 +11,7 @@ import {
 } from 'react-icons/io5';
 import SheetViewOutline from '../../StyleLibary/SheetViewOutline';
 import { Icons, StringToIcon } from '../../Icons';
+import { IconNameFacet } from '@leanscope/ecs-models';
 
 interface IconOptionsProps {
   isVisible: boolean;
@@ -27,7 +27,7 @@ const IconOptions: React.FC<IconOptionsProps> = ({ toggleIsVisible }) => {
 
   const handleClick = (icon: string) => {
     pressedBlockEntities.map((entity) => {
-      entity.addComponent(new IconFacet({ icon: StringToIcon(icon) }));
+      entity.addComponent(new IconNameFacet({ iconName: icon }));
     });
     setIsGoingBack(true);
   };

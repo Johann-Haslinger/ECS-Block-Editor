@@ -2,9 +2,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useEntities } from '@leanscope/ecs-engine';
 import { Colors, Tags } from '../../../base/Constants';
-import { ColorFacet } from '../../../app/BlockFacets';
 import { Theme, Themes } from '../../Theme';
 import { IoEllipsisHorizontal, IoEllipsisHorizontalCircle, IoImage } from 'react-icons/io5';
+import { ColorFacet } from '@leanscope/ecs-models';
 
 interface ColorOptionsProps {
   isVisible: boolean;
@@ -16,7 +16,7 @@ const ColorOptions: React.FC<ColorOptionsProps> = ({ isVisible, toggleIsVisible 
 
   const onClick = (color: string) => {
     pressedBlockEntities.map((entity) => {
-      entity.addComponent(new ColorFacet({ color: color }));
+      entity.addComponent(new ColorFacet({ colorName: color }));
     });
   };
 

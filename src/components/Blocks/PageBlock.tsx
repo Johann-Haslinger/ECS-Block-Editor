@@ -1,7 +1,8 @@
-import { Entity, useEntityComponents } from '@leanscope/ecs-engine';
+import { Entity, useEntityComponents, useEntityHasTags } from '@leanscope/ecs-engine';
 import React from 'react';
 import BlockOutline from './BlockOutline';
-import { FurtherFacet, IdFacet, IsEditingFacet, ParentFacet, TextFacet } from '../../app/BlockFacets';
+import {  FurtherFacet, IdentifierFacet, ParentFacet, TextFacet } from '@leanscope/ecs-models';
+import { Tags } from '../../base/Constants';
 
 interface PageBlockProps {
   blockEntity: Entity;
@@ -10,12 +11,13 @@ interface PageBlockProps {
 
 const PageBlock: React.FC<PageBlockProps> = ({ blockEntity, blockEditorEntity }) => {
   const [textFacet] = useEntityComponents(blockEntity, TextFacet);
-  const text = textFacet.props.text;
-  const [isEditingFacet] = useEntityComponents(blockEditorEntity, IsEditingFacet);
-  const isEditing = isEditingFacet.props.isEditing;
+  const text = textFacet?.props.text;
+  
+  const [isEditing] =useEntityHasTags(blockEditorEntity, Tags.IS_EDITING )
 
   return (
     <BlockOutline
+    blockEditorEntity={blockEditorEntity}
       blockEntity={blockEntity}
       content={
         <div
@@ -23,7 +25,7 @@ const PageBlock: React.FC<PageBlockProps> = ({ blockEntity, blockEditorEntity })
             if (!isEditing) {
               blockEntity.addComponent(new FurtherFacet({ isGoingFurther: true }));
               blockEditorEntity.addComponent(
-                new ParentFacet({ parentId: blockEntity.get(IdFacet)?.props.id || '1' }),
+                new ParentFacet({ parentId: blockEntity.get(IdentifierFacet)?.props.guid || '1' }),
               );
             }
           }}

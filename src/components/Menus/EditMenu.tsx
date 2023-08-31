@@ -1,21 +1,16 @@
 import {
   ECSContext,
   Entity,
+  EntityProps,
   useEntities,
   useEntity,
   useEntityComponents,
+  useEntityHasTags,
 } from '@leanscope/ecs-engine';
-import { EntityProps } from '@leanscope/ecs-engine/react-api/classes/EntityProps';
+
 import { motion } from 'framer-motion';
 import React, { useContext, useEffect, useState } from 'react';
-import {
-  FurtherFacet,
-  IdFacet,
-  IsEditingFacet,
-  ParentFacet,
-  TextFacet,
-  TypeFacet,
-} from '../../app/BlockFacets';
+
 import {
   IoArrowForwardCircle,
   IoArrowForwardCircleOutline,
@@ -32,13 +27,14 @@ import {
   IoTrashOutline,
 } from 'react-icons/io5';
 import StyleOptions from './EditMenu/StyleOptions';
-import { BlockTypes, Tags } from '../../base/Constants';
+import { Tags } from '../../base/Constants';
 import DestructiveActionSheet from '../StyleLibary/DestructiveActionSheet';
 import LayoutOptions from './EditMenu/LayoutOptions';
 import { v4 as uuid } from 'uuid';
 import CardOptions from './EditMenu/CardOptions';
 import KIChatBox from './InputBar/KIChatBox';
 import BlockAIMenu from './BlockAIMenu';
+import { BlockTypes, FurtherFacet, IdentifierFacet, ParentFacet, TextFacet, TypeFacet } from '@leanscope/ecs-models';
 
 type option = {
   name: string;
@@ -110,8 +106,7 @@ const EditOption: React.FC<EditOptionProps> = ({ option, isVisible, canShow }) =
 
 const EditMenu = (props: EntityProps) => {
   const ecs = useContext(ECSContext);
-  const [isEditingFacet] = useEntityComponents(props.entity, IsEditingFacet);
-  const isVisible = isEditingFacet.props.isEditing;
+  const [isVisible] = useEntityHasTags(props.entity, Tags.IS_EDITING );
   const [pressedBlockEntities] = useEntities((e) => e.hasTag(Tags.PRESSED));
   const [isDeleteSheetVisible, setIsDeleteSheetVisible] = useState(false);
   const [blockEntities] = useEntities((e) => e.has(TypeFacet));
@@ -146,7 +141,7 @@ const EditMenu = (props: EntityProps) => {
       if (block.hasTag(Tags.PRESSED)) {
         if (newParentId === '') {
           currentParentId = block.get(ParentFacet)?.props.parentId;
-          newParentId = block.get(IdFacet)?.props.id;
+          newParentId = block.get(IdentifierFacet)?.props.guid;
         }
         if (newText === '') {
           newText = block.get(TextFacet)?.props.text;
@@ -163,7 +158,7 @@ const EditMenu = (props: EntityProps) => {
     const newBlockEntity = new Entity();
     ecs.engine.addEntity(newBlockEntity);
     newBlockEntity.addComponent(new ParentFacet({ parentId: currentParentId }));
-    newBlockEntity.addComponent(new IdFacet({ id: newParentId }));
+    newBlockEntity.addComponent(new IdentifierFacet({ guid: newParentId }));
     newBlockEntity.addComponent(new TypeFacet({ type: BlockTypes.PAGE }));
     newBlockEntity.addComponent(
       new TextFacet({ text: newText == undefined ? 'Seitentitel' : newText }),
@@ -319,8 +314,8 @@ const EditMenu = (props: EntityProps) => {
           dragConstraints={{ top: 0, bottom: 0 }}
         >
           <div className="flex overflow-x-scroll w flex-auto">
-            {editOptions.map((option) => (
-              <EditOption canShow={option.canShow()} isVisible={isVisible} option={option} />
+            {editOptions.map((option, idx) => (
+              <EditOption key={idx} canShow={option.canShow()} isVisible={isVisible} option={option} />
             ))}
           </div>
         </motion.div>

@@ -1,18 +1,12 @@
-import { EntityProps } from '@leanscope/ecs-engine/react-api/classes/EntityProps';
+
 import { motion } from 'framer-motion';
-import { BlockTypes, FitTypes, SizeTypes, Tags } from '../../base/Constants';
+
 import { IoClose, IoImage, IoRemove } from 'react-icons/io5';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { ECS, ECSContext, Entity, useEntityHasTags } from '@leanscope/ecs-engine';
-import {
-  FitFacet,
-  IsEditingFacet,
-  ParentFacet,
-  SizeFacet,
-  SrcFacet,
-  TypeFacet,
-} from '../../app/BlockFacets';
-import { string } from 'prop-types';
+import { BlockTypes, TypeFacet, ParentFacet, Base64Facet, FitTypes, SizeFacet, SizeTypes, ImageFitFacet, ImageSizeFacet,  } from '@leanscope/ecs-models';
+import { Tags } from '../../base/Constants';
+
 
 type option = {
   blockType: BlockTypes;
@@ -68,9 +62,9 @@ const CreateOption: React.FC<CreateOptionProps> = ({ option, parentId, blockEdit
     ecs.engine.addEntity(newBlockEntity);
     newBlockEntity.addComponent(new TypeFacet({ type: BlockTypes.IMAGE }));
     newBlockEntity.addComponent(new ParentFacet({ parentId: parentId }));
-    newBlockEntity.addComponent(new SrcFacet({ src: url }));
-    newBlockEntity.addComponent(new FitFacet({ fit: FitTypes.AUTO }));
-    newBlockEntity.addComponent(new SizeFacet({ size: SizeTypes.AUTO }));
+    newBlockEntity.addComponent(new Base64Facet({ data: url }));
+    newBlockEntity.addComponent(new ImageFitFacet({ fit: FitTypes.AUTO_FIT }));
+    newBlockEntity.addComponent(new ImageSizeFacet({ size: SizeTypes.AUTO_SIZE }));
     if (blockEditorEntity) {
       blockEditorEntity.removeTag(Tags.IS_CREATEMENU_VISIBLE);
     }

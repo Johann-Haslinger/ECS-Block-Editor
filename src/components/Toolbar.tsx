@@ -6,14 +6,14 @@ import {
   useEntityHasTags,
 } from '@leanscope/ecs-engine';
 import React, { useEffect, useState } from 'react';
-import { IsEditingFacet } from '../app/BlockFacets';
+
 import {
   IoAddOutline,
   IoEllipsisHorizontalCircleOutline,
   IoShapesOutline,
   IoShareOutline,
 } from 'react-icons/io5';
-import { EntityProps } from '@leanscope/ecs-engine/react-api/classes/EntityProps';
+
 import { Tags } from '../base/Constants';
 
 interface ToolbarProps {
@@ -21,9 +21,8 @@ interface ToolbarProps {
   blockEntities: readonly Entity[];
 }
 const Toolbar: React.FC<ToolbarProps> = ({ blockEditorEntity, blockEntities }) => {
-  const [isEditingFacet] = useEntityComponents(blockEditorEntity, IsEditingFacet);
-  const [isWriting] = useEntityHasTags(blockEditorEntity, Tags.FOCUSED);
-  const isEditing = isEditingFacet.props.isEditing;
+  const [isWriting, isEditing] = useEntityHasTags(blockEditorEntity, Tags.FOCUSED, Tags.IS_EDITING);
+   
 
   return (
     <div className="py-6 md:py-4 h-16 bg-white  w-full md:bg-opacity-0  absolute top-0 right-0  flex justify-end">
@@ -31,7 +30,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ blockEditorEntity, blockEntities }) =
         {isEditing ? (
           <p
             onClick={() => {
-              blockEditorEntity?.addComponent(new IsEditingFacet({ isEditing: false }));
+              blockEditorEntity?.removeTag(Tags.IS_EDITING)
             }}
             className="text-base font-bold  "
           >
@@ -41,7 +40,7 @@ const Toolbar: React.FC<ToolbarProps> = ({ blockEditorEntity, blockEntities }) =
           <p
             onClick={() => {
               blockEntities.map((block) => {
-                block.removeTag(Tags.FOCUSED);
+                block.removeTag(Tags.PRESSED);
               });
               blockEditorEntity.removeTag(Tags.FOCUSED)
             }}

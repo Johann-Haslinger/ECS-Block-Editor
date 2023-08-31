@@ -1,19 +1,12 @@
 import React, { SetStateAction, useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { IoDocument, IoFlower, IoReader, IoSettings, IoStar } from 'react-icons/io5';
-import { EntityProps } from '@leanscope/ecs-engine/react-api/classes/EntityProps';
 import { Entity, useEntities, useEntityComponents } from '@leanscope/ecs-engine';
-import { BlockTypes, StyleTypes, Tags } from '../../../base/Constants';
-import {
-  ColorFacet,
-  DescriptionFacet,
-  IconFacet,
-  IsSmallBlockFacet,
-  SrcFacet,
-  TypeFacet,
-} from '../../../app/BlockFacets';
+
 import ColorOptions from './ColorOptions';
 import IconOptions from './IconOptions';
+import {  DescriptionFacet, TypeFacet, BlockTypes, IconNameFacet, ColorFacet, Base64Facet } from '@leanscope/ecs-models';
+import { StyleTypes, Tags } from '../../../base/Constants';
 
 interface TypeOptionProps {
   changeType: () => void;
@@ -81,16 +74,16 @@ const addstyle = (
         } else {
           block.add(new DescriptionFacet({ description: 'Beschreibung' }));
           block.add(new TypeFacet({ type: BlockTypes.MORE_INFORMATIONS }));
-          block.add(new IconFacet({ icon: <IoReader /> }));
+          block.add(new IconNameFacet({ iconName: "<IoReader />" }));
           setCurrentStyleType(StyleTypes.DESCRIPTION);
         }
         break;
       case StyleTypes.LARGE:
         if (styleType === currentStyleType) {
-          block.remove(IsSmallBlockFacet);
+          // block.remove(IsSmallBlockFacet);
           setCurrentStyleType(undefined);
         } else {
-          block.add(new IsSmallBlockFacet({ isSmall: true }));
+          // block.add(new IsSmallBlockFacet({ isSmall: true }));
           setCurrentStyleType(StyleTypes.LARGE);
         }
         break;
@@ -111,12 +104,12 @@ const CardOptions = () => {
   const [pressedBlockEntities] = useEntities((e) => e.hasTag(Tags.PRESSED));
   const [isColorOptionsVisible, setIsColorOptionsVisible] = useState(false);
   const [isIconOptionsVisible, setIsIconOptionsVisible] = useState(false);
-  const [hasSrcFacet, setHasSrcFacet] = useState(false);
+  const [hasBase64Facet, setHasBase64Facet] = useState(false);
   
-  const [srcFacet] = useEntityComponents(pressedBlockEntities[0], SrcFacet  )
+  const [base64Facet] = useEntityComponents(pressedBlockEntities[0], Base64Facet  )
   const [isSelectingImageSrc, setIsSelectingImageSrc] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const src = srcFacet.props.src
+  const src = base64Facet?.props.data
 
   useEffect(() => {
     if (isSelectingImageSrc && fileInputRef.current !== null) {
@@ -132,7 +125,7 @@ const CardOptions = () => {
       const base64data = reader.result;
       if (typeof base64data == 'string') {
         pressedBlockEntities.map((block) => {
-          block.add(new SrcFacet({ src: base64data }));
+          block.add(new Base64Facet({ data: base64data }));
         });
       }
     };
@@ -153,7 +146,7 @@ const CardOptions = () => {
     let currentColor: string | undefined = '';
     pressedBlockEntities.map((block) => {
       if (currentColor == '') {
-        currentColor = block.get(ColorFacet)?.props.color;
+        currentColor = block.get(ColorFacet)?.props.colorName;
       } // else {
       //   currentColor = "#ffffff"
       // }
@@ -183,9 +176,10 @@ const CardOptions = () => {
             let currentType: undefined | StyleTypes = StyleTypes.LARGE;
 
             pressedBlockEntities.map((block) => {
-              if (block.get(IsSmallBlockFacet)?.props.isSmall) {
-                currentType = undefined;
-              }
+              // if (block.get(IsSmallBlockFacet)?.props.isSmall) {
+              //   currentType = undefined;
+              // }
+              console.log(block)
             });
             return currentType;
           }}
@@ -218,9 +212,9 @@ const CardOptions = () => {
         </div>
         <div
           onClick={() => {
-            if (pressedBlockEntities[0].get(SrcFacet)?.props.src) {
+            if (pressedBlockEntities[0].get(Base64Facet)?.props.data) {
               pressedBlockEntities.map((block) => {
-                block.remove(SrcFacet);
+                block.remove(Base64Facet);
               });
             } else {
               openFilePicker();
@@ -245,7 +239,7 @@ const CardOptions = () => {
             setIsIconOptionsVisible(true);
           }}
           className={`py-2 items-center border  px-4 w-full flex  rounded-lg justify-center ${
-            pressedBlockEntities[0] && pressedBlockEntities[0].get(IconFacet)?.props.icon
+            pressedBlockEntities[0] && pressedBlockEntities[0].get(IconNameFacet)?.props.iconName
               ? 'border-blue bg-blue-light text-blue'
               : ' border-white'
           } `}

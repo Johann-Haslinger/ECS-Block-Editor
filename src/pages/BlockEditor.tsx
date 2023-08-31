@@ -1,10 +1,10 @@
 import { ECSContext, Entity, useEntities } from '@leanscope/ecs-engine';
 import ComponentRenderer from '../components/ComponentRenderer';
-import { ChildFacet, IdFacet, IsEditingFacet, TextFacet, TypeFacet } from '../app/BlockFacets';
 import Toolbar from '../components/Toolbar';
 import { useContext, useEffect, useRef } from 'react';
 import { useWindowDimensions } from '../components/Size';
 import { useStateContext } from '../contexts/ContextProvider';
+import { TypeFacet } from '@leanscope/ecs-models';
 
 interface BlockEditorProps {
   blockEntities: readonly Entity[];
@@ -19,7 +19,7 @@ const BlockEditor: React.FC<BlockEditorProps> = ({
   parentId,
   setHeader,
 }) => {
-  const [blockEditorEntities] = useEntities((e) => e.has(IsEditingFacet));
+  const [blockEditorEntities] = useEntities((e) => e.has(TypeFacet));
   const { width } = useWindowDimensions();
   const { setTheme } = useStateContext();
   const contentEditableRef = useRef<HTMLDivElement>(null);

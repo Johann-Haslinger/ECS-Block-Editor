@@ -1,21 +1,22 @@
-import { Entity, useEntityComponents } from '@leanscope/ecs-engine';
+import { Entity, useEntityComponents, useEntityHasTags } from '@leanscope/ecs-engine';
 import React from 'react';
-import { FurtherFacet, IsEditingFacet, TextFacet } from '../../app/BlockFacets';
 import BlockOutline from './BlockOutline';
+import { TextFacet, FurtherFacet } from '@leanscope/ecs-models';
+import { Tags } from '../../base/Constants';
 
 interface PagesBlockProps {
   blockEntity: Entity;
   blockEditorEntity: Entity;
 }
 
-const PagesBlock: React.FC<PagesBlockProps> = ({ blockEntity, blockEditorEntity }) => {
+const PagesBlock: React.FC<PagesBlockProps> = ({ blockEntity, blockEditorEntity,  }) => {
   const [textFacet] = useEntityComponents(blockEntity, TextFacet);
-  const [isEditingFacet] = useEntityComponents(blockEditorEntity, IsEditingFacet);
-  const text = textFacet.props.text;
-  const isEditing = isEditingFacet.props.isEditing;
+  const text = textFacet?.props.text;
+   const [isEditing] =useEntityHasTags(blockEditorEntity, Tags.IS_EDITING )
 
   return (
     <BlockOutline
+    blockEditorEntity={blockEditorEntity}
       blockEntity={blockEntity}
       content={
         <div

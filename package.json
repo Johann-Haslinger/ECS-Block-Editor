@@ -10,9 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@leanscope/ecs-engine": "^0.1.69",
-    "@leanscope/ecs-models": "^0.1.95",
-    "@supabase/supabase-js": "^2.31.0",
+    "@leanscope/ecs-engine": "^0.1.84",
+    "@leanscope/ecs-models": "^0.1.96",
+    "@supabase/supabase-js": "^2.33.1",
     "@types/react-beautiful-dnd": "^13.1.4",
     "autoprefixer": "^10.4.14",
     "framer-motion": "^10.15.0",
